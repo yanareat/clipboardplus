@@ -1,12 +1,670 @@
-﻿<Window x:Class="clipboardplus.MainWindow"
+﻿<!--
+    WindowStyle="None" 去除标题栏
+    AllowsTransparency="True" 允许透明
+ -->
+<Window x:Class="clipboardplus.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:local="clr-namespace:clipboardplus"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="MainWindow" 
+        Height="450" 
+        Width="800"
+        WindowStyle="None"
+        AllowsTransparency="True">
+
+    <!--Window.Clip window的显示范围-->
+    <Window.Clip>
+        <RectangleGeometry x:Name="windowClip"
+                           RadiusX="5"
+                           RadiusY="5"
+                           Rect="0,0,800,450"/> <!--Rect="起点x,起点y,宽度,高度"-->
+    </Window.Clip>
+    
+    <!--全局Grid-->
+    <Grid x:Name="globalGrid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
         
+        <!--左侧功能区-->
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+
+            <!--功能tab选择区-->
+            <Grid Grid.RowSpan="2"
+                  Panel.ZIndex="1"
+                  x:Name="tabGrid">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="120"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+
+                <!--窗体控制栏-->
+                <Grid Grid.Row="1"
+                      Grid.Column="1"
+                      Panel.ZIndex="1">
+                    <Label HorizontalAlignment="Stretch" 
+                           hc:BorderElement.CornerRadius="0" 
+                           VerticalAlignment="Stretch" 
+                           MouseMove="windowMove" 
+                           MouseDoubleClick="windowDoubleClick" 
+                           MouseRightButtonDown="windowMin"
+                           BorderThickness="0,0,1,0"
+                           Margin="-1,0,0,0"/>
+                </Grid>
+                
+                <!--Tab功能选择-->
+                <TabControl Grid.RowSpan="2"
+                            Grid.ColumnSpan="2"
+                            TabStripPlacement="Right"
+                            Panel.ZIndex="0"
+                            BorderThickness="0,0,1,0">
+                    
+                    <!--历史记录Tab-->
+                    <TabItem Header="&#xE81C;" 
+                             Height="40" 
+                             FontFamily="Segoe MDL2 Assets" 
+                             FontSize="20">
+                        <Grid>
+                            
+                            <!--历史记录列表-->
+                            <ListBox FontFamily="微软雅黑">
+
+                                <ListBoxItem BorderThickness="0,0,0,1"
+                                         BorderBrush="LightGray"
+                                         Padding="0">
+
+                                    <!--记录条目-->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="40"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <!--标识图标-->
+                                        <Image Source="/Resources/Images/gravatar.jpeg"
+                                           Grid.RowSpan="3"/>
+
+                                        <!--标题-->
+                                        <TextBlock Grid.Column="1" 
+                                               Text="标题"
+                                               FontSize="14"
+                                               TextTrimming="CharacterEllipsis"/>
+
+                                        <!--记录图片内容-->
+                                        <Image Source="/Resources/Images/content_0.jpg"
+                                           Grid.Column="1"
+                                           Grid.Row="1"
+                                           MaxHeight="120"/>
+
+                                        <!--记录文本内容-->
+                                        <TextBlock Text="123456789qwertyuiopasdfghjklzxcvbnm"
+                                               Grid.Column="1"
+                                               Grid.Row="1"
+                                               TextTrimming="CharacterEllipsis"/>
+
+                                        <!--记录时间-->
+                                        <TextBlock Grid.Column="1"
+                                               Grid.Row="2"
+                                               FontSize="10"
+                                               Text="2020.5.2 17:40:36"
+                                               TextTrimming="CharacterEllipsis"/>
+
+                                        <!--记录来源-->
+                                        <TextBlock Grid.Column="1"
+                                               Grid.Row="2"
+                                               FontSize="10"
+                                               HorizontalAlignment="Right"
+                                               Text="window"
+                                               TextTrimming="CharacterEllipsis"/>
+                                    </Grid>
+                                </ListBoxItem>
+
+                                <ListBoxItem BorderThickness="0,0,0,1"
+                                         BorderBrush="LightGray"
+                                         Padding="0">
+
+                                    <!--记录条目-->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="40"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <!--标识图标-->
+                                        <Image Source="/Resources/Images/gravatar.jpeg"
+                                           Grid.RowSpan="3"/>
+
+                                        <!--标题-->
+                                        <TextBlock Grid.Column="1" 
+                                               Text="标题"
+                                               FontSize="14"
+                                               TextTrimming="CharacterEllipsis"/>
+
+                                        <!--记录图片内容-->
+                                        <Image Source="/Resources/Images/content_1.png"
+                                           Grid.Column="1"
+                                           Grid.Row="1"
+                                           MaxHeight="120"/>
+
+                                        <!--记录文本内容-->
+                                        <TextBlock Text="123"
+                                               Grid.Column="1"
+                                               Grid.Row="1"
+                                               TextTrimming="CharacterEllipsis"/>
+
+                                        <!--记录时间-->
+                                        <TextBlock Grid.Column="1"
+                                               Grid.Row="2"
+                                               FontSize="10"
+                                               Text="2020.5.2 17:40:36"
+                                               TextTrimming="CharacterEllipsis"/>
+
+                                        <!--记录来源-->
+                                        <TextBlock Grid.Column="1"
+                                               Grid.Row="2"
+                                               FontSize="10"
+                                               HorizontalAlignment="Right"
+                                               Text="window"
+                                               TextTrimming="CharacterEllipsis"/>
+                                    </Grid>
+                                </ListBoxItem>
+                            </ListBox>
+                        </Grid>
+                    </TabItem>
+
+                    <!--笔记本Tab-->
+                    <TabItem Header="&#xE838;" 
+                             Height="40" 
+                             FontFamily="Segoe MDL2 Assets" 
+                             FontSize="20">
+                        <Grid>
+
+                            <!--展示分区-->
+                            <ToggleButton Panel.ZIndex="1"
+                                          Content="&#xE728;" 
+                                          hc:BorderElement.CornerRadius="15" 
+                                          Background="{StaticResource PrimaryBrush}" 
+                                          Foreground="White" 
+                                          Padding="0" 
+                                          Width="30" 
+                                          Height="30" 
+                                          HorizontalAlignment="Right" 
+                                          VerticalAlignment="Bottom" 
+                                          Margin="0,0,10,10" 
+                                          IsChecked="{Binding IsOpen,ElementName=DrawerLeft}">
+                                <ToggleButton.Effect>
+                                    <DropShadowEffect ShadowDepth="3"/>
+                                </ToggleButton.Effect>
+                            </ToggleButton>
+
+                            <!--笔记本列表-->
+                            <ListBox FontFamily="微软雅黑"
+                                     Panel.ZIndex="0">
+
+                                <ListBoxItem BorderThickness="1"
+                                         BorderBrush="LightGray"
+                                         Padding="0">
+
+                                    <!--记录条目-->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="40"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <!--标识图标-->
+                                        <Image Source="/Resources/Images/gravatar.jpeg"
+                                           Grid.RowSpan="3"/>
+
+                                        <!--标题-->
+                                        <TextBlock Grid.Column="1" 
+                                               Text="标题"
+                                               FontSize="14"
+                                               TextTrimming="CharacterEllipsis"/>
+
+                                        <!--记录图片内容-->
+                                        <Image Source="/Resources/Images/content_0.jpg"
+                                           Grid.Column="1"
+                                           Grid.Row="1"
+                                           MaxHeight="120"/>
+
+                                        <!--记录文本内容-->
+                                        <TextBlock Text="123456789qwertyuiopasdfghjklzxcvbnm"
+                                               Grid.Column="1"
+                                               Grid.Row="1"
+                                               TextTrimming="CharacterEllipsis"/>
+
+                                        <!--记录时间-->
+                                        <TextBlock Grid.Column="1"
+                                               Grid.Row="2"
+                                               FontSize="10"
+                                               Text="2020.5.2 17:40:36"
+                                               TextTrimming="CharacterEllipsis"/>
+
+                                        <!--记录来源-->
+                                        <TextBlock Grid.Column="1"
+                                               Grid.Row="2"
+                                               FontSize="10"
+                                               HorizontalAlignment="Right"
+                                               Text="window"
+                                               TextTrimming="CharacterEllipsis"/>
+                                    </Grid>
+                                </ListBoxItem>
+
+                                <ListBoxItem BorderThickness="1"
+                                         BorderBrush="LightGray"
+                                         Padding="0">
+
+                                    <!--记录条目-->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="40"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <!--标识图标-->
+                                        <Image Source="/Resources/Images/gravatar.jpeg"
+                                           Grid.RowSpan="3"/>
+
+                                        <!--标题-->
+                                        <TextBlock Grid.Column="1" 
+                                               Text="标题"
+                                               FontSize="14"
+                                               TextTrimming="CharacterEllipsis"/>
+
+                                        <!--记录图片内容-->
+                                        <Image Source="/Resources/Images/content_1.png"
+                                           Grid.Column="1"
+                                           Grid.Row="1"
+                                           MaxHeight="120"/>
+
+                                        <!--记录文本内容-->
+                                        <TextBlock Text="123"
+                                               Grid.Column="1"
+                                               Grid.Row="1"
+                                               TextTrimming="CharacterEllipsis"/>
+
+                                        <!--记录时间-->
+                                        <TextBlock Grid.Column="1"
+                                               Grid.Row="2"
+                                               FontSize="10"
+                                               Text="2020.5.2 17:40:36"
+                                               TextTrimming="CharacterEllipsis"/>
+
+                                        <!--记录来源-->
+                                        <TextBlock Grid.Column="1"
+                                               Grid.Row="2"
+                                               FontSize="10"
+                                               HorizontalAlignment="Right"
+                                               Text="window"
+                                               TextTrimming="CharacterEllipsis"/>
+                                    </Grid>
+                                </ListBoxItem>
+                            </ListBox>
+
+                            <!--分区抽屉-->
+                            <hc:Drawer Name="DrawerLeft" 
+                                       Dock="Left" 
+                                       MaskCanClose="True" 
+                                       ShowMode="Push">
+                                <Border Background="{DynamicResource RegionBrush}"
+                                        Width="200" 
+                                        BorderBrush="{DynamicResource BorderBrush}">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        
+                                        <!--标题-->
+                                        <TextBlock Margin="10,0,0,0"
+                                                   Text="分区" 
+                                                   Style="{StaticResource TextBlockTitle}" 
+                                                   HorizontalAlignment="Left"/>
+                                        
+                                        <!--关闭按钮-->
+                                        <Button CommandTarget="{Binding}" Command="hc:ControlCommands.Close" Grid.Row="0" HorizontalAlignment="Right" Foreground="{DynamicResource PrimaryTextBrush}" Style="{StaticResource ButtonIcon}" hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}"/>
+                                        
+                                        <!--回收站-->
+                                        <TextBlock Text="&#xE74D;"
+                                                   FontFamily="Segoe MDL2 Assets"
+                                                   FontSize="16"
+                                                   VerticalAlignment="Center"
+                                                   Margin="10,0"
+                                                   Grid.Row="2"/>
+                                        <Label Grid.Row="2"                                                                                                
+                                               VerticalAlignment="Stretch"                                                 
+                                               HorizontalAlignment="Stretch"                                                 
+                                               HorizontalContentAlignment="Left"                                                
+                                               Content="回收站"
+                                               Margin="25,0,0,0"
+                                               BorderThickness="0"
+                                               />
+                                        
+                                        <!--树状分区-->
+                                        <TreeView Grid.Row="1" Margin="0" ItemsSource="{Binding DataList}">
+                                            <TreeViewItem Header="收藏">
+                                            </TreeViewItem>
+                                            <TreeViewItem Header="随笔">
+                                            </TreeViewItem>
+                                            <TreeViewItem Header="文摘">
+                                            </TreeViewItem>
+                                        </TreeView>
+                                    </Grid>
+                                </Border>
+                            </hc:Drawer>
+                        </Grid>
+                    </TabItem>
+
+                    <!--设置Tab-->
+                    <TabItem Header="&#xE115;" 
+                             Height="40" 
+                             FontFamily="Segoe MDL2 Assets" 
+                             FontSize="20">
+                        <Grid>
+
+                            <!--搜索列表-->
+                            
+                        </Grid>
+                    </TabItem>
+
+                    <!--个人信息Tab-->
+                    <TabItem Header="&#xE13D;" 
+                             Height="40" 
+                             FontFamily="Segoe MDL2 Assets" 
+                             FontSize="20"
+                             x:Name="personalCenterTab">
+                        <Grid>
+
+                            <!--搜索列表-->
+                            
+                        </Grid>
+                    </TabItem>
+
+                    <!--搜索Tab-->
+                    <TabItem Header="&#xE721;" 
+                             Height="40" 
+                             FontFamily="Segoe MDL2 Assets" 
+                             FontSize="20"
+                             x:Name="searchTab">
+                        <Grid>
+
+                            <!--搜索列表-->
+                            <ListBox FontFamily="微软雅黑">
+
+                                <ListBoxItem BorderThickness="1"
+                                         BorderBrush="LightGray"
+                                         Padding="0">
+
+                                    <!--记录条目-->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="40"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <!--标识图标-->
+                                        <Image Source="/Resources/Images/gravatar.jpeg"
+                                           Grid.RowSpan="3"/>
+
+                                        <!--标题-->
+                                        <TextBlock Grid.Column="1" 
+                                               Text="标题"
+                                               FontSize="14"
+                                               TextTrimming="CharacterEllipsis"/>
+
+                                        <!--记录图片内容-->
+                                        <Image Source="/Resources/Images/content_0.jpg"
+                                           Grid.Column="1"
+                                           Grid.Row="1"
+                                           MaxHeight="120"/>
+
+                                        <!--记录文本内容-->
+                                        <TextBlock Text="123456789qwertyuiopasdfghjklzxcvbnm"
+                                               Grid.Column="1"
+                                               Grid.Row="1"
+                                               TextTrimming="CharacterEllipsis"/>
+
+                                        <!--记录时间-->
+                                        <TextBlock Grid.Column="1"
+                                               Grid.Row="2"
+                                               FontSize="10"
+                                               Text="2020.5.2 17:40:36"
+                                               TextTrimming="CharacterEllipsis"/>
+
+                                        <!--记录来源-->
+                                        <TextBlock Grid.Column="1"
+                                               Grid.Row="2"
+                                               FontSize="10"
+                                               HorizontalAlignment="Right"
+                                               Text="window"
+                                               TextTrimming="CharacterEllipsis"/>
+                                    </Grid>
+                                </ListBoxItem>
+
+                                <ListBoxItem BorderThickness="1"
+                                         BorderBrush="LightGray"
+                                         Padding="0">
+
+                                    <!--记录条目-->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="40"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <!--标识图标-->
+                                        <Image Source="/Resources/Images/gravatar.jpeg"
+                                           Grid.RowSpan="3"/>
+
+                                        <!--标题-->
+                                        <TextBlock Grid.Column="1" 
+                                               Text="标题"
+                                               FontSize="14"
+                                               TextTrimming="CharacterEllipsis"/>
+
+                                        <!--记录图片内容-->
+                                        <Image Source="/Resources/Images/content_1.png"
+                                           Grid.Column="1"
+                                           Grid.Row="1"
+                                           MaxHeight="120"/>
+
+                                        <!--记录文本内容-->
+                                        <TextBlock Text="123"
+                                               Grid.Column="1"
+                                               Grid.Row="1"
+                                               TextTrimming="CharacterEllipsis"/>
+
+                                        <!--记录时间-->
+                                        <TextBlock Grid.Column="1"
+                                               Grid.Row="2"
+                                               FontSize="10"
+                                               Text="2020.5.2 17:40:36"
+                                               TextTrimming="CharacterEllipsis"/>
+
+                                        <!--记录来源-->
+                                        <TextBlock Grid.Column="1"
+                                               Grid.Row="2"
+                                               FontSize="10"
+                                               HorizontalAlignment="Right"
+                                               Text="window"
+                                               TextTrimming="CharacterEllipsis"/>
+                                    </Grid>
+                                </ListBoxItem>
+                            </ListBox>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </Grid>
+
+            <!--高级搜索设置区-->
+            <Border Grid.Row="1" 
+                    BorderBrush="LightGray"
+                    BorderThickness="0,1,1,0"/>
+            <Grid Grid.Row="1"
+                  Panel.ZIndex="0">
+                
+                <!--工具自动调节控件-->
+                <ToolBarTray>
+                    
+                    <!--日期选择器-->
+                    <ToolBar Header="时间">
+                        <DatePicker/>
+                    </ToolBar>
+
+                    <!--分区,内容选取-->
+                    <ToolBar Band="1"
+                             Header="分区">
+                        
+                        <!--分区选择-->
+                        <ComboBox SelectedIndex="0"
+                                  IsEditable="True">
+                            <ComboBoxItem Content="不限"/>
+                            <ComboBoxItem Content="收藏"/>
+                            <ComboBoxItem Content="随笔"/>
+                        </ComboBox>
+
+                        <!--包含内容-->
+                        <TextBlock Text="包含内容"
+                                   Margin="5,0"
+                                   VerticalAlignment="Center"/>
+                        <ToggleButton BorderThickness="0" 
+                                      IsChecked="True"
+                                      Width="20"
+                                      Height="20"
+                                      Style="{StaticResource ToggleButtonFlip}">
+                            <hc:StatusSwitchElement.CheckedElement>
+                                <Border Background="{DynamicResource PrimaryBrush}">
+                                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="是" Foreground="{DynamicResource TextIconBrush}"/>
+                                </Border>
+                            </hc:StatusSwitchElement.CheckedElement>
+                            <Border Background="{DynamicResource DangerBrush}">
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="否" Foreground="{DynamicResource TextIconBrush}"/>
+                            </Border>
+                        </ToggleButton>
+                    </ToolBar>
+
+                    <!--种类,内容选取-->
+                    <ToolBar Band="2"
+                             Header="种类">
+                        
+                        <!--种类选择-->
+                        <ComboBox SelectedIndex="0"
+                                  IsEditable="True">
+                            <ComboBoxItem Content="不限"/>
+                            <ComboBoxItem Content="文本"/>
+                            <ComboBoxItem Content="图片"/>
+                        </ComboBox>
+
+                        <!--包含回收站-->
+                        <TextBlock Text="包含回收站"
+                                   Margin="5,0"
+                                   VerticalAlignment="Center"/>
+                        <ToggleButton BorderThickness="0" 
+                                      IsChecked="True"
+                                      Width="20"
+                                      Height="20"
+                                      Style="{StaticResource ToggleButtonFlip}">
+                            <hc:StatusSwitchElement.CheckedElement>
+                                <Border Background="{DynamicResource PrimaryBrush}">
+                                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="是" Foreground="{DynamicResource TextIconBrush}"/>
+                                </Border>
+                            </hc:StatusSwitchElement.CheckedElement>
+                            <Border Background="{DynamicResource DangerBrush}">
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="否" Foreground="{DynamicResource TextIconBrush}"/>
+                            </Border>
+                        </ToggleButton>
+                    </ToolBar>
+                </ToolBarTray>                
+            </Grid>
+
+            <!--搜索框区-->
+            <Grid Grid.Row="2"
+                  Background="{StaticResource PrimaryBrush}">
+
+                <!--展示高级搜索-->
+                <ToggleButton HorizontalAlignment="Left"
+                              hc:BorderElement.CornerRadius="15"
+                              Checked="advancedSearchShow" 
+                              Unchecked="advancedSearchHide" 
+                              Margin="10,0"
+                              Height="30" 
+                              Width="30" 
+                              Style="{StaticResource ToggleButtonIcon}" 
+                              hc:IconSwitchElement.Geometry="{StaticResource RightGeometry}" 
+                              hc:IconSwitchElement.GeometrySelected="{StaticResource UpGeometry}"/>
+                
+                <!--搜索框-->
+                <hc:SearchBar GotFocus="showSearchTab"
+                              ShowClearButton="True" 
+                              Style="{StaticResource SearchBarPlus}" 
+                              Width="200" 
+                              Height="30" 
+                              HorizontalAlignment="Left" 
+                              Margin="50,0,0,0"/>
+                
+                <!--头像-->
+                <hc:Gravatar Style="{StaticResource GravatarCircleImg}" 
+                             Grid.Row="1" 
+                             Width="30" 
+                             Height="30" 
+                             HorizontalAlignment="Right" 
+                             MouseLeftButtonDown="showPersonalCenter" 
+                             MouseRightButtonDown="showEditZone" 
+                             Margin="10,0">
+                    <Image Source="/Resources/Images/gravatar.jpeg"/>
+                </hc:Gravatar>
+            </Grid>
+        </Grid>
+        
+        <!--右侧编辑区-->
+        <Grid Grid.Column="1">
+            
+        </Grid>
     </Grid>
 </Window>
