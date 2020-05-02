@@ -664,7 +664,119 @@
         
         <!--右侧编辑区-->
         <Grid Grid.Column="1">
-            
+            <TabControl TabStripPlacement="Bottom" Grid.Column="1" FontSize="16">
+                <TabItem Header="&#xE164;" MinWidth="20" FontFamily="Segoe MDL2 Assets" HorizontalAlignment="Left" Width="36">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40"/>
+                            <RowDefinition Height="40"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <ToolBarTray VerticalAlignment="Top">
+                            <ToolBar Padding="6" FontFamily="微软雅黑">
+                                <hc:ButtonGroup>
+                                    <Button Content="&#xE19B;"
+                                            FontFamily="Segoe MDL2 Assets"/>
+                                    <Button Content="&#xE8DB;"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            FontWeight="Bold"/>
+                                    <Button Content="&#xE8DC;"
+                                            FontWeight="Bold"
+                                            FontFamily="Segoe MDL2 Assets"/>
+                                </hc:ButtonGroup>
+                                <Separator Margin="5,0"/>
+                                <hc:ButtonGroup>
+                                    <Button Content="&#xE1C6;"
+                                            FontWeight="Bold"
+                                            FontFamily="Segoe MDL2 Assets"/>
+                                    <Button Content="&#xE1C7;"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            FontWeight="Bold"/>
+                                    <Button Content="&#xE185;"
+                                            FontWeight="Bold"
+                                            FontFamily="Segoe MDL2 Assets"/>
+                                </hc:ButtonGroup>
+                                <Separator Margin="5,0"/>
+                                <Button Content="&#xE167;"
+                                        FontFamily="Segoe MDL2 Assets"/>
+                                <Separator Margin="5,0"/>
+                                <ToggleButton HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="2" Content="翻译" IsChecked="{Binding IsOpen,ElementName=DrawerRight}"/>
+                            </ToolBar>
+                        </ToolBarTray>
+                        <TextBlock Text="题目"
+                                       FontFamily="微软雅黑"
+                                       Grid.Row="1"
+                                       VerticalAlignment="Center"
+                                       Margin="10,0"/>
+                        <TextBox Grid.Row="1"
+                                     FontFamily="微软雅黑"
+                                     Margin="50,0,0,0"/>
+                        <TextBlock Text="时间"
+                                       FontFamily="微软雅黑"
+                                       Grid.Row="2"
+                                       VerticalAlignment="Center"
+                                       Margin="10,0"/>
+                        <TextBlock Grid.Row="2"
+                                       FontFamily="微软雅黑"
+                                       Text="2020.4.26"
+                                       VerticalAlignment="Center"
+                                       Margin="60,0,0,0"/>
+                        <TextBlock Grid.Row="2"
+                                       FontFamily="微软雅黑"
+                                       Text="来源"
+                                       VerticalAlignment="Center"
+                                       Margin="150,0,0,0"/>
+                        <TextBlock Grid.Row="2"
+                                       FontFamily="微软雅黑"
+                                       Text="QQ"
+                                       VerticalAlignment="Center"
+                                       Margin="200,0,0,0"/>
+                        <!--<Controls:RichTextEditor Grid.Row="3"
+                                                     FontFamily="微软雅黑"
+                                                     ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                
+                            </Controls:RichTextEditor>-->
+                        <!--<RichTextBox Grid.Row="3"
+                                         FontFamily="微软雅黑"
+                                         ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                <FlowDocument>
+                                    <Paragraph>
+                                        <Run FontSize="20" Text="qwe"/>
+                                    </Paragraph>
+                                    <Paragraph>
+                                          <Run Text="asd"/>
+                                    </Paragraph>
+                                    <Paragraph>
+                                        <Hyperlink>https://github.com/NaBian/HandyControl</Hyperlink>
+                                    </Paragraph>
+                                </FlowDocument>
+                            </RichTextBox>-->
+                    </Grid>
+                </TabItem>
+                <TabItem Header="&#xEB9F;" MinWidth="20" FontFamily="Segoe MDL2 Assets">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <ToolBarTray VerticalAlignment="Top">
+                            <ToolBar Padding="5" FontFamily="微软雅黑">
+                                <ToggleButton HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="2" Content="识别" IsChecked="{Binding IsOpen,ElementName=DrawerRight}"/>
+                            </ToolBar>
+                        </ToolBarTray>
+                        <Grid Grid.Row="1">
+                            <!--<hc:ImageViewer Background="{DynamicResource BackgroundBrush}" 
+                                                ImageSource="/1.png"
+                                                FontFamily="微软雅黑"
+                                                ShowImgMap="True">
+                                </hc:ImageViewer>-->
+                        </Grid>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="qwe">
+                </TabItem>
+            </TabControl>
         </Grid>
     </Grid>
 </Window>
