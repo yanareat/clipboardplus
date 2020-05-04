@@ -21,9 +21,10 @@
         <RectangleGeometry x:Name="windowClip"
                            RadiusX="5"
                            RadiusY="5"
-                           Rect="0,0,800,450"/> <!--Rect="起点x,起点y,宽度,高度"-->
+                           Rect="0,0,800,450"/>
+        <!--Rect="起点x,起点y,宽度,高度"-->
     </Window.Clip>
-    
+
     <!--testWindowResources-->
     <Window.Resources>
         <SolidColorBrush x:Key="PaintingColor1" Color="#FF86E238"/>
@@ -55,7 +56,7 @@
             <ColumnDefinition Width="300"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        
+
         <!--左侧功能区-->
         <Grid>
             <Grid.RowDefinitions>
@@ -90,21 +91,21 @@
                            BorderThickness="0,0,1,0"
                            Margin="-1,0,0,0"/>
                 </Grid>
-                
+
                 <!--Tab功能选择-->
                 <TabControl Grid.RowSpan="2"
                             Grid.ColumnSpan="2"
                             TabStripPlacement="Right"
                             Panel.ZIndex="0"
                             BorderThickness="0,0,1,0">
-                    
+
                     <!--历史记录Tab-->
                     <TabItem Header="&#xE81C;" 
                              Height="40" 
                              FontFamily="Segoe MDL2 Assets" 
                              FontSize="20">
                         <Grid>
-                            
+
                             <!--历史记录列表-->
                             <ListBox FontFamily="微软雅黑">
 
@@ -375,16 +376,16 @@
                                             <RowDefinition/>
                                             <RowDefinition Height="Auto"/>
                                         </Grid.RowDefinitions>
-                                        
+
                                         <!--标题-->
                                         <TextBlock Margin="10,0,0,0"
                                                    Text="分区" 
                                                    Style="{StaticResource TextBlockTitle}" 
                                                    HorizontalAlignment="Left"/>
-                                        
+
                                         <!--关闭按钮-->
                                         <Button CommandTarget="{Binding}" Command="hc:ControlCommands.Close" Grid.Row="0" HorizontalAlignment="Right" Foreground="{DynamicResource PrimaryTextBrush}" Style="{StaticResource ButtonIcon}" hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}"/>
-                                        
+
                                         <!--回收站-->
                                         <TextBlock Text="&#xE74D;"
                                                    FontFamily="Segoe MDL2 Assets"
@@ -400,7 +401,7 @@
                                                Margin="25,0,0,0"
                                                BorderThickness="0"
                                                />
-                                        
+
                                         <!--树状分区-->
                                         <TreeView Grid.Row="1" Margin="0" ItemsSource="{Binding DataList}">
                                             <TreeViewItem Header="收藏">
@@ -424,7 +425,7 @@
                         <Grid>
 
                             <!--搜索列表-->
-                            
+
                         </Grid>
                     </TabItem>
 
@@ -437,7 +438,7 @@
                         <Grid>
 
                             <!--搜索列表-->
-                            
+
                         </Grid>
                     </TabItem>
 
@@ -573,10 +574,10 @@
                     BorderThickness="0,1,1,0"/>
             <Grid Grid.Row="1"
                   Panel.ZIndex="0">
-                
+
                 <!--工具自动调节控件-->
                 <ToolBarTray>
-                    
+
                     <!--日期选择器-->
                     <ToolBar Header="时间">
                         <DatePicker/>
@@ -585,7 +586,7 @@
                     <!--分区,内容选取-->
                     <ToolBar Band="1"
                              Header="分区">
-                        
+
                         <!--分区选择-->
                         <ComboBox SelectedIndex="0"
                                   IsEditable="True">
@@ -617,7 +618,7 @@
                     <!--种类,内容选取-->
                     <ToolBar Band="2"
                              Header="种类">
-                        
+
                         <!--种类选择-->
                         <ComboBox SelectedIndex="0"
                                   IsEditable="True">
@@ -645,7 +646,7 @@
                             </Border>
                         </ToggleButton>
                     </ToolBar>
-                </ToolBarTray>                
+                </ToolBarTray>
             </Grid>
 
             <!--搜索框区-->
@@ -663,7 +664,7 @@
                               Style="{StaticResource ToggleButtonIcon}" 
                               hc:IconSwitchElement.Geometry="{StaticResource RightGeometry}" 
                               hc:IconSwitchElement.GeometrySelected="{StaticResource UpGeometry}"/>
-                
+
                 <!--搜索框-->
                 <hc:SearchBar GotFocus="showSearchTab"
                               ShowClearButton="True" 
@@ -672,7 +673,7 @@
                               Height="30" 
                               HorizontalAlignment="Left" 
                               Margin="50,0,0,0"/>
-                
+
                 <!--头像-->
                 <hc:Gravatar Style="{StaticResource GravatarCircleImg}" 
                              Grid.Row="1" 
@@ -686,13 +687,13 @@
                 </hc:Gravatar>
             </Grid>
         </Grid>
-        
+
         <!--右侧编辑区-->
         <Grid Grid.Column="1">
-            
+
             <!--不同格式Tab-->
             <TabControl TabStripPlacement="Bottom">
-                
+
                 <!--文本编辑Tab-->
                 <TabItem Header="&#xE164;" 
                          FontFamily="Segoe MDL2 Assets"
@@ -714,7 +715,7 @@
                                    FontFamily="微软雅黑"
                                    Text="2020.4.26 20:55:23"
                                    Margin="10,0"/>
-                        
+
                         <!--来源-->
                         <TextBlock Grid.Row="1"
                                    FontFamily="微软雅黑"
@@ -756,7 +757,7 @@
                         </ToolBarTray>-->
                     </Grid>
                 </TabItem>
-                
+
                 <!--图片编辑-->
                 <TabItem Header="&#xEB9F;" 
                          FontSize="14"
@@ -766,14 +767,14 @@
                             <RowDefinition Height="40"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        
+
                         <!--工具栏-->
                         <ToolBarTray VerticalAlignment="Top">
                             <ToolBar Padding="5" FontFamily="微软雅黑">
                                 <ToggleButton HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="2" Content="识别" IsChecked="{Binding IsOpen,ElementName=DrawerRight}"/>
                             </ToolBar>
                         </ToolBarTray>
-                        
+
                         <!--图片浏览器-->
                         <Grid Grid.Row="1">
                             <hc:ImageViewer Background="{DynamicResource BackgroundBrush}" 
@@ -784,18 +785,22 @@
                         </Grid>
                     </Grid>
                 </TabItem>
-                
+
                 <!--test-->
                 <TabItem Header="&#xE7A8; &#xE890;"
                          FontSize="14"
                          FontFamily="Segoe MDL2 Assets">
                     <Grid>
-                        <!--<Image Source="/Resources/Images/content_0.jpg"/>-->
-                        <hc:ImageViewer Background="{DynamicResource BackgroundBrush}" 
+                        <Grid.Background>
+                            <ImageBrush ImageSource="Resources/Images/transparency.png"/>
+                        </Grid.Background>
+                        <Image Source="/Resources/Images/content_1.png"
+                               x:Name="img"/>
+                        <!--<hc:ImageViewer Background="{DynamicResource BackgroundBrush}" 
                                             ImageSource="/Resources/Images/content_0.jpg"
                                             FontFamily="微软雅黑"
                                             ShowImgMap="True">
-                        </hc:ImageViewer>
+                        </hc:ImageViewer>-->
                         <InkCanvas x:Name="MainInkCanvas" 
                                    Background="{x:Null}" 
                                    UseCustomCursor="False" Cursor="Cross" Margin="0,0,0,-0.333">

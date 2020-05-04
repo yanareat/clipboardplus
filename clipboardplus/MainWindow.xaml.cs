@@ -995,11 +995,11 @@ namespace clipboardplus
                 //MessageBox.Show(MainInkCanvas.ActualHeight+"    "+ MainInkCanvas.ActualWidth);
                 //var w = (int)(SystemParameters.PrimaryScreenWidth * fromHwnd.DpiX / 96.0);
                 //var h = (int)(SystemParameters.PrimaryScreenHeight * fromHwnd.DpiY / 96.0);
-                var w = (int)(MainInkCanvas.ActualWidth * fromHwnd.DpiX / 96.0);
-                var h = (int)(MainInkCanvas.ActualHeight * fromHwnd.DpiY / 96.0);
+                var w = (int)(img.ActualWidth * fromHwnd.DpiX / 96.0);
+                var h = (int)(img.ActualHeight * fromHwnd.DpiY / 96.0);
                 var image = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                 //Graphics.FromImage(image).CopyFromScreen(0, 0, 0, 0, new System.Drawing.Size(w, h), CopyPixelOperation.SourceCopy);
-                Graphics.FromImage(image).CopyFromScreen(new dPoint((int)MainInkCanvas.PointToScreen(new Point(0, 0)).X, (int)MainInkCanvas.PointToScreen(new Point(0, 0)).Y), dPoint.Empty, new System.Drawing.Size(w, h), CopyPixelOperation.SourceCopy);
+                Graphics.FromImage(image).CopyFromScreen(new dPoint((int)img.PointToScreen(new Point(0, 0)).X, (int)img.PointToScreen(new Point(0, 0)).Y), dPoint.Empty, new System.Drawing.Size(w, h), CopyPixelOperation.SourceCopy);
                 image.Save(s, ImageFormat.Png);
                 Palette.Opacity = 1;
                 s.Close();
