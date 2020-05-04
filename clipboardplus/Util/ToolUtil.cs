@@ -1,12 +1,16 @@
 ﻿using HandyControl.Controls;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 
 namespace clipboardplus.Util
 {
@@ -107,5 +111,28 @@ namespace clipboardplus.Util
             }
         }
 
+        #region Win32 API
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetClipboardOwner();
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetOpenClipboardWindow();
+
+        [DllImport("user32.dll")]
+        public static extern int GetWindowThreadProcessId(IntPtr handle,
+        out int processId);
+        [DllImport("kernel32.dll")]
+        public static extern bool CloseHandle(IntPtr handle);
+        #endregion
+
+        public static string ClipFrom()
+        {
+            IntPtr vOwner = GetOpenClipboardWindow();
+            if (vOwner == IntPtr.Zero) return "";
+            int vProcessId;
+            GetWindowThreadProcessId(vOwner, out vProcessId);
+            Process vProcess = Process.GetProcessById(vProcessId);
+            return vProcess.MainModule.FileName;
+        }
     }
 }
