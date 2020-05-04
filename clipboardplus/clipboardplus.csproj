@@ -73,6 +73,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converter\HtmlToXamlConverter.cs" />
+    <Compile Include="Converter\HtmlParser.cs" />
+    <Compile Include="Converter\CssStylesheet.cs" />
+    <Compile Include="Converter\HtmlSchema.cs" />
+    <Compile Include="Converter\HtmlLexicalAnalyzer.cs" />
+    <Compile Include="Converter\HtmlTokenType.cs" />
+    <Compile Include="Converter\HtmlCssParser.cs" />
+    <Compile Include="Converter\HtmlFromXamlConverter.cs" />
+    <Compile Include="Converter\HtmlEncodedTextWriter.cs" />
+    <Compile Include="Model\Record.cs" />
+    <Compile Include="Util\HtmlRichTextBoxBehavior.cs" />
+    <Compile Include="Util\ToolUtil.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Page Include="MainWindow.xaml">

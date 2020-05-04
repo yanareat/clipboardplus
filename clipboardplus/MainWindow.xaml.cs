@@ -25,6 +25,7 @@ namespace clipboardplus
             InitializeComponent();
             SizeChanged += MainWindow_SizeChanged;
             StateChanged += MainWindow_StateChanged;
+            htmlBoxToggle.IsChecked = true; 
         }
 
         private void MainWindow_StateChanged(object sender, EventArgs e)
@@ -107,6 +108,16 @@ namespace clipboardplus
         private void showSearchTabKey(object sender, KeyboardFocusChangedEventArgs e)
         {
             MessageBox.Show("key");
+        }
+
+        private void htmlBoxHide(object sender, RoutedEventArgs e)
+        {
+            Grid.SetColumnSpan(richTextBox, 2);
+        }
+
+        private void htmlBoxShow(object sender, RoutedEventArgs e)
+        {
+            Grid.SetColumnSpan(richTextBox, 1);
         }
     }
 }
