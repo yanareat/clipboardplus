@@ -52,6 +52,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\MvvmLightLibs.5.4.1.1\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
@@ -73,6 +74,30 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\ArrowTool.cs" />
+    <Compile Include="Controls\EllipseTool.cs" />
+    <Compile Include="Controls\ImageEditBar.cs" />
+    <Compile Include="Controls\KeyboardTextBox.cs" />
+    <Compile Include="Controls\LineTool.cs" />
+    <Compile Include="Controls\MainImage.cs" />
+    <Compile Include="Controls\RectangleTool.cs" />
+    <Compile Include="Controls\SizeColorBar.cs" />
+    <Compile Include="Controls\TextBoxControl.cs" />
+    <Compile Include="Controls\TextTool.cs" />
+    <Compile Include="Controls\ToolButton.cs" />
+    <Compile Include="Controls\ZoomThumb.cs" />
+    <Compile Include="Converters\ColorConverter.cs" />
+    <Compile Include="Converters\SizeConverter.cs" />
+    <Compile Include="Converters\ToolConverter.cs" />
+    <Compile Include="Helpers\ImageHelper.cs" />
+    <Compile Include="Helpers\RelayCommand.cs" />
+    <Compile Include="Helpers\ScreenHelper.cs" />
+    <Compile Include="Helpers\WpfHelper.cs" />
+    <Compile Include="Models\AppModel.cs" />
+    <Compile Include="Models\Direction.cs" />
+    <Compile Include="Models\EntityBase.cs" />
+    <Compile Include="Models\Limit.cs" />
+    <Compile Include="Models\Tool.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Page Include="MainWindow.xaml">
@@ -87,6 +112,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -120,6 +149,18 @@
     <Resource Include="Resources\Images\content_1.png" />
     <Resource Include="Resources\Images\clipboardplus.ico" />
     <Resource Include="Resources\Images\gravatar.jpeg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\transparency.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\cut.ico" />
+    <Resource Include="Resources\showyou.png" />
+    <Resource Include="Resources\保存.png" />
+    <Resource Include="Resources\后退.png" />
+    <Resource Include="Resources\笔刷.png" />
+    <Resource Include="Resources\箭头.png" />
+    <Resource Include="Resources\设置.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
