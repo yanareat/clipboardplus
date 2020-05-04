@@ -742,12 +742,14 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         
-
+                        <!--工具栏-->
                         <ToolBarTray VerticalAlignment="Top">
                             <ToolBar Padding="5" FontFamily="微软雅黑">
                                 <ToggleButton HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="2" Content="识别" IsChecked="{Binding IsOpen,ElementName=DrawerRight}"/>
                             </ToolBar>
                         </ToolBarTray>
+                        
+                        <!--图片浏览器-->
                         <Grid Grid.Row="1">
                             <hc:ImageViewer Background="{DynamicResource BackgroundBrush}" 
                                             ImageSource="/Resources/Images/content_0.jpg"
@@ -755,9 +757,48 @@
                                             ShowImgMap="True">
                             </hc:ImageViewer>
                         </Grid>
+                        
+                        <!--识别抽屉-->
+                        <hc:Drawer Name="DrawerRight" 
+                                   Dock="Right" 
+                                   ShowMask="False" 
+                                   ShowMode="Push">
+                            <Border Background="{DynamicResource RegionBrush}" 
+                                    Width="300" 
+                                    BorderThickness="1,0,0,0" 
+                                    BorderBrush="{DynamicResource BorderBrush}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    
+                                    <!--标题-->
+                                    <TextBlock Margin="10,0,0,0" 
+                                               Text="文本识别" 
+                                               Style="{StaticResource TextBlockTitle}" 
+                                               HorizontalAlignment="Left"/>
+                                    
+                                    <!--关闭按钮-->
+                                    <Button CommandTarget="{Binding}"
+                                            Command="hc:ControlCommands.Close" 
+                                            Grid.Row="0" HorizontalAlignment="Right"
+                                            Foreground="{DynamicResource PrimaryTextBrush}" 
+                                            Style="{StaticResource ButtonIcon}" 
+                                            hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}"/>
+
+                                    <RichTextBox Grid.Row="1"/>
+                                </Grid>
+                            </Border>
+                        </hc:Drawer>
                     </Grid>
                 </TabItem>
+                
+                <!--testTab-->
                 <TabItem Header="&#xE7A8; &#xE890;">
+                    <Grid>
+                        <Image Source="/Resources/Images/content_0.jpg"/>
+                    </Grid>
                 </TabItem>
             </TabControl>
         </Grid>
