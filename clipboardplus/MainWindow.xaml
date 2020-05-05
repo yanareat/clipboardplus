@@ -87,7 +87,16 @@
 
                             <!--历史记录列表-->
                             <ListBox FontFamily="微软雅黑"
-                                     ItemsSource="{Binding RecordList}">
+                                     ItemsSource="{Binding RecordList}"
+                                     x:Name="historyList">
+
+                                <!--非按钮出发命令的方式-->
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="SelectionChanged">
+                                        <mvvm:EventToCommand Command="{Binding SelectionChanged}" CommandParameter="{Binding SelectedItem ,ElementName=historyList}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
 
@@ -225,36 +234,78 @@
 
                             <!--笔记本列表-->
                             <ListBox FontFamily="微软雅黑"
-                                     ItemsSource="{Binding RecordList}">
+                                     ItemsSource="{Binding RecordList}"
+                                     x:Name="pagekList">
+
+                                <!--非按钮出发命令的方式-->
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="SelectionChanged">
+                                        <mvvm:EventToCommand Command="{Binding SelectionChanged}" CommandParameter="{Binding SelectedItem ,ElementName=pagekList}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
 
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
 
-                                        <!--记录条目-->
-                                        <Grid ToolTip="{Binding TextData}">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="40"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="auto"/>
-                                                <RowDefinition Height="auto"/>
-                                                <RowDefinition Height="auto"/>
-                                            </Grid.RowDefinitions>
+                                        <Grid Margin="-10,0">
 
-                                            <!--标识图标-->
-                                            <Image Source="/Resources/Images/gravatar.jpeg"
-                                                 Grid.RowSpan="3"/>
+                                            <!--边框-->
+                                            <Border Grid.ColumnSpan="2" 
+                                                    Grid.RowSpan="3" 
+                                                    BorderThickness="0,0,0,1"
+                                                    BorderBrush="LightGray"/>
 
-                                            <!--testCommand-->
-                                            <!--<Button DataContext="{Binding Source={StaticResource Locator},Path=Main}"
+                                            <!--记录条目-->
+                                            <Grid ToolTip="{Binding TextData}"
+                                                  x:Name="recordGrid"
+                                                  Margin="5">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="40"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="auto"/>
+                                                    <RowDefinition Height="auto"/>
+                                                    <RowDefinition Height="auto"/>
+                                                </Grid.RowDefinitions>
+
+                                                <!--标识图标-->
+                                                <!--<Border VerticalAlignment="Center"
+                                                 Grid.RowSpan="3">
+                                                    <Path Fill="Black" 
+                                                          Data="{Binding TypeIcon}" 
+                                                          VerticalAlignment="Center" 
+                                                          HorizontalAlignment="Center">
+                                                        <Path.RenderTransform>
+                                                            <ScaleTransform ScaleX="1.5" ScaleY="1.5" CenterX="15" CenterY="14"/>
+                                                        </Path.RenderTransform>
+                                                    </Path>
+                                                </Border>-->
+                                                <!--<Label Content="{Binding TypeIcon}"
+                                                       FontFamily="Segoe MDL2 Assets" 
+                                                       FontSize="24"
+                                                       BorderThickness="0"
+                                                       Grid.RowSpan="3"
+                                                       Padding="0"
+                                                       Background="Transparent"
+                                                       Foreground="Black"/>-->
+                                                <TextBlock Text="{Binding TypeIcon}"
+                                                           VerticalAlignment="Center"
+                                                           HorizontalAlignment="Center"
+                                                           Grid.RowSpan="3"
+                                                           FontFamily="Segoe MDL2 Assets" 
+                                                           FontSize="24"/>
+
+                                                <!--testCommand-->
+                                                <!--<Button DataContext="{Binding Source={StaticResource Locator},Path=Main}"
                                                 Command="{Binding ChangTitle}"/>-->
 
-                                            <!--标题-->
-                                            <TextBlock Grid.Column="1"
-                                               Text="{Binding Title}"
-                                               FontSize="14"
-                                               TextTrimming="CharacterEllipsis">
+                                                <!--标题-->
+                                                <TextBlock Grid.Column="1"
+                                                           FontWeight="Black"
+                                                           Text="{Binding Title}"
+                                                           FontSize="14"
+                                                           TextTrimming="CharacterEllipsis">
                                             
                                             <!--非按钮出发命令的方式-->
                                             <!--<i:Interaction.Triggers>
@@ -262,37 +313,40 @@
                                                     <mvvm:EventToCommand Command="{Binding ChangTitle}"/>
                                                 </i:EventTrigger>
                                             </i:Interaction.Triggers>-->
-                                            </TextBlock>
+                                                </TextBlock>
 
-                                            <!--记录图片内容-->
-                                            <Image Source="{Binding ImageData}"
-                                                   MinWidth="200"
+                                                <!--记录图片内容-->
+                                                <Image Source="{Binding ImageData}"
+                                                   MinWidth="206"
                                                Grid.Column="1"
                                                Grid.Row="1"
                                                MaxHeight="120"/>
 
-                                            <!--记录文本内容-->
-                                            <TextBlock Text="{Binding TextData}"
+                                                <!--记录文本内容-->
+                                                <TextBlock Text="{Binding TextData}"
                                                Grid.Column="1"
                                                Grid.Row="1"
                                                        MaxHeight="20"
                                                        Visibility="{Binding TextShow}"
                                                TextTrimming="CharacterEllipsis"/>
 
-                                            <!--记录时间-->
-                                            <TextBlock Grid.Column="1"
+                                                <!--记录时间-->
+                                                <TextBlock Grid.Column="1"
+                                                           Foreground="DarkGray"
                                                Grid.Row="2"
                                                FontSize="10"
                                                Text="{Binding TimeFormat}"
                                                TextTrimming="CharacterEllipsis"/>
 
-                                            <!--记录来源-->
-                                            <TextBlock Grid.Column="1"
+                                                <!--记录来源-->
+                                                <TextBlock Grid.Column="1"
+                                                           Foreground="DarkGray"
                                                Grid.Row="2"
                                                FontSize="10"
                                                HorizontalAlignment="Right"
                                                Text="{Binding From}"
                                                TextTrimming="CharacterEllipsis"/>
+                                            </Grid>
                                         </Grid>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
@@ -394,38 +448,72 @@
                                 <!--非按钮出发命令的方式-->
                                 <i:Interaction.Triggers>
                                     <i:EventTrigger EventName="SelectionChanged">
-                                        <mvvm:EventToCommand Command="{Binding SearchSelectionChanged}" CommandParameter="{Binding SelectedItem ,ElementName=searchList}"/>
+                                        <mvvm:EventToCommand Command="{Binding SelectionChanged}" CommandParameter="{Binding SelectedItem ,ElementName=searchList}"/>
                                     </i:EventTrigger>
                                 </i:Interaction.Triggers>
 
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
 
-                                        <!--记录条目-->
-                                        <Grid ToolTip="{Binding TextData}">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="40"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="auto"/>
-                                                <RowDefinition Height="auto"/>
-                                                <RowDefinition Height="auto"/>
-                                            </Grid.RowDefinitions>
+                                        <Grid Margin="-10,0">
 
-                                            <!--标识图标-->
-                                            <Image Source="/Resources/Images/gravatar.jpeg"
-                                                 Grid.RowSpan="3"/>
+                                            <!--边框-->
+                                            <Border Grid.ColumnSpan="2" 
+                                                    Grid.RowSpan="3" 
+                                                    BorderThickness="0,0,0,1"
+                                                    BorderBrush="LightGray"/>
 
-                                            <!--testCommand-->
-                                            <!--<Button DataContext="{Binding Source={StaticResource Locator},Path=Main}"
+                                            <!--记录条目-->
+                                            <Grid ToolTip="{Binding TextData}"
+                                                  x:Name="recordGrid"
+                                                  Margin="5">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="40"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="auto"/>
+                                                    <RowDefinition Height="auto"/>
+                                                    <RowDefinition Height="auto"/>
+                                                </Grid.RowDefinitions>
+
+                                                <!--标识图标-->
+                                                <!--<Border VerticalAlignment="Center"
+                                                 Grid.RowSpan="3">
+                                                    <Path Fill="Black" 
+                                                          Data="{Binding TypeIcon}" 
+                                                          VerticalAlignment="Center" 
+                                                          HorizontalAlignment="Center">
+                                                        <Path.RenderTransform>
+                                                            <ScaleTransform ScaleX="1.5" ScaleY="1.5" CenterX="15" CenterY="14"/>
+                                                        </Path.RenderTransform>
+                                                    </Path>
+                                                </Border>-->
+                                                <!--<Label Content="{Binding TypeIcon}"
+                                                       FontFamily="Segoe MDL2 Assets" 
+                                                       FontSize="24"
+                                                       BorderThickness="0"
+                                                       Grid.RowSpan="3"
+                                                       Padding="0"
+                                                       Background="Transparent"
+                                                       Foreground="Black"/>-->
+                                                <TextBlock Text="{Binding TypeIcon}"
+                                                           VerticalAlignment="Center"
+                                                           HorizontalAlignment="Center"
+                                                           Grid.RowSpan="3"
+                                                           FontFamily="Segoe MDL2 Assets" 
+                                                           FontSize="24"/>
+
+                                                <!--testCommand-->
+                                                <!--<Button DataContext="{Binding Source={StaticResource Locator},Path=Main}"
                                                 Command="{Binding ChangTitle}"/>-->
 
-                                            <!--标题-->
-                                            <TextBlock Grid.Column="1"
-                                               Text="{Binding Title}"
-                                               FontSize="14"
-                                               TextTrimming="CharacterEllipsis">
+                                                <!--标题-->
+                                                <TextBlock Grid.Column="1"
+                                                           FontWeight="Black"
+                                                           Text="{Binding Title}"
+                                                           FontSize="14"
+                                                           TextTrimming="CharacterEllipsis">
                                             
                                             <!--非按钮出发命令的方式-->
                                             <!--<i:Interaction.Triggers>
@@ -433,37 +521,40 @@
                                                     <mvvm:EventToCommand Command="{Binding ChangTitle}"/>
                                                 </i:EventTrigger>
                                             </i:Interaction.Triggers>-->
-                                            </TextBlock>
+                                                </TextBlock>
 
-                                            <!--记录图片内容-->
-                                            <Image Source="{Binding ImageData}"
-                                                   MinWidth="200"
+                                                <!--记录图片内容-->
+                                                <Image Source="{Binding ImageData}"
+                                                   MinWidth="206"
                                                Grid.Column="1"
                                                Grid.Row="1"
                                                MaxHeight="120"/>
 
-                                            <!--记录文本内容-->
-                                            <TextBlock Text="{Binding TextData}"
+                                                <!--记录文本内容-->
+                                                <TextBlock Text="{Binding TextData}"
                                                Grid.Column="1"
                                                Grid.Row="1"
                                                        MaxHeight="20"
                                                        Visibility="{Binding TextShow}"
                                                TextTrimming="CharacterEllipsis"/>
 
-                                            <!--记录时间-->
-                                            <TextBlock Grid.Column="1"
+                                                <!--记录时间-->
+                                                <TextBlock Grid.Column="1"
+                                                           Foreground="DarkGray"
                                                Grid.Row="2"
                                                FontSize="10"
                                                Text="{Binding TimeFormat}"
                                                TextTrimming="CharacterEllipsis"/>
 
-                                            <!--记录来源-->
-                                            <TextBlock Grid.Column="1"
+                                                <!--记录来源-->
+                                                <TextBlock Grid.Column="1"
+                                                           Foreground="DarkGray"
                                                Grid.Row="2"
                                                FontSize="10"
                                                HorizontalAlignment="Right"
                                                Text="{Binding From}"
                                                TextTrimming="CharacterEllipsis"/>
+                                            </Grid>
                                         </Grid>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
@@ -699,11 +790,11 @@
                                       Style="{StaticResource ToggleButtonFlip}">
                                         <hc:StatusSwitchElement.CheckedElement>
                                             <Border Background="{DynamicResource DefaultBrush}">
-                                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xF617;" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xF614;" Foreground="{DynamicResource PrimaryTextBrush}"/>
                                             </Border>
                                         </hc:StatusSwitchElement.CheckedElement>
                                         <Border Background="{DynamicResource DefaultBrush}">
-                                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xF614;" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xF617;" Foreground="{DynamicResource PrimaryTextBrush}"/>
                                         </Border>
                                     </ToggleButton>
                                 </ToolBar>
@@ -725,6 +816,7 @@
 
                             <!--html文本框-->
                             <TextBox Text="{Binding TextData}"
+                                     VerticalContentAlignment="Top"
                                      TextWrapping="Wrap"
                                      AcceptsReturn="True"
                                      Grid.Row="1"
@@ -737,25 +829,56 @@
                 <!--图片编辑-->
                 <TabItem Header="&#xEB9F;" 
                          FontSize="14"
-                         FontFamily="Segoe MDL2 Assets">
+                         FontFamily="Segoe MDL2 Assets"
+                         DataContext="{Binding ToEditImageRecord}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="40"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
-
+                        <!--工具栏-->
                         <ToolBarTray VerticalAlignment="Top">
                             <ToolBar Padding="5" FontFamily="微软雅黑">
                                 <ToggleButton HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="2" Content="识别" IsChecked="{Binding IsOpen,ElementName=DrawerRight}"/>
+                                <ToggleButton BorderThickness="0"
+                                                  x:Name="imageEditToggle"
+                                              Checked="imageEdiHide"
+                                              Unchecked="imageEdiShow"
+                                              Margin="5,0"
+                                              FontSize="16"
+                                              FontFamily="Segoe MDL2 Assets"
+                                      Width="30"
+                                      Height="30"
+                                      Style="{StaticResource ToggleButtonFlip}">
+                                    <hc:StatusSwitchElement.CheckedElement>
+                                        <Border Background="{DynamicResource DefaultBrush}">
+                                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xE890;" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                        </Border>
+                                    </hc:StatusSwitchElement.CheckedElement>
+                                    <Border Background="{DynamicResource DefaultBrush}">
+                                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xE7A8;" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                    </Border>
+                                </ToggleButton>
                             </ToolBar>
                         </ToolBarTray>
-                        <Grid Grid.Row="1">
+
+                        <!--图片浏览器-->
+                        <Grid Grid.Row="1"
+                              Panel.ZIndex="1">
                             <hc:ImageViewer Background="{DynamicResource BackgroundBrush}" 
-                                            ImageSource="/Resources/Images/content_0.jpg"
+                                            ImageSource="{Binding ImageData}"
                                             FontFamily="微软雅黑"
                                             ShowImgMap="True">
                             </hc:ImageViewer>
+                        </Grid>
+
+                        <!--图片编辑-->
+                        <Grid>
+                            <Grid.Background>
+                                <ImageBrush/>
+                            </Grid.Background>
+                            <Image Source="{Binding ImageData}"/>
                         </Grid>
                     </Grid>
                 </TabItem>
@@ -764,6 +887,40 @@
                 <TabItem Header="&#xE7A8; &#xE890;">
                 </TabItem>
             </TabControl>
+
+            <!--翻译,文字识别抽屉-->
+            <hc:Drawer Name="DrawerRight" 
+                                   Dock="Right" 
+                                   ShowMask="False" 
+                                   ShowMode="Push">
+                <Border Background="{DynamicResource RegionBrush}" 
+                                    Width="300" 
+                                    BorderThickness="1,0,0,0" 
+                                    BorderBrush="{DynamicResource BorderBrush}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <!--标题-->
+                        <TextBlock Margin="10,0,0,0" 
+                                               Text="文本识别" 
+                                               Style="{StaticResource TextBlockTitle}" 
+                                               HorizontalAlignment="Left"/>
+
+                        <!--关闭按钮-->
+                        <Button CommandTarget="{Binding}"
+                                            Command="hc:ControlCommands.Close" 
+                                            Grid.Row="0" HorizontalAlignment="Right"
+                                            Foreground="{DynamicResource PrimaryTextBrush}" 
+                                            Style="{StaticResource ButtonIcon}" 
+                                            hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}"/>
+
+                        <RichTextBox Grid.Row="1"/>
+                    </Grid>
+                </Border>
+            </hc:Drawer>
         </Grid>
     </Grid>
 </Window>

@@ -56,10 +56,21 @@ namespace clipboardplus.ViewModel
                 {
                     Id = 0,
                     Title = "题0目",
-                    Type = 2,
+                    Type = 1,
                     Time = DateTimeOffset.Now.ToUnixTimeMilliseconds(),
                     From = "CentBrowser",
                     TextData = "// Code data."
+                    //,ImageData = ToolUtil.ConvertToBytes(new BitmapImage(new Uri("pack://application:,,,/Resources/Images/content_0.jpg")))
+                };
+
+                ToEditImageRecord = new Record()
+                {
+                    Id = 0,
+                    Title = "题0目",
+                    Type = 2,
+                    Time = DateTimeOffset.Now.ToUnixTimeMilliseconds(),
+                    From = "CentBrowser",
+                    TextData = "// Picture"
                     //,ImageData = ToolUtil.ConvertToBytes(new BitmapImage(new Uri("pack://application:,,,/Resources/Images/content_0.jpg")))
                 };
             }
@@ -109,13 +120,23 @@ namespace clipboardplus.ViewModel
 
         #region 属性
         /// <summary>
-        /// 剪贴板记录
+        /// 文本编辑记录
         /// </summary>
         private Record _toEditTextRecord;
         public Record ToEditTextRecord
         {
             get => _toEditTextRecord;
             set { _toEditTextRecord = value; RaisePropertyChanged(() => ToEditTextRecord); }
+        }
+
+        /// <summary>
+        /// 图片编辑记录
+        /// </summary>
+        private Record _toEditImageRecord;
+        public Record ToEditImageRecord
+        {
+            get => _toEditImageRecord;
+            set { _toEditImageRecord = value; RaisePropertyChanged(() => ToEditImageRecord); }
         }
 
         /// <summary>
@@ -149,19 +170,21 @@ namespace clipboardplus.ViewModel
         }
 
         /// <summary>
-        /// 命令模板
+        /// 选择记录触发
         /// </summary>
-        private RelayCommand<object> _searchSelectionChanged;
-        public RelayCommand<object> SearchSelectionChanged
+        private RelayCommand<object> _selectionChanged;
+        public RelayCommand<object> SelectionChanged
         {
             get
             {
-                return _searchSelectionChanged
-                    ?? (_searchSelectionChanged = new RelayCommand<object>(
+                return _selectionChanged
+                    ?? (_selectionChanged = new RelayCommand<object>(
                         (selected) =>
                         {
-                            ToEditTextRecord = (Record)selected;
-                            Console.WriteLine("@@@@@@@@@@@@@@" + ToEditTextRecord.TextData);
+                            Record tempRecord = ToolUtil.DeepCopy((Record)selected);
+                            Console.WriteLine("****************"+tempRecord.Type);
+                            _ = tempRecord.Type == 1 ? ToEditTextRecord = tempRecord : ToEditImageRecord = tempRecord;
+                            //Console.WriteLine("@@@@@@@@@@@@@@" + ToEditTextRecord.TextData+"\n###############"+ToEditImageRecord.TextData);
                         }));
             }
         }

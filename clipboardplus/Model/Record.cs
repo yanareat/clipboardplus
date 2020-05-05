@@ -177,14 +177,6 @@ namespace clipboardplus.Model
         }
 
         /// <summary>
-        /// 记录的二进制还原成图片
-        /// </summary>
-        public BitmapImage ImageSource
-        {
-            get => ToolUtil.ConvertToBitmap(_imageData);
-        }
-
-        /// <summary>
         /// 记录的时间格式化
         /// </summary>
         public string TimeFormat
