@@ -853,11 +853,11 @@
                                       Style="{StaticResource ToggleButtonFlip}">
                                     <hc:StatusSwitchElement.CheckedElement>
                                         <Border Background="{DynamicResource DefaultBrush}">
-                                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xE890;" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xE7A8;" Foreground="{DynamicResource PrimaryTextBrush}"/>
                                         </Border>
                                     </hc:StatusSwitchElement.CheckedElement>
                                     <Border Background="{DynamicResource DefaultBrush}">
-                                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xE7A8;" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xE890;" Foreground="{DynamicResource PrimaryTextBrush}"/>
                                     </Border>
                                 </ToggleButton>
                             </ToolBar>
@@ -865,7 +865,8 @@
 
                         <!--图片浏览器-->
                         <Grid Grid.Row="1"
-                              Panel.ZIndex="1">
+                              Panel.ZIndex="1"
+                              x:Name="imageViewer">
                             <hc:ImageViewer Background="{DynamicResource BackgroundBrush}" 
                                             ImageSource="{Binding ImageData}"
                                             FontFamily="微软雅黑"
@@ -874,9 +875,9 @@
                         </Grid>
 
                         <!--图片编辑-->
-                        <Grid>
+                        <Grid Grid.Row="1">
                             <Grid.Background>
-                                <ImageBrush/>
+                                <ImageBrush ImageSource="Resources/Images/transparency.png"/>
                             </Grid.Background>
                             <Image Source="{Binding ImageData}"/>
                         </Grid>

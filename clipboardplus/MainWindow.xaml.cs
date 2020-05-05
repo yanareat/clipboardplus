@@ -16,6 +16,7 @@ namespace clipboardplus
             SizeChanged += MainWindow_SizeChanged;
             StateChanged += MainWindow_StateChanged;
             htmlBoxToggle.IsChecked = true;
+            imageEditToggle.IsChecked = true;
         }
 
         private void MainWindow_StateChanged(object sender, EventArgs e)
@@ -108,6 +109,16 @@ namespace clipboardplus
         private void htmlBoxShow(object sender, RoutedEventArgs e)
         {
             Grid.SetColumnSpan(richTextBox, 1);
+        }
+
+        private void imageEdiHide(object sender, RoutedEventArgs e)
+        {
+            Panel.SetZIndex(imageViewer, 1);
+        }
+
+        private void imageEdiShow(object sender, RoutedEventArgs e)
+        {
+            Panel.SetZIndex(imageViewer, 0);
         }
     }
 }

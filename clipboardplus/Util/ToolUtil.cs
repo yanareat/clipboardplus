@@ -65,6 +65,12 @@ namespace clipboardplus.Util
             return bi;
         }
 
+        /// <summary>
+        /// 得到文件,字符串的MD5码
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public static string GetMD5Hash(string fileName, int type)
         {
             try

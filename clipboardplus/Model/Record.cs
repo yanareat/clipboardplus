@@ -1,5 +1,6 @@
 ﻿using clipboardplus.Util;
 using GalaSoft.MvvmLight;
+using SQLite;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,6 +13,7 @@ using System.Windows.Media.Imaging;
 
 namespace clipboardplus.Model
 {
+    [Table("record")]
     public class Record : ObservableObject
     {
         #region 属性
@@ -19,6 +21,9 @@ namespace clipboardplus.Model
         /// 记录的序号
         /// </summary>
         private int _id;
+        [Column("id")]
+        [PrimaryKey]
+        [AutoIncrement]
         public int Id
         {
             get => _id; 
@@ -29,6 +34,8 @@ namespace clipboardplus.Model
         /// 记录的标题
         /// </summary>
         private string _title;
+        [Column("title")]
+        [NotNull]
         public string Title
         {
             get => _title;
@@ -39,9 +46,11 @@ namespace clipboardplus.Model
         /// 记录的内容的MD5码
         /// </summary>
         private string _md5;
+        [Column("md5")]
+        [NotNull]
         public string MD5
         {
-            get => _md5;
+            get { return _md5 == null ? (Type == 1 ? ToolUtil.GetMD5Hash(TextData, 0) : ToolUtil.GetMD5Hash(ImageData)) : _md5; }
             set { _md5 = value; RaisePropertyChanged(() => MD5); }
         }
 
@@ -53,6 +62,8 @@ namespace clipboardplus.Model
         /// 3文件
         /// </summary>
         private int _type;
+        [Column("type")]
+        [NotNull]
         public int Type
         {
             get => _type;
@@ -63,8 +74,10 @@ namespace clipboardplus.Model
         /// 记录的时间
         /// 通过 DateTimeOffset.Now.ToUnixTimeMilliseconds() 获得
         /// </summary>
-        private long _time;
-        public long Time
+        private string _time;
+        [Column("time")]
+        [NotNull]
+        public string Time
         {
             get => _time;
             set { _time = value; RaisePropertyChanged(() => Time); }
@@ -73,17 +86,20 @@ namespace clipboardplus.Model
         /// <summary>
         /// 记录的来源
         /// </summary>
-        private string _from;
-        public string From
+        private string _origin;
+        [Column("origin")]
+        public string Origin
         {
-            get => _from;
-            set { _from = value; RaisePropertyChanged(() => From); }
+            get => _origin;
+            set { _origin = value; RaisePropertyChanged(() => Origin); }
         }
 
         /// <summary>
         /// 记录的分区
         /// </summary>
         private int _zone;
+        [Column("zone")]
+        [NotNull]
         public int Zone
         {
             get => _zone;
@@ -94,6 +110,8 @@ namespace clipboardplus.Model
         /// 记录是否删除
         /// </summary>
         private int _deleted;
+        [Column("deleted")]
+        [NotNull]
         public int Deleted
         {
             get => _deleted;
@@ -104,6 +122,7 @@ namespace clipboardplus.Model
         /// 记录的文本数据
         /// </summary>
         private string _textData;
+        [Column("text_data")]
         public string TextData
         {
             get => _textData;
@@ -114,6 +133,7 @@ namespace clipboardplus.Model
         /// 记录的HTML数据
         /// </summary>
         private string _htmlData;
+        [Column("html_data")]
         public string HtmlData
         {
             get => _htmlData;
@@ -125,6 +145,7 @@ namespace clipboardplus.Model
         /// 二进制
         /// </summary>
         private byte[] _imageData;
+        [Column("image_data")]
         public byte[] ImageData
         {
             get => _imageData;
@@ -136,6 +157,7 @@ namespace clipboardplus.Model
         /// 二进制
         /// </summary>
         private byte[] _fileData;
+        [Column("file_data")]
         public byte[] FileData
         {
             get => _fileData;
@@ -149,7 +171,7 @@ namespace clipboardplus.Model
         /// </summary>
         public int TextSize
         {
-            get => _textData.Length;
+            get => _textData == null ? 0 : _textData.Length;
         }
 
         /// <summary>
@@ -157,7 +179,7 @@ namespace clipboardplus.Model
         /// </summary>
         public int HtmlSize
         {
-            get => _htmlData.Length;
+            get => _htmlData == null ? 0: _htmlData.Length;
         }
 
         /// <summary>
@@ -165,7 +187,7 @@ namespace clipboardplus.Model
         /// </summary>
         public int ImageSize
         {
-            get => _imageData.Length;
+            get => _imageData == null ? 0 : _imageData.Length;
         }
 
         /// <summary>
@@ -173,7 +195,7 @@ namespace clipboardplus.Model
         /// </summary>
         public int FileSize
         {
-            get => _fileData.Length;
+            get => _fileData == null ? 0 : _fileData.Length;
         }
 
         /// <summary>
@@ -181,7 +203,7 @@ namespace clipboardplus.Model
         /// </summary>
         public string TimeFormat
         {
-            get => DateTimeOffset.FromUnixTimeMilliseconds(_time).ToLocalTime().ToString("yyyy.MM.dd HH:mm:ss");
+            get => DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(_time)).ToLocalTime().ToString("yyyy.MM.dd HH:mm:ss");
         }
 
         /// <summary>

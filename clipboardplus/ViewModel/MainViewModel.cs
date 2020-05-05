@@ -4,6 +4,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using System;
 using System.Collections.ObjectModel;
+using System.Text;
 using System.Windows.Media.Imaging;
 using CM = ClipboardMonitor;
 
@@ -37,8 +38,8 @@ namespace clipboardplus.ViewModel
                     Id = 0,
                     Title = "题0目",
                     Type = 1,
-                    Time = DateTimeOffset.Now.ToUnixTimeMilliseconds(),
-                    From = "CentBrowser",
+                    Time = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(),
+                    Origin = "CentBrowser",
                     TextData = "// Code runs in Blend --> create design time data."
                 });
                 _recordList.Add(new Record()
@@ -46,8 +47,8 @@ namespace clipboardplus.ViewModel
                     Id = 0,
                     Title = "题0目",
                     Type = 2,
-                    Time = DateTimeOffset.Now.ToUnixTimeMilliseconds(),
-                    From = "CentBrowser",
+                    Time = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(),
+                    Origin = "CentBrowser",
                     TextData = "// Code data."
                     //,ImageData = ToolUtil.ConvertToBytes(new BitmapImage(new Uri("pack://application:,,,/Resources/Images/content_0.jpg")))
                 });
@@ -57,8 +58,8 @@ namespace clipboardplus.ViewModel
                     Id = 0,
                     Title = "题0目",
                     Type = 1,
-                    Time = DateTimeOffset.Now.ToUnixTimeMilliseconds(),
-                    From = "CentBrowser",
+                    Time = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(),
+                    Origin = "CentBrowser",
                     TextData = "// Code data."
                     //,ImageData = ToolUtil.ConvertToBytes(new BitmapImage(new Uri("pack://application:,,,/Resources/Images/content_0.jpg")))
                 };
@@ -68,34 +69,34 @@ namespace clipboardplus.ViewModel
                     Id = 0,
                     Title = "题0目",
                     Type = 2,
-                    Time = DateTimeOffset.Now.ToUnixTimeMilliseconds(),
-                    From = "CentBrowser",
+                    Time = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(),
+                    Origin = "CentBrowser",
                     TextData = "// Picture"
                     //,ImageData = ToolUtil.ConvertToBytes(new BitmapImage(new Uri("pack://application:,,,/Resources/Images/content_0.jpg")))
                 };
             }
             else
             {
-                //CM.ClipboardMonitor cm = new CM.ClipboardMonitor();
-                //cm.ClipboardData += (obj, args) =>
-                //{
-                //    try
-                //    {
-                //        ClipboardListener();
-                //    }
-                //    catch (Exception e)
-                //    {
-                //        Console.WriteLine(e.ToString());
-                //    }
-                //};
+                CM.ClipboardMonitor cm = new CM.ClipboardMonitor();
+                cm.ClipboardData += (obj, args) =>
+                {
+                    try
+                    {
+                        ClipboardListener();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.ToString());
+                    }
+                };
                 // Code runs "for real"
                 _recordList.Add(new Record()
                 {
-                    Id = 3,
+                    Id = 4,
                     Title = "今天笔记",
                     Type = 1,
-                    Time = DateTimeOffset.Now.ToUnixTimeMilliseconds(),
-                    From = "OneNote",
+                    Time = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(),
+                    Origin = "OneNote",
                     TextData = @"BitmapImage bi = null;
                                 if (ImageSize != 0)
                                 {
@@ -110,8 +111,8 @@ namespace clipboardplus.ViewModel
                     Id = 0,
                     Title = "题0目",
                     Type = 2,
-                    Time = DateTimeOffset.Now.ToUnixTimeMilliseconds(),
-                    From = "CentBrowser",
+                    Time = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(),
+                    Origin = "CentBrowser",
                     TextData = "// Code data.",
                     ImageData = ToolUtil.ConvertToBytes(new BitmapImage(new Uri("pack://application:,,,/Resources/Images/content_0.jpg")))
                 });
@@ -119,6 +120,16 @@ namespace clipboardplus.ViewModel
         }
 
         #region 属性
+        /// <summary>
+        /// 数据库工具类
+        /// </summary>
+        private SQLiteUtil<Record> _sqlutil = new SQLiteUtil<Record>(new StringBuilder("D:/5_desktop"));
+        public SQLiteUtil<Record> Sqlutil
+        {
+            get => _sqlutil;
+            set { _sqlutil = value; RaisePropertyChanged(() => Sqlutil); }
+        }
+
         /// <summary>
         /// 文本编辑记录
         /// </summary>
@@ -182,7 +193,7 @@ namespace clipboardplus.ViewModel
                         (selected) =>
                         {
                             Record tempRecord = ToolUtil.DeepCopy((Record)selected);
-                            Console.WriteLine("****************"+tempRecord.Type);
+                            Console.WriteLine("****************" + tempRecord.Type);
                             _ = tempRecord.Type == 1 ? ToEditTextRecord = tempRecord : ToEditImageRecord = tempRecord;
                             //Console.WriteLine("@@@@@@@@@@@@@@" + ToEditTextRecord.TextData+"\n###############"+ToEditImageRecord.TextData);
                         }));
@@ -203,38 +214,28 @@ namespace clipboardplus.ViewModel
                 Console.WriteLine(format);
             }
             Console.WriteLine(clipData.GetDataPresent(System.Windows.DataFormats.Bitmap));
-            Record clipItem;
+
+            Record clipItem = new Record()
+            {
+                Origin = ToolUtil.ClipFrom(),
+                Time = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(),
+            };
+
             if (clipData.GetDataPresent(System.Windows.DataFormats.Bitmap))
             {
-                Console.WriteLine("GetDataPresent");
                 byte[] tempData = ToolUtil.ConvertToBytes(System.Windows.Clipboard.GetImage());
-                clipItem = new Record()
-                {
-                    Id = 1,
-                    Type = 2,
-                    From = ToolUtil.ClipFrom(),
-                    MD5 = ToolUtil.GetMD5Hash(tempData),
-                    Time = DateTimeOffset.Now.ToUnixTimeMilliseconds(),
-                    Title = "图片",
-                    ImageData = tempData
-                };
-                //sqlu.Insert(clipItem);
+                clipItem.Type = 2;
+                clipItem.Title = "图片";
+                clipItem.ImageData = tempData;
             }
             else
             {
                 string temp = System.Windows.Clipboard.GetText();
-                clipItem = new Record()
-                {
-                    Id = 5,
-                    Type = 1,
-                    From = ToolUtil.ClipFrom(),
-                    MD5 = ToolUtil.GetMD5Hash(System.Windows.Clipboard.GetText(), 0),
-                    Time = DateTimeOffset.Now.ToUnixTimeMilliseconds(),
-                    Title = temp,
-                    TextData = temp
-                };
-                //sqlu.Insert(clipItem);
+                clipItem.Type = 1;
+                clipItem.Title = temp;
+                clipItem.TextData = temp;
             }
+
             foreach (var item in RecordList)
             {
                 if (item.MD5 == clipItem.MD5)
@@ -244,6 +245,20 @@ namespace clipboardplus.ViewModel
                 }
             }
             RecordList.Insert(0, clipItem);
+
+            var res = Sqlutil.Query<Record>("select id from record where md5 = '" + clipItem.MD5 + "'");
+            if (res.Count == 0)
+            {
+                Console.WriteLine("777");
+                Sqlutil.Add(clipItem);
+            }
+            else
+            {
+                Console.WriteLine("aaa" + res[0].Id);
+                clipItem.Id = res[0].Id;
+                Sqlutil.Update(clipItem);
+            }
+
             Console.WriteLine("ClipboardMonitor");
         }
         #endregion
