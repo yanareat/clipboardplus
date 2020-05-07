@@ -5,7 +5,11 @@ using GalaSoft.MvvmLight.CommandWpf;
 using SqlSugar;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -40,9 +44,8 @@ namespace clipboardplus.ViewModel
             }
             else
             {
-                InitData();
-                ClipboardRecorderOpen();
                 // Code runs "for real"
+                InitData();
             }
         }
 
@@ -108,6 +111,16 @@ namespace clipboardplus.ViewModel
         }
 
         /// <summary>
+        /// 选择的记录
+        /// </summary>
+        private Record _clipRecord;
+        public Record ClipRecord
+        {
+            get => _clipRecord;
+            set { _clipRecord = value; RaisePropertyChanged(() => ClipRecord); }
+        }
+
+        /// <summary>
         /// 选择的分区
         /// </summary>
         private Zone _selectedZone;
@@ -118,7 +131,7 @@ namespace clipboardplus.ViewModel
         }
 
         /// <summary>
-        /// 选择的分区
+        /// 根分区
         /// </summary>
         private Zone _rootZone = new Zone() { Id = 0, Parent = 0, Name = "根目录", Nodes = new ObservableCollection<Zone>() };
         public Zone RootZone
@@ -128,23 +141,13 @@ namespace clipboardplus.ViewModel
         }
 
         /// <summary>
-        /// Tab序号
-        /// </summary>
-        private int _tabIndex;
-        public int TabIndex
-        {
-            get => _tabIndex;
-            set { _tabIndex = value; RaisePropertyChanged(() => TabIndex); }
-        }
-
-        /// <summary>
         /// 列表序号
         /// </summary>
-        private int _listIndex;
-        public int ListIndex
+        private bool _flag = true;
+        public bool Flag
         {
-            get => _listIndex;
-            set { _listIndex = value; RaisePropertyChanged(() => ListIndex); }
+            get => _flag;
+            set { _flag = value; RaisePropertyChanged(); }
         }
         #endregion
 
@@ -232,62 +235,56 @@ namespace clipboardplus.ViewModel
         #region 方法
 
         /// <summary>
+        /// 初始化数据
+        /// </summary>
+        private void InitData()
+        {
+            try
+            {
+                ClipboardRecorderOpen();
+                Console.WriteLine(" -----------------1-----------------\n");
+                Sqlutil = new SqlUtil<Record>(new StringBuilder("DataSource=D:/5_desktop"), DbType.Sqlite);
+                Console.WriteLine(" -----------------2-----------------\n");
+                RecordList = new ObservableCollection<Record>(Sqlutil.CurrentDb.GetPageList(r => r.Deleted == 0, new PageModel() { PageIndex = 1, PageSize = 10 }));
+                Console.WriteLine(" -----------------3-----------------\n");
+                ZoneTree = ToolUtil.getTrees(0, new ObservableCollection<Zone>(Sqlutil.ZoneDb.GetPageList(z => z.Parent != -1, new PageModel() { PageIndex = 1, PageSize = 10 })));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(" -----------------ERROR-----------------\n" + e.Message);
+            }
+        }
+
+        /// <summary>
         /// 剪贴监听函数
         /// </summary>
-        private void ClipboardListener()
+        private void ClipboardListener(CM.ClipboardMonitor cm)
         {
-            var clipData = System.Windows.Clipboard.GetDataObject();
-            foreach (var format in clipData.GetFormats())
+            Console.WriteLine(" -----------------5-----------------\n");
+            ClipRecord = new Record();
+            if (cm.ClipboardContainsImage)
             {
-                Console.WriteLine(format);
-            }
-            Console.WriteLine(clipData.GetDataPresent(System.Windows.DataFormats.Bitmap));
-
-            Record clipItem = new Record()
-            {
-                Origin = ToolUtil.ClipFrom(),
-                Time = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(),
-            };
-
-            if (clipData.GetDataPresent(System.Windows.DataFormats.Bitmap))
-            {
-                byte[] tempData = ToolUtil.ConvertToBytes(System.Windows.Clipboard.GetImage());
-                clipItem.Type = 2;
-                clipItem.Title = "图片";
-                clipItem.ImageData = tempData;
+                Console.WriteLine(" -----------------9-----------------\n");
+                ClipRecord.Type = 2;
+                ClipRecord.Title = "图片";
+                ClipRecord.ImageData = ToolUtil.ConvertToBytes(cm.ClipboardImage);
+                ClipRecord.MD5 = ToolUtil.GetMD5Hash(ClipRecord.ImageData);
+                Console.WriteLine(" -----------------6-----------------\n");
             }
             else
             {
-                string temp = System.Windows.Clipboard.GetText();
-                clipItem.Type = 1;
-                clipItem.Title = temp;
-                clipItem.TextData = temp;
+                Console.WriteLine(" -----------------10-----------------\n");
+                ClipRecord.Type = 1;
+                ClipRecord.Title = cm.ClipboardText.Trim().Length > 16 ? cm.ClipboardText.Trim().Substring(0, 16) : cm.ClipboardText.Trim();
+                ClipRecord.TextData = cm.ClipboardText;
+                ClipRecord.MD5 = ToolUtil.GetMD5Hash(ClipRecord.TextData, 0);
+                Console.WriteLine(" -----------------7-----------------\n");
             }
-
-            foreach (var item in RecordList)
-            {
-                if (item.MD5 == clipItem.MD5)
-                {
-                    RecordList.Remove(item);
-                    break;
-                }
-            }
-            RecordList.Insert(0, clipItem);
-
-            var res = Sqlutil.CurrentDb.GetList(r => r.MD5 == clipItem.MD5);
-            if (res.Count == 0)
-            {
-                Console.WriteLine("777");
-                Sqlutil.CurrentDb.Insert(clipItem);
-            }
-            else
-            {
-                Console.WriteLine("aaa" + res[0].Id);
-                Console.WriteLine("MD5:"+clipItem.MD5);
-                Sqlutil.CurrentDb.Update(r => new Record() { Time = clipItem.Time }, r => r.Id == res[0].Id);
-            }
-
-            Console.WriteLine("ClipboardMonitor");
+            ClipRecord.Time = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString();
+            ClipRecord.Origin = ToolUtil.ClipFrom();
+            Console.WriteLine(ClipRecord.ToString());
+            RecordList.Insert(0, ClipRecord);
+            Console.WriteLine(" -----------------8-----------------\n");
         }
         
         /// <summary>
@@ -296,27 +293,22 @@ namespace clipboardplus.ViewModel
         private void ClipboardRecorderOpen()
         {
             CM.ClipboardMonitor cm = new CM.ClipboardMonitor();
-            cm.ClipboardData += (obj, args) =>
+            cm.ClipboardData += (sender, e) =>
             {
                 try
                 {
-                    ClipboardListener();
+                    ClipboardListener(cm);
+                    Console.WriteLine(" -----------------4-----------------\n");
                 }
-                catch (Exception e)
+                catch (Exception error)
                 {
-                    Console.WriteLine(e.ToString());
+                    Console.WriteLine(error.Message);
                 }
             };
         }
 
-        /// <summary>
-        /// 初始化数据
-        /// </summary>
-        private void InitData()
+        private void InitRecord(string s)
         {
-            Sqlutil = new SqlUtil<Record>(new StringBuilder("DataSource=D:/5_desktop"), DbType.Sqlite);
-            RecordList = new ObservableCollection<Record>(Sqlutil.CurrentDb.GetPageList(r => r.Deleted == 0, new PageModel() { PageIndex = 1, PageSize = 10 }));
-            ZoneTree = ToolUtil.getTrees(0, new ObservableCollection<Zone>(Sqlutil.ZoneDb.GetPageList(z => z.Parent != -1, new PageModel() { PageIndex = 1, PageSize = 10 })));
         }
 
         /// <summary>
@@ -365,22 +357,22 @@ namespace clipboardplus.ViewModel
         /// </summary>
         private void changeRecordList(SelectionChangedEventArgs e)
         {
-            //MessageBox.Show(selected.ToString());
             RecordList.Clear();
             switch ((e.OriginalSource as TabControl).SelectedIndex)
             {
                 case 0:
                     Sqlutil.CurrentDb.GetPageList(r => r.Deleted == 0, new PageModel() { PageIndex = 1, PageSize = 10 }).ForEach(r => RecordList.Add(r));
+                    //RecordList = new ObservableCollection<Record>(Sqlutil.CurrentDb.GetPageList(r => r.Deleted == 0, new PageModel() { PageIndex = 1, PageSize = 10 }));
                     break;
                 case 1:
                     break;
                 case 4:
                     Sqlutil.CurrentDb.GetPageList(r => r.Deleted == 0 && r.Type == 1, new PageModel() { PageIndex = 1, PageSize = 10 }).ForEach(r => RecordList.Add(r));
+                    //RecordList = new ObservableCollection<Record>(Sqlutil.CurrentDb.GetPageList(r => r.Deleted == 0 && r.Type == 1, new PageModel() { PageIndex = 1, PageSize = 10 }));
                     break;
                 default:
                     break;
             }
-            //MessageBox.Show((e.OriginalSource as TabControl).SelectedIndex.ToString());
             e.Handled = true;
         }
 

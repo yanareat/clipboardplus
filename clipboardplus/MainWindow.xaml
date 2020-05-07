@@ -229,11 +229,11 @@
                                                 <!--记录来源-->
                                                 <TextBlock Grid.Column="1"
                                                            Foreground="DarkGray"
-                                               Grid.Row="2"
-                                               FontSize="10"
-                                               HorizontalAlignment="Right"
-                                               Text="{Binding From}"
-                                               TextTrimming="CharacterEllipsis"/>
+                                                           Grid.Row="2"
+                                                           FontSize="10"
+                                                           HorizontalAlignment="Right"
+                                                           Text="{Binding Origin}"
+                                                           TextTrimming="CharacterEllipsis"/>
                                             </Grid>
                                         </Grid>
                                     </DataTemplate>
@@ -403,11 +403,11 @@
                                                 <!--记录来源-->
                                                 <TextBlock Grid.Column="1"
                                                            Foreground="DarkGray"
-                                               Grid.Row="2"
-                                               FontSize="10"
-                                               HorizontalAlignment="Right"
-                                               Text="{Binding From}"
-                                               TextTrimming="CharacterEllipsis"/>
+                                                           Grid.Row="2"
+                                                           FontSize="10"
+                                                           HorizontalAlignment="Right"
+                                                           Text="{Binding Origin}"
+                                                           TextTrimming="CharacterEllipsis"/>
                                             </Grid>
                                         </Grid>
                                     </DataTemplate>
@@ -678,11 +678,11 @@
                                                 <!--记录来源-->
                                                 <TextBlock Grid.Column="1"
                                                            Foreground="DarkGray"
-                                               Grid.Row="2"
-                                               FontSize="10"
-                                               HorizontalAlignment="Right"
-                                               Text="{Binding From}"
-                                               TextTrimming="CharacterEllipsis"/>
+                                                           Grid.Row="2"
+                                                           FontSize="10"
+                                                           HorizontalAlignment="Right"
+                                                           Text="{Binding Origin}"
+                                                           TextTrimming="CharacterEllipsis"/>
                                             </Grid>
                                         </Grid>
                                     </DataTemplate>

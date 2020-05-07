@@ -77,7 +77,6 @@ namespace clipboardplus.Util
         {
             try
             {
-                Console.WriteLine("image#####");
                 byte[] retVal = null;
                 MD5 md5 = new MD5CryptoServiceProvider();
                 if (type == 0)
@@ -108,7 +107,6 @@ namespace clipboardplus.Util
         {
             try
             {
-                Console.WriteLine("image@@@@@");
                 MD5 md5 = new MD5CryptoServiceProvider();
                 byte[] retVal = md5.ComputeHash(bytedata);
 
@@ -133,20 +131,31 @@ namespace clipboardplus.Util
         public static extern IntPtr GetOpenClipboardWindow();
 
         [DllImport("user32.dll")]
-        public static extern int GetWindowThreadProcessId(IntPtr handle,
-        out int processId);
+        public static extern int GetWindowThreadProcessId(IntPtr handle, out int processId);
+
         [DllImport("kernel32.dll")]
         public static extern bool CloseHandle(IntPtr handle);
         #endregion
 
         public static string ClipFrom()
         {
-            IntPtr vOwner = GetOpenClipboardWindow();
-            if (vOwner == IntPtr.Zero) return "";
+            IntPtr vOwner = GetClipboardOwner();
+            Console.WriteLine("******************* 1 ****** " + vOwner + " ************************");
+
+            Console.WriteLine("******************* 2 ****** " + (vOwner == IntPtr.Zero) + " ************************");
+            if (vOwner == IntPtr.Zero) return "";            
+
             int vProcessId;
             GetWindowThreadProcessId(vOwner, out vProcessId);
+            Console.WriteLine("******************* 3 ****** " + vProcessId + " ************************");
+
             Process vProcess = Process.GetProcessById(vProcessId);
-            return vProcess.MainModule.FileName;
+            if(vProcess != null)
+            {
+                Console.WriteLine(vProcess.MainWindowTitle + "-----" + vProcess.ProcessName);
+            }
+
+            return vProcess.ProcessName;
         }
 
         #region 四种深拷贝方法
