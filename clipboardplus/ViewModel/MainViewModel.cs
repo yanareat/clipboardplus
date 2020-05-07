@@ -50,7 +50,7 @@ namespace clipboardplus.ViewModel
         /// <summary>
         /// 数据库工具类
         /// </summary>
-        private SqlUtil<Record> _sqlutil = new SqlUtil<Record>(new StringBuilder("DataSource=D:/5_desktop"), DbType.Sqlite);
+        private SqlUtil<Record> _sqlutil;
         public SqlUtil<Record> Sqlutil
         {
             get => _sqlutil;
@@ -314,6 +314,7 @@ namespace clipboardplus.ViewModel
         /// </summary>
         private void InitData()
         {
+            Sqlutil = new SqlUtil<Record>(new StringBuilder("DataSource=D:/5_desktop"), DbType.Sqlite);
             RecordList = new ObservableCollection<Record>(Sqlutil.CurrentDb.GetPageList(r => r.Deleted == 0, new PageModel() { PageIndex = 1, PageSize = 10 }));
             ZoneTree = ToolUtil.getTrees(0, new ObservableCollection<Zone>(Sqlutil.ZoneDb.GetPageList(z => z.Parent != -1, new PageModel() { PageIndex = 1, PageSize = 10 })));
         }
@@ -336,7 +337,6 @@ namespace clipboardplus.ViewModel
                 {
                     ToEditImageRecord = tempRecord;
                 }
-                Console.WriteLine(RecordList.Count + "%%%%%%%%%%%%%^^^^^^^^^^^^^^^^^^%%%%%%%%%%%%");
                 //MessageBox.Show(((Record)e.AddedItems[0]).TextData);
             }
             e.Handled = true;
@@ -380,7 +380,6 @@ namespace clipboardplus.ViewModel
                 default:
                     break;
             }
-            Console.WriteLine(RecordList.Count+ "%%%%%%%%%%%%%%%%%%%%%%%%%"  + "@@@@@@@@@@@@@@@@@@@@");
             //MessageBox.Show((e.OriginalSource as TabControl).SelectedIndex.ToString());
             e.Handled = true;
         }

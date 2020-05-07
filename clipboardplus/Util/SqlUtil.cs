@@ -46,9 +46,9 @@ namespace clipboardplus.Util
                 Console.WriteLine();
             };
             Db.CodeFirst.InitTables<Record>();//Create Tables
-            //Db.CodeFirst.InitTables<Zone>();//Create Tables
+            Db.CodeFirst.InitTables<Zone>();//Create Tables
         }
-        private string dbPath = Path.Combine(Environment.CurrentDirectory, "clipboardplus.db");//没有数据库会创建数据库
+        private string dbPath = Path.Combine("DataSource = " + Environment.CurrentDirectory, "clipboardplus.db");//没有数据库会创建数据库
         public SqlSugarClient Db;//用来处理事务多表查询和复杂的操作
         public DbSet<Record> StudentDb { get { return new DbSet<Record>(Db); } }//用来处理Student表的常用操作
         public DbSet<Zone> ZoneDb { get { return new DbSet<Zone>(Db); } }//用来处理Student表的常用操作
