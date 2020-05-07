@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace clipboardplus
 {
@@ -22,7 +23,7 @@ namespace clipboardplus
         private void MainWindow_StateChanged(object sender, EventArgs e)
         {
             if (this.WindowState == WindowState.Maximized)
-            {           
+            {
                 double clipWidth = SystemParameters.MaximumWindowTrackWidth;
                 double clipHeight = SystemParameters.MaximumWindowTrackHeight;
                 double gridWidth = SystemParameters.PrimaryScreenWidth;
@@ -83,7 +84,9 @@ namespace clipboardplus
 
         private void showSearchTab(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine("&&&&&&&&&&&----------------&&&&&&&&&");
             searchTab.IsSelected = true;
+            e.Handled = true;
         }
 
         private void advancedSearchShow(object sender, RoutedEventArgs e)
@@ -119,6 +122,44 @@ namespace clipboardplus
         private void imageEdiShow(object sender, RoutedEventArgs e)
         {
             Panel.SetZIndex(imageViewer, 0);
+        }
+
+        private void beHandled(object sender, SelectionChangedEventArgs e)
+        {
+            //MessageBox.Show("test1");
+            //MessageBox.Show(e.AddedItems.GetType().ToString());
+            Console.WriteLine("&&&&&&&&&&&++++++++++++++++&&&&&&&&&");
+            //e.Handled = true;
+        }
+
+        private void test(object sender, MouseButtonEventArgs e)
+        {
+            //MessageBox.Show("test1");
+            //MessageBox.Show(sender.GetType().ToString());
+            Console.WriteLine("分区:"+sender.GetType());
+            var treeViewItem = VisualUpwardSearch<TreeViewItem>(e.OriginalSource as DependencyObject) as TreeViewItem;
+            if (treeViewItem != null)
+            {
+                treeViewItem.Focus();
+                e.Handled = true;
+            }
+        }
+
+        private void test(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("select");
+        }
+
+        private void test(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            //MessageBox.Show(e.OriginalSource.GetType().ToString()+sender.GetType().ToString()+testtree.SelectedItem.GetType().ToString()+e.NewValue.GetType().ToString());
+        }
+
+        private DependencyObject VisualUpwardSearch<T>(DependencyObject source)
+        {
+            while (source != null && source.GetType() != typeof(T))
+                source = VisualTreeHelper.GetParent(source);
+            return source;
         }
     }
 }

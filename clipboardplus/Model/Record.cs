@@ -1,19 +1,11 @@
 ﻿using clipboardplus.Util;
 using GalaSoft.MvvmLight;
-using SQLite;
+using SqlSugar;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace clipboardplus.Model
 {
-    [Table("record")]
     public class Record : ObservableObject
     {
         #region 属性
@@ -21,9 +13,7 @@ namespace clipboardplus.Model
         /// 记录的序号
         /// </summary>
         private int _id;
-        [Column("id")]
-        [PrimaryKey]
-        [AutoIncrement]
+        [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
         public int Id
         {
             get => _id; 
@@ -34,24 +24,10 @@ namespace clipboardplus.Model
         /// 记录的标题
         /// </summary>
         private string _title;
-        [Column("title")]
-        [NotNull]
         public string Title
         {
             get => _title;
             set { _title = value;RaisePropertyChanged(() => Title); }
-        }
-
-        /// <summary>
-        /// 记录的内容的MD5码
-        /// </summary>
-        private string _md5;
-        [Column("md5")]
-        [NotNull]
-        public string MD5
-        {
-            get { return _md5 == null ? (Type == 1 ? ToolUtil.GetMD5Hash(TextData, 0) : ToolUtil.GetMD5Hash(ImageData)) : _md5; }
-            set { _md5 = value; RaisePropertyChanged(() => MD5); }
         }
 
         /// <summary>
@@ -62,8 +38,6 @@ namespace clipboardplus.Model
         /// 3文件
         /// </summary>
         private int _type;
-        [Column("type")]
-        [NotNull]
         public int Type
         {
             get => _type;
@@ -71,12 +45,27 @@ namespace clipboardplus.Model
         }
 
         /// <summary>
+        /// 记录的内容的MD5码
+        /// </summary>
+        private string _md5;
+        public string MD5
+        {
+            get 
+            { 
+                if(_md5 == null && Type != 0)
+                {
+                    return Type == 2 ? ToolUtil.GetMD5Hash(ImageData) : ToolUtil.GetMD5Hash(TextData, 0);
+                }
+                return _md5; 
+            }
+            set { _md5 = value; RaisePropertyChanged(() => MD5); }
+        }
+
+        /// <summary>
         /// 记录的时间
         /// 通过 DateTimeOffset.Now.ToUnixTimeMilliseconds() 获得
         /// </summary>
         private string _time;
-        [Column("time")]
-        [NotNull]
         public string Time
         {
             get => _time;
@@ -87,7 +76,6 @@ namespace clipboardplus.Model
         /// 记录的来源
         /// </summary>
         private string _origin;
-        [Column("origin")]
         public string Origin
         {
             get => _origin;
@@ -98,8 +86,6 @@ namespace clipboardplus.Model
         /// 记录的分区
         /// </summary>
         private int _zone;
-        [Column("zone")]
-        [NotNull]
         public int Zone
         {
             get => _zone;
@@ -110,8 +96,6 @@ namespace clipboardplus.Model
         /// 记录是否删除
         /// </summary>
         private int _deleted;
-        [Column("deleted")]
-        [NotNull]
         public int Deleted
         {
             get => _deleted;
@@ -122,7 +106,7 @@ namespace clipboardplus.Model
         /// 记录的文本数据
         /// </summary>
         private string _textData;
-        [Column("text_data")]
+        [SugarColumn(IsNullable = true)]
         public string TextData
         {
             get => _textData;
@@ -133,7 +117,7 @@ namespace clipboardplus.Model
         /// 记录的HTML数据
         /// </summary>
         private string _htmlData;
-        [Column("html_data")]
+        [SugarColumn(IsNullable = true)]
         public string HtmlData
         {
             get => _htmlData;
@@ -145,7 +129,7 @@ namespace clipboardplus.Model
         /// 二进制
         /// </summary>
         private byte[] _imageData;
-        [Column("image_data")]
+        [SugarColumn(IsNullable = true)]
         public byte[] ImageData
         {
             get => _imageData;
@@ -157,7 +141,7 @@ namespace clipboardplus.Model
         /// 二进制
         /// </summary>
         private byte[] _fileData;
-        [Column("file_data")]
+        [SugarColumn(IsNullable = true)]
         public byte[] FileData
         {
             get => _fileData;
@@ -169,6 +153,7 @@ namespace clipboardplus.Model
         /// <summary>
         /// 记录的文本大小
         /// </summary>
+        [SugarColumn(IsIgnore = true)]
         public int TextSize
         {
             get => _textData == null ? 0 : _textData.Length;
@@ -177,6 +162,7 @@ namespace clipboardplus.Model
         /// <summary>
         /// 记录的HTML大小
         /// </summary>
+        [SugarColumn(IsIgnore = true)]
         public int HtmlSize
         {
             get => _htmlData == null ? 0: _htmlData.Length;
@@ -185,6 +171,7 @@ namespace clipboardplus.Model
         /// <summary>
         /// 记录的image大小
         /// </summary>
+        [SugarColumn(IsIgnore = true)]
         public int ImageSize
         {
             get => _imageData == null ? 0 : _imageData.Length;
@@ -193,6 +180,7 @@ namespace clipboardplus.Model
         /// <summary>
         /// 记录的文件大小
         /// </summary>
+        [SugarColumn(IsIgnore = true)]
         public int FileSize
         {
             get => _fileData == null ? 0 : _fileData.Length;
@@ -201,6 +189,7 @@ namespace clipboardplus.Model
         /// <summary>
         /// 记录的时间格式化
         /// </summary>
+        [SugarColumn(IsIgnore = true)]
         public string TimeFormat
         {
             get => DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(_time)).ToLocalTime().ToString("yyyy.MM.dd HH:mm:ss");
@@ -209,6 +198,7 @@ namespace clipboardplus.Model
         /// <summary>
         /// 记录的时间格式化
         /// </summary>
+        [SugarColumn(IsIgnore = true)]
         public Visibility TextShow
         {
             get => Type == 1 ? Visibility.Visible : Visibility.Collapsed;
@@ -217,6 +207,7 @@ namespace clipboardplus.Model
         /// <summary>
         /// 记录的种类图标
         /// </summary>
+        [SugarColumn(IsIgnore = true)]
         public string TypeIcon
         {
             //get => Type != 1 ? @"F1 M 20 2.5 L 20 17.5 L 0 17.5 L 0 2.5 Z M 1.25 3.75 L 1.25 10.361328 L 5.625 5.996094 L 11.875 12.246094 L 14.375 9.746094 L 18.75 14.111328 L 18.75 3.75 Z M 1.25 16.25 L 14.111328 16.25 L 5.625 7.753906 L 1.25 12.138672 Z M 18.75 16.25 L 18.75 15.888672 L 14.375 11.503906 L 12.753906 13.125 L 15.888672 16.25 Z M 15.625 7.5 C 15.455729 7.5 15.309244 7.438151 15.185547 7.314453 C 15.061848 7.190756 14.999999 7.044271 15 6.875 C 14.999999 6.705729 15.061848 6.559245 15.185547 6.435547 C 15.309244 6.31185 15.455729 6.25 15.625 6.25 C 15.79427 6.25 15.940754 6.31185 16.064453 6.435547 C 16.18815 6.559245 16.25 6.705729 16.25 6.875 C 16.25 7.044271 16.18815 7.190756 16.064453 7.314453 C 15.940754 7.438151 15.79427 7.5 15.625 7.5 Z " 

@@ -1,6 +1,8 @@
-﻿using HandyControl.Controls;
+﻿using clipboardplus.Model;
+using HandyControl.Controls;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -75,6 +77,7 @@ namespace clipboardplus.Util
         {
             try
             {
+                Console.WriteLine("image#####");
                 byte[] retVal = null;
                 MD5 md5 = new MD5CryptoServiceProvider();
                 if (type == 0)
@@ -105,6 +108,7 @@ namespace clipboardplus.Util
         {
             try
             {
+                Console.WriteLine("image@@@@@");
                 MD5 md5 = new MD5CryptoServiceProvider();
                 byte[] retVal = md5.ComputeHash(bytedata);
 
@@ -206,5 +210,21 @@ namespace clipboardplus.Util
             return (T)retval;
         }
         #endregion
+
+        /// <summary>
+        /// 递归生成树形数据
+        /// </summary>
+        /// <param name="delst"></param>
+        /// <returns></returns>
+        public static ObservableCollection<Zone> getTrees(int parent, ObservableCollection<Zone> nodes)
+        {
+            ObservableCollection<Zone> mainNodes = new ObservableCollection<Zone>(nodes.Where(x => x.Parent == parent).ToList());
+            ObservableCollection<Zone> otherNodes = new ObservableCollection<Zone>(nodes.Where(x => x.Parent != parent).ToList());
+            foreach (Zone node in mainNodes)
+            {
+                node.Nodes = getTrees(node.Id, otherNodes);
+            }
+            return mainNodes;
+        }
     }
 }
