@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -88,7 +90,7 @@ namespace clipboardplus
         }
 
         /// <summary>
-        /// 展示分区
+        /// 展示编辑分区
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -104,6 +106,16 @@ namespace clipboardplus
                 this.Width = 300;
                 this.Height = 450;
             }
+        }
+
+        /// <summary>
+        /// 展示编辑Tab
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void showEditTab(object sender, MouseButtonEventArgs e)
+        {
+            Console.WriteLine(e.OriginalSource.GetType().ToString()+e.Source.GetType().ToString()+(sender as Grid).DataContext.GetType().ToString());
         }
 
         /// <summary>
@@ -227,14 +239,33 @@ namespace clipboardplus
             return source;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tabSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //loadingCircle.Visibility = Visibility.Visible;
+            //Thread.Sleep(1000);
+            //loadingCircle.Visibility = Visibility.Collapsed;
+        }
+
         private void test(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("select");
+            //MessageBox.Show("Expand");
         }
 
         private void test(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
+            //MessageBox.Show("e");
+            //Console.WriteLine("e");
             //MessageBox.Show(e.OriginalSource.GetType().ToString()+sender.GetType().ToString()+testtree.SelectedItem.GetType().ToString()+e.NewValue.GetType().ToString());
+        }
+
+        private void test(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            
         }
     }
 }

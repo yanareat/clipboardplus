@@ -118,7 +118,8 @@
 
                                             <!--记录条目-->
                                             <Grid x:Name="recordGrid"
-                                                  Margin="5">
+                                                  Margin="5"
+                                                  MouseLeftButtonDown="showEditTab">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="40"/>
                                                     <ColumnDefinition Width="*"/>
@@ -129,10 +130,17 @@
                                                     <RowDefinition Height="auto"/>
                                                 </Grid.RowDefinitions>
 
+                                                <!--非按钮出发命令的方式-->
+                                                <i:Interaction.Triggers>
+                                                    <i:EventTrigger EventName="MouseLeftButtonDown">
+                                                        <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.RecordDoubleClick}" PassEventArgsToCommand="True"/>
+                                                    </i:EventTrigger>
+                                                </i:Interaction.Triggers>
+
                                                 <!--右键菜单-->
                                                 <Grid.ContextMenu>
                                                     <ContextMenu>
-                                                        <MenuItem Header="删除"/>
+                                                        <MenuItem Header="{Binding DeletedText}" Command="{Binding Source={StaticResource Locator},Path=Main.DeleteRecordOrZone}" CommandParameter="{Binding Source={StaticResource Locator},Path=Main.SelectedRecord}"/>
                                                         <MenuItem ItemsSource="{Binding Source={StaticResource Locator},Path=Main.ZoneTree}"
                                                                   Header="移动至">
                                                             <MenuItem.ItemTemplate>
@@ -142,7 +150,7 @@
                                                                         <!--非按钮出发命令的方式-->
                                                                         <i:Interaction.Triggers>
                                                                             <i:EventTrigger EventName="Click">
-                                                                                <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.ZoneMenuSelected}" 
+                                                                                <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.RecordMenuSelected}" 
                                                                                                                  PassEventArgsToCommand="True"/>
                                                                             </i:EventTrigger>
                                                                         </i:Interaction.Triggers>
@@ -188,7 +196,7 @@
                                                 <TextBlock Grid.Column="1"
                                                            FontWeight="Black"
                                                            Text="{Binding Title}"
-                                                           ToolTip="{Binding TextData}"
+                                                           ToolTip="{Binding Title}"
                                                            FontSize="14"
                                                            MaxHeight="20"
                                                            TextTrimming="CharacterEllipsis">
@@ -232,13 +240,41 @@
                                                            Grid.Row="2"
                                                            FontSize="10"
                                                            HorizontalAlignment="Right"
-                                                           Text="{Binding Origin}"
+                                                           Text="{Binding OriginText}"
                                                            TextTrimming="CharacterEllipsis"/>
+                                            </Grid>
+
+                                            <!--加载动画-->
+                                            <Grid Background="White"
+                                                  Grid.RowSpan="2"
+                                                  Visibility="{Binding LoadFlag}">
+                                                <hc:LoadingCircle/>
                                             </Grid>
                                         </Grid>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>
+
+                            <hc:GotoTop Animated="True" 
+                                        AutoHiding="True" 
+                                        AnimationTime="500" 
+                                        BorderThickness="0"
+                                        hc:IconElement.Geometry=""
+                                        Background="{StaticResource PrimaryBrush}"
+                                        Foreground="White"
+                                        Content="&#xE110;"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        Padding="0,0,6,0"
+                                        Height="30"
+                                        Width="30"
+                                        Target="{Binding ElementName=historyList}" 
+                                        HorizontalAlignment="Right" 
+                                        VerticalAlignment="Bottom" 
+                                        Margin="0,0,10,10">
+                                <hc:GotoTop.Effect>
+                                    <DropShadowEffect ShadowDepth="3"/>
+                                </hc:GotoTop.Effect>
+                            </hc:GotoTop>
                         </Grid>
                     </TabItem>
 
@@ -260,12 +296,35 @@
                                           Height="30" 
                                           HorizontalAlignment="Right" 
                                           VerticalAlignment="Bottom" 
-                                          Margin="0,0,10,10" 
+                                          Margin="0,0,10,50" 
+                                          BorderThickness="0"
                                           IsChecked="{Binding IsOpen,ElementName=DrawerLeft}">
                                 <ToggleButton.Effect>
                                     <DropShadowEffect ShadowDepth="3"/>
                                 </ToggleButton.Effect>
                             </ToggleButton>
+
+                            <hc:GotoTop Animated="True" 
+                                        AutoHiding="True" 
+                                        AnimationTime="500" 
+                                        Panel.ZIndex="1"
+                                        BorderThickness="0"
+                                        hc:IconElement.Geometry=""
+                                        Background="{StaticResource PrimaryBrush}"
+                                        Foreground="White"
+                                        Content="&#xE110;"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        Padding="0,0,6,0"
+                                        Height="30"
+                                        Width="30"
+                                        Target="{Binding ElementName=pageList}" 
+                                        HorizontalAlignment="Right" 
+                                        VerticalAlignment="Bottom" 
+                                        Margin="0,0,10,10">
+                                <hc:GotoTop.Effect>
+                                    <DropShadowEffect ShadowDepth="3"/>
+                                </hc:GotoTop.Effect>
+                            </hc:GotoTop>
 
                             <!--笔记本列表-->
                             <ListBox FontFamily="微软雅黑"
@@ -291,8 +350,7 @@
                                                     BorderBrush="LightGray"/>
 
                                             <!--记录条目-->
-                                            <Grid ToolTip="{Binding TextData}"
-                                                  x:Name="recordGrid"
+                                            <Grid x:Name="recordGrid"
                                                   Margin="5">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="40"/>
@@ -307,7 +365,7 @@
                                                 <!--右键菜单-->
                                                 <Grid.ContextMenu>
                                                     <ContextMenu>
-                                                        <MenuItem Header="删除"/>
+                                                        <MenuItem Header="{Binding DeletedText}" Command="{Binding Source={StaticResource Locator},Path=Main.DeleteRecordOrZone}" CommandParameter="{Binding Source={StaticResource Locator},Path=Main.SelectedRecord}"/>
                                                         <MenuItem ItemsSource="{Binding Source={StaticResource Locator},Path=Main.ZoneTree}"
                                                                   Header="移动至">
                                                             <MenuItem.ItemTemplate>
@@ -363,7 +421,7 @@
                                                 <TextBlock Grid.Column="1"
                                                            FontWeight="Black"
                                                            Text="{Binding Title}"
-                                                           ToolTip="{Binding TextData}"
+                                                           ToolTip="{Binding Title}"
                                                            FontSize="14"
                                                            MaxHeight="20"
                                                            TextTrimming="CharacterEllipsis">
@@ -378,10 +436,11 @@
 
                                                 <!--记录图片内容-->
                                                 <Image Source="{Binding ImageData}"
-                                                   MinWidth="206"
-                                               Grid.Column="1"
-                                               Grid.Row="1"
-                                               MaxHeight="120"/>
+                                                       ToolTip="{Binding ImageSize}"
+                                                       MinWidth="206"
+                                                       Grid.Column="1"
+                                                       Grid.Row="1"
+                                                       MaxHeight="120"/>
 
                                                 <!--记录文本内容-->
                                                 <TextBlock Text="{Binding TextData}"
@@ -406,8 +465,15 @@
                                                            Grid.Row="2"
                                                            FontSize="10"
                                                            HorizontalAlignment="Right"
-                                                           Text="{Binding Origin}"
+                                                           Text="{Binding OriginText}"
                                                            TextTrimming="CharacterEllipsis"/>
+                                            </Grid>
+
+                                            <!--加载动画-->
+                                            <Grid Background="White"
+                                                  Grid.RowSpan="2"
+                                                  Visibility="{Binding LoadFlag}">
+                                                <hc:LoadingCircle/>
                                             </Grid>
                                         </Grid>
                                     </DataTemplate>
@@ -465,7 +531,8 @@
                                         <TreeView Grid.Row="1" 
                                                   Margin="0" 
                                                   ItemsSource="{Binding Source={StaticResource Locator},Path=Main.ZoneTree}"
-                                                  x:Name="testtree">
+                                                  x:Name="testtree"
+                                                  SelectedItemChanged="test">
 
                                             <!--非按钮出发命令的方式-->
                                             <i:Interaction.Triggers>
@@ -474,6 +541,21 @@
                                                                                      PassEventArgsToCommand="True"/>
                                                 </i:EventTrigger>
                                             </i:Interaction.Triggers>
+
+                                            <TreeView.ItemContainerStyle>
+                                                <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource TreeViewItemBaseStyle}">
+                                                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                                                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                                                    <Setter Property="FontWeight" Value="Normal" />
+                                                    <EventSetter Event="Expanded" Handler="test"/>
+                                                    <EventSetter Event="Collapsed" Handler="test"/>
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsSelected" Value="True">
+                                                            <Setter Property="FontWeight" Value="Bold" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TreeView.ItemContainerStyle>
 
                                             <TreeView.ItemTemplate>
                                                 <HierarchicalDataTemplate ItemsSource="{Binding Nodes}">
@@ -484,9 +566,8 @@
                                                         <!--右键菜单-->
                                                         <Grid.ContextMenu>
                                                             <ContextMenu>
-                                                                <MenuItem Header="删除"/>
-                                                                <MenuItem Header="移动至"
-                                                                          Background="Red">
+                                                                <MenuItem Header="删除" Command="{Binding Source={StaticResource Locator},Path=Main.DeleteRecordOrZone}" CommandParameter="{Binding Source={StaticResource Locator},Path=Main.SelectedZone}"/>
+                                                                <MenuItem Header="移动至">
                                                                     <MenuItem Header="{Binding Name}" DataContext="{Binding Source={StaticResource Locator},Path=Main.RootZone}">
                                                                         <!--非按钮出发命令的方式-->
                                                                         <i:Interaction.Triggers>
@@ -501,8 +582,7 @@
 
                                                                         <MenuItem.ItemTemplate>
                                                                             <HierarchicalDataTemplate ItemsSource="{Binding Nodes}">
-                                                                                <MenuItem Header="{Binding Name}"
-                                                                                           Background="Red">
+                                                                                <MenuItem Header="{Binding Name}">
 
                                                                                         <!--非按钮出发命令的方式-->
                                                                                         <i:Interaction.Triggers>
@@ -591,8 +671,7 @@
                                                     BorderBrush="LightGray"/>
 
                                             <!--记录条目-->
-                                            <Grid ToolTip="{Binding TextData}"
-                                                  x:Name="recordGrid"
+                                            <Grid x:Name="recordGrid"
                                                   Margin="5">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="40"/>
@@ -603,6 +682,30 @@
                                                     <RowDefinition Height="auto"/>
                                                     <RowDefinition Height="auto"/>
                                                 </Grid.RowDefinitions>
+
+                                                <!--右键菜单-->
+                                                <Grid.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="{Binding DeletedText}" Command="{Binding Source={StaticResource Locator},Path=Main.DeleteRecordOrZone}" CommandParameter="{Binding Source={StaticResource Locator},Path=Main.SelectedRecord}"/>
+                                                        <MenuItem ItemsSource="{Binding Source={StaticResource Locator},Path=Main.ZoneTree}"
+                                                                  Header="移动至">
+                                                            <MenuItem.ItemTemplate>
+                                                                <HierarchicalDataTemplate ItemsSource="{Binding Nodes}">
+                                                                    <MenuItem Header="{Binding Name}">
+
+                                                                        <!--非按钮出发命令的方式-->
+                                                                        <i:Interaction.Triggers>
+                                                                            <i:EventTrigger EventName="Click">
+                                                                                <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.ZoneMenuSelected}" 
+                                                                                                                 PassEventArgsToCommand="True"/>
+                                                                            </i:EventTrigger>
+                                                                        </i:Interaction.Triggers>
+                                                                    </MenuItem>
+                                                                </HierarchicalDataTemplate>
+                                                            </MenuItem.ItemTemplate>
+                                                        </MenuItem>
+                                                    </ContextMenu>
+                                                </Grid.ContextMenu>
 
                                                 <!--标识图标-->
                                                 <!--<Border VerticalAlignment="Center"
@@ -639,10 +742,11 @@
                                                 <TextBlock Grid.Column="1"
                                                            FontWeight="Black"
                                                            Text="{Binding Title}"
-                                                           ToolTip="{Binding TextData}"
+                                                           ToolTip="{Binding Title}"
                                                            FontSize="14"
                                                            MaxHeight="20"
                                                            TextTrimming="CharacterEllipsis">
+                                            
                                                     <!--非按钮出发命令的方式-->
                                                     <!--<i:Interaction.Triggers>
                                                         <i:EventTrigger EventName="MouseLeftButtonDown">
@@ -653,10 +757,11 @@
 
                                                 <!--记录图片内容-->
                                                 <Image Source="{Binding ImageData}"
-                                                   MinWidth="206"
-                                               Grid.Column="1"
-                                               Grid.Row="1"
-                                               MaxHeight="120"/>
+                                                       ToolTip="{Binding ImageSize}"
+                                                       MinWidth="206"
+                                                       Grid.Column="1"
+                                                       Grid.Row="1"
+                                                       MaxHeight="120"/>
 
                                                 <!--记录文本内容-->
                                                 <TextBlock Text="{Binding TextData}"
@@ -681,16 +786,47 @@
                                                            Grid.Row="2"
                                                            FontSize="10"
                                                            HorizontalAlignment="Right"
-                                                           Text="{Binding Origin}"
+                                                           Text="{Binding OriginText}"
                                                            TextTrimming="CharacterEllipsis"/>
+                                            </Grid>
+
+                                            <!--加载动画-->
+                                            <Grid Background="White"
+                                                  Grid.RowSpan="2"
+                                                  Visibility="{Binding LoadFlag}">
+                                                <hc:LoadingCircle/>
                                             </Grid>
                                         </Grid>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
+                                
+                                
                             </ListBox>
+
+                            <hc:GotoTop Animated="True" 
+                                        AutoHiding="True" 
+                                        AnimationTime="500" 
+                                        BorderThickness="0"
+                                        hc:IconElement.Geometry=""
+                                        Background="{StaticResource PrimaryBrush}"
+                                        Foreground="White"
+                                        Content="&#xE110;"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        Padding="0,0,6,0"
+                                        Height="30"
+                                        Width="30"
+                                        Target="{Binding ElementName=searchList}" 
+                                        HorizontalAlignment="Right" 
+                                        VerticalAlignment="Bottom" 
+                                        Margin="0,0,10,10">
+                                <hc:GotoTop.Effect>
+                                    <DropShadowEffect ShadowDepth="3"/>
+                                </hc:GotoTop.Effect>
+                            </hc:GotoTop>
                         </Grid>
                     </TabItem>
                 </TabControl>
+
             </Grid>
 
             <!--高级搜索设置区-->
@@ -823,12 +959,14 @@
         <Grid Grid.Column="1">
 
             <!--不同格式Tab-->
-            <TabControl TabStripPlacement="Bottom">
+            <TabControl TabStripPlacement="Bottom"
+                        SelectedIndex="{Binding SelectedTab}">
 
                 <!--文本编辑Tab-->
                 <TabItem Header="&#xE164;" 
                          FontFamily="Segoe MDL2 Assets"
                          FontSize="14"
+                         x:Name="textTab"
                          DataContext="{Binding ToEditTextRecord}">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -852,7 +990,7 @@
                         <!--来源-->
                         <TextBlock Grid.Row="1"
                                    FontFamily="微软雅黑"
-                                   Text="{Binding From}"
+                                   Text="{Binding OriginText}"
                                    HorizontalAlignment="Right"
                                    Margin="10,0"/>
 
@@ -959,18 +1097,50 @@
                 <TabItem Header="&#xEB9F;" 
                          FontSize="14"
                          FontFamily="Segoe MDL2 Assets"
+                         x:Name="imageTab"
                          DataContext="{Binding ToEditImageRecord}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="40"/>
+                            <RowDefinition Height="20"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
-                        <!--工具栏-->
-                        <ToolBarTray VerticalAlignment="Top">
-                            <ToolBar Padding="5" FontFamily="微软雅黑">
-                                <ToggleButton HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="2" Content="识别" IsChecked="{Binding IsOpen,ElementName=DrawerRight}"/>
-                                <ToggleButton BorderThickness="0"
+                        <!--标题-->
+                        <TextBox FontFamily="微软雅黑"
+                                 BorderThickness="0,0,0,1"
+                                 FontSize="20"
+                                 Text="{Binding Title}"/>
+
+                        <!--时间-->
+                        <TextBlock Grid.Row="1"
+                                   FontFamily="微软雅黑"
+                                   Text="{Binding TimeFormat}"
+                                   Margin="10,0"/>
+
+                        <!--来源-->
+                        <TextBlock Grid.Row="1"
+                                   FontFamily="微软雅黑"
+                                   Text="{Binding OriginText}"
+                                   HorizontalAlignment="Right"
+                                   Margin="10,0"/>
+
+                        <!--边框-->
+                        <Border BorderThickness="0,1,0,0"
+                                BorderBrush="LightGray"
+                                Grid.Row="2"/>
+                        
+                        <Grid Grid.Row="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="40"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <!--工具栏-->
+                            <ToolBarTray VerticalAlignment="Top">
+                                <ToolBar Padding="5" FontFamily="微软雅黑">
+                                    <ToggleButton HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="2" Content="识别" IsChecked="{Binding IsOpen,ElementName=DrawerRight}"/>
+                                    <ToggleButton BorderThickness="0"
                                                   x:Name="imageEditToggle"
                                               Checked="imageEdiHide"
                                               Unchecked="imageEdiShow"
@@ -980,35 +1150,36 @@
                                       Width="30"
                                       Height="30"
                                       Style="{StaticResource ToggleButtonFlip}">
-                                    <hc:StatusSwitchElement.CheckedElement>
+                                        <hc:StatusSwitchElement.CheckedElement>
+                                            <Border Background="{DynamicResource DefaultBrush}">
+                                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xE7A8;" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                            </Border>
+                                        </hc:StatusSwitchElement.CheckedElement>
                                         <Border Background="{DynamicResource DefaultBrush}">
-                                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xE7A8;" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xE890;" Foreground="{DynamicResource PrimaryTextBrush}"/>
                                         </Border>
-                                    </hc:StatusSwitchElement.CheckedElement>
-                                    <Border Background="{DynamicResource DefaultBrush}">
-                                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xE890;" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                    </Border>
-                                </ToggleButton>
-                            </ToolBar>
-                        </ToolBarTray>
+                                    </ToggleButton>
+                                </ToolBar>
+                            </ToolBarTray>
 
-                        <!--图片浏览器-->
-                        <Grid Grid.Row="1"
+                            <!--图片浏览器-->
+                            <Grid Grid.Row="1"
                               Panel.ZIndex="1"
                               x:Name="imageViewer">
-                            <hc:ImageViewer Background="{DynamicResource BackgroundBrush}" 
+                                <hc:ImageViewer Background="{DynamicResource BackgroundBrush}" 
                                             ImageSource="{Binding ImageData}"
                                             FontFamily="微软雅黑"
                                             ShowImgMap="True">
-                            </hc:ImageViewer>
-                        </Grid>
+                                </hc:ImageViewer>
+                            </Grid>
 
-                        <!--图片编辑-->
-                        <Grid Grid.Row="1">
-                            <Grid.Background>
-                                <ImageBrush ImageSource="Resources/Images/transparency.png"/>
-                            </Grid.Background>
-                            <Image Source="{Binding ImageData}"/>
+                            <!--图片编辑-->
+                            <Grid Grid.Row="1">
+                                <Grid.Background>
+                                    <ImageBrush ImageSource="Resources/Images/transparency.png"/>
+                                </Grid.Background>
+                                <Image Source="{Binding ImageData}" hc:Magnifier.Instance="{x:Static hc:Magnifier.Default}"/>
+                            </Grid>
                         </Grid>
                     </Grid>
                 </TabItem>

@@ -12,7 +12,9 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -137,6 +139,10 @@ namespace clipboardplus.Util
         public static extern bool CloseHandle(IntPtr handle);
         #endregion
 
+        /// <summary>
+        /// 获取剪贴板来源
+        /// </summary>
+        /// <returns></returns>
         public static string ClipFrom()
         {
             IntPtr vOwner = GetClipboardOwner();
@@ -150,12 +156,97 @@ namespace clipboardplus.Util
             Console.WriteLine("******************* 3 ****** " + vProcessId + " ************************");
 
             Process vProcess = Process.GetProcessById(vProcessId);
-            if(vProcess != null)
-            {
-                Console.WriteLine(vProcess.MainWindowTitle + "-----" + vProcess.ProcessName);
-            }
+            Console.WriteLine("******************* 4 ****** " + vProcess.ProcessName + " ************************");
 
             return vProcess.ProcessName;
+        }
+
+        /// <summary>
+        /// 方法转异步
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="ac"></param>
+        /// <param name="obj"></param>
+        public static void ToAsync<T>(Action<T> ac, T obj)
+        {
+            Task.Run(() => {
+                try
+                {
+                    ac(obj);
+                }
+                catch (Exception error)
+                {
+                    Console.WriteLine(error.Message);
+                }
+            });
+        }
+
+        /// <summary>
+        /// 方法转异步
+        /// </summary>
+        /// <param name="ac"></param>
+        public static void ToAsync(Action ac)
+        {
+            Task.Run(() => {
+                try
+                {
+                    ac();
+                }
+                catch (Exception error)
+                {
+                    Console.WriteLine(error.Message);
+                }
+            });
+        }
+
+        /// <summary>
+        /// 方法转同步
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="ac"></param>
+        /// <param name="obj"></param>
+        public static void ToSync<T>(Action<T> ac, T obj)
+        {
+            ThreadPool.QueueUserWorkItem(delegate
+            {
+                SynchronizationContext.SetSynchronizationContext(new System.Windows.Threading.DispatcherSynchronizationContext(Application.Current.Dispatcher));
+                SynchronizationContext.Current.Send(pl =>
+                {
+                    try
+                    {
+                        ac(obj);
+                    }
+                    catch (Exception error)
+                    {
+                        Console.WriteLine(error.Message);
+                    }
+
+                }, null);
+            });
+        }
+
+        /// <summary>
+        /// 方法转同步
+        /// </summary>
+        /// <param name="ac"></param>
+        public static void ToSync(Action ac)
+        {
+            ThreadPool.QueueUserWorkItem(delegate
+            {
+                SynchronizationContext.SetSynchronizationContext(new System.Windows.Threading.DispatcherSynchronizationContext(Application.Current.Dispatcher));
+                SynchronizationContext.Current.Send(pl =>
+                {
+                    try
+                    {
+                        ac();
+                    }
+                    catch (Exception error)
+                    {
+                        Console.WriteLine(error.Message);
+                    }
+
+                }, null);
+            });
         }
 
         #region 四种深拷贝方法
@@ -234,6 +325,6 @@ namespace clipboardplus.Util
                 node.Nodes = getTrees(node.Id, otherNodes);
             }
             return mainNodes;
-        }
+        }        
     }
 }

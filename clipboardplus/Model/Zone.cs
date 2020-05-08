@@ -61,6 +61,28 @@ namespace clipboardplus.Model
             set { _parent = value; RaisePropertyChanged(() => Parent); }
         }
 
+        /// <summary>
+        /// 是否展开
+        /// </summary>
+        private bool _isExpanded;
+        [SugarColumn(IsNullable = true)]
+        public bool IsExpanded
+        {
+            get => _isExpanded;
+            set { _isExpanded = value; RaisePropertyChanged(() => IsExpanded); }
+        }
+
+        /// <summary>
+        /// 是否选中
+        /// </summary>
+        private bool _isSelected;
+        [SugarColumn(IsNullable = true)]
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set { _isSelected = value; RaisePropertyChanged(() => IsSelected); }
+        }
+
         #endregion
     }
 }
