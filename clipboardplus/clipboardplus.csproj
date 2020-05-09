@@ -37,9 +37,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="clipboardMonitor">
-      <HintPath>..\..\clipboardMonitor.dll</HintPath>
-    </Reference>
     <Reference Include="CommonServiceLocator, Version=2.0.2.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
       <HintPath>packages\CommonServiceLocator.2.0.2\lib\net47\CommonServiceLocator.dll</HintPath>
     </Reference>
@@ -69,6 +66,7 @@
       <HintPath>..\..\System.Data.SQLite.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\MvvmLightLibs.5.4.1.1\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
@@ -101,6 +99,7 @@
     <Compile Include="Converter\HtmlEncodedTextWriter.cs" />
     <Compile Include="Model\Record.cs" />
     <Compile Include="Model\Zone.cs" />
+    <Compile Include="Util\HotKeySettingsManager.cs" />
     <Compile Include="Util\HtmlRichTextBoxBehavior.cs" />
     <Compile Include="Util\SqlUtil.cs" />
     <Compile Include="Util\ToolUtil.cs" />

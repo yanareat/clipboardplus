@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -58,14 +59,18 @@ namespace clipboardplus.Util
 
         public static BitmapImage ConvertToBitmap(byte[] ImageData)
         {
+            Console.WriteLine(ImageData.Length);
             BitmapImage bi = null;
             if (ImageData != null)
             {
                 bi = new BitmapImage();
+                Console.WriteLine("开始转化");
                 bi.BeginInit();
                 bi.StreamSource = new MemoryStream(ImageData);
                 bi.EndInit();
+                Console.WriteLine("转化完成");
             }
+            Console.WriteLine(bi == null);
             return bi;
         }
 
@@ -137,7 +142,180 @@ namespace clipboardplus.Util
 
         [DllImport("kernel32.dll")]
         public static extern bool CloseHandle(IntPtr handle);
+
+        [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
         #endregion
+
+        #region 热键管理
+
+        /// <summary>
+        /// 热键消息
+        /// </summary>
+        public const int WM_HOTKEY = 0x312;
+
+        /// <summary>
+        /// 注册热键
+        /// </summary>
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool RegisterHotKey(IntPtr hWnd, int id, ModifierKeys fsModifuers, int vk);
+
+        /// <summary>
+        /// 注销热键
+        /// </summary>
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+
+        /// <summary>
+        /// 向原子表中添加全局原子
+        /// </summary>
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern short GlobalAddAtom(string lpString);
+
+        /// <summary>
+        /// 在表中搜索全局原子
+        /// </summary>
+        /// <param name="lpString">字符串，这个字符串的长度最大为255字节</param>
+        /// <returns>成功：返回原子；失败：返回值为0</returns>
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern short GlobalFindAtom(string lpString);
+
+        /// <summary>
+        /// 在表中删除全局原子
+        /// </summary>
+        /// <param name="nAtom">全局原子</param>
+        /// <returns>成功：返回原子；失败：返回值为0</returns>
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern short GlobalDeleteAtom(short nAtom);
+
+        /// <summary>
+        /// 记录快捷键注册项的唯一标识符
+        /// </summary>
+        private static Dictionary<EHotKeySetting, int> m_HotKeySettingsDic = new Dictionary<EHotKeySetting, int>();
+
+        /// <summary>
+        /// 注册全局快捷键
+        /// </summary>
+        /// <param name="hotKeyModelList">待注册快捷键项</param>
+        /// <param name="hwnd">窗口句柄</param>
+        /// <param name="hotKeySettingsDic">快捷键注册项的唯一标识符字典</param>
+        /// <returns>返回注册失败项的拼接字符串</returns>
+        public static string RegisterGlobalHotKey(IEnumerable<HotKeyModel> hotKeyModelList, IntPtr hwnd, out Dictionary<EHotKeySetting, int> hotKeySettingsDic)
+        {
+            string failList = string.Empty;
+            foreach (var item in hotKeyModelList)
+            {
+                if (!RegisterHotKey(item, hwnd))
+                {
+                    string str = string.Empty;
+                    if (item.IsSelectCtrl && !item.IsSelectShift && !item.IsSelectAlt)
+                    {
+                        str = ModifierKeys.Control.ToString();
+                    }
+                    else if (!item.IsSelectCtrl && item.IsSelectShift && !item.IsSelectAlt)
+                    {
+                        str = ModifierKeys.Shift.ToString();
+                    }
+                    else if (!item.IsSelectCtrl && !item.IsSelectShift && item.IsSelectAlt)
+                    {
+                        str = ModifierKeys.Alt.ToString();
+                    }
+                    else if (item.IsSelectCtrl && item.IsSelectShift && !item.IsSelectAlt)
+                    {
+                        str = string.Format("{0}+{1}", ModifierKeys.Control.ToString(), ModifierKeys.Shift);
+                    }
+                    else if (item.IsSelectCtrl && !item.IsSelectShift && item.IsSelectAlt)
+                    {
+                        str = string.Format("{0}+{1}", ModifierKeys.Control.ToString(), ModifierKeys.Alt);
+                    }
+                    else if (!item.IsSelectCtrl && item.IsSelectShift && item.IsSelectAlt)
+                    {
+                        str = string.Format("{0}+{1}", ModifierKeys.Shift.ToString(), ModifierKeys.Alt);
+                    }
+                    else if (item.IsSelectCtrl && item.IsSelectShift && item.IsSelectAlt)
+                    {
+                        str = string.Format("{0}+{1}+{2}", ModifierKeys.Control.ToString(), ModifierKeys.Shift.ToString(), ModifierKeys.Alt);
+                    }
+                    if (string.IsNullOrEmpty(str))
+                    {
+                        str += item.SelectKey;
+                    }
+                    else
+                    {
+                        str += string.Format("+{0}", item.SelectKey);
+                    }
+                    str = string.Format("{0} ({1})\n\r", item.Name, str);
+                    failList += str;
+                }
+            }
+            hotKeySettingsDic = m_HotKeySettingsDic;
+            return failList;
+        }
+
+        /// <summary>
+        /// 注册热键
+        /// </summary>
+        /// <param name="hotKeyModel">热键待注册项</param>
+        /// <param name="hWnd">窗口句柄</param>
+        /// <returns>成功返回true，失败返回false</returns>
+        private static bool RegisterHotKey(HotKeyModel hotKeyModel, IntPtr hWnd)
+        {
+            var fsModifierKey = new ModifierKeys();
+            var hotKeySetting = (EHotKeySetting)Enum.Parse(typeof(EHotKeySetting), hotKeyModel.Name);
+
+            if (!m_HotKeySettingsDic.ContainsKey(hotKeySetting))
+            {
+                // 全局原子不会在应用程序终止时自动删除。每次调用GlobalAddAtom函数，必须相应的调用GlobalDeleteAtom函数删除原子。
+                if (GlobalFindAtom(hotKeySetting.ToString()) != 0)
+                {
+                    GlobalDeleteAtom(GlobalFindAtom(hotKeySetting.ToString()));
+                }
+                // 获取唯一标识符
+                m_HotKeySettingsDic[hotKeySetting] = GlobalAddAtom(hotKeySetting.ToString());
+            }
+            else
+            {
+                // 注销旧的热键
+                UnregisterHotKey(hWnd, m_HotKeySettingsDic[hotKeySetting]);
+            }
+            if (!hotKeyModel.IsUsable)
+                return true;
+
+            // 注册热键
+            if (hotKeyModel.IsSelectCtrl && !hotKeyModel.IsSelectShift && !hotKeyModel.IsSelectAlt)
+            {
+                fsModifierKey = ModifierKeys.Control;
+            }
+            else if (!hotKeyModel.IsSelectCtrl && hotKeyModel.IsSelectShift && !hotKeyModel.IsSelectAlt)
+            {
+                fsModifierKey = ModifierKeys.Shift;
+            }
+            else if (!hotKeyModel.IsSelectCtrl && !hotKeyModel.IsSelectShift && hotKeyModel.IsSelectAlt)
+            {
+                fsModifierKey = ModifierKeys.Alt;
+            }
+            else if (hotKeyModel.IsSelectCtrl && hotKeyModel.IsSelectShift && !hotKeyModel.IsSelectAlt)
+            {
+                fsModifierKey = ModifierKeys.Control | ModifierKeys.Shift;
+            }
+            else if (hotKeyModel.IsSelectCtrl && !hotKeyModel.IsSelectShift && hotKeyModel.IsSelectAlt)
+            {
+                fsModifierKey = ModifierKeys.Control | ModifierKeys.Alt;
+            }
+            else if (!hotKeyModel.IsSelectCtrl && hotKeyModel.IsSelectShift && hotKeyModel.IsSelectAlt)
+            {
+                fsModifierKey = ModifierKeys.Shift | ModifierKeys.Alt;
+            }
+            else if (hotKeyModel.IsSelectCtrl && hotKeyModel.IsSelectShift && hotKeyModel.IsSelectAlt)
+            {
+                fsModifierKey = ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt;
+            }
+
+            return RegisterHotKey(hWnd, m_HotKeySettingsDic[hotKeySetting], fsModifierKey, (int)hotKeyModel.SelectKey);
+        }
+
+        #endregion
+
 
         /// <summary>
         /// 获取剪贴板来源

@@ -58,8 +58,8 @@ namespace clipboardplus.Model
         /// 记录的时间
         /// 通过 DateTimeOffset.Now.ToUnixTimeMilliseconds() 获得
         /// </summary>
-        private string _time;
-        public string Time
+        private DateTime _time;
+        public DateTime Time
         {
             get => _time;
             set { _time = value; RaisePropertyChanged(() => Time); }
@@ -88,8 +88,8 @@ namespace clipboardplus.Model
         /// <summary>
         /// 记录是否删除
         /// </summary>
-        private int _deleted;
-        public int Deleted
+        private bool _deleted;
+        public bool Deleted
         {
             get => _deleted;
             set { _deleted = value; RaisePropertyChanged(() => Deleted); }
@@ -185,7 +185,7 @@ namespace clipboardplus.Model
         [SugarColumn(IsIgnore = true)]
         public string TimeFormat
         {
-            get => Time == null ? "" : DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(Time)).ToLocalTime().ToString("yyyy.MM.dd HH:mm:ss");
+            get => Time.ToString("yyyy.MM.dd HH:mm:ss");
         }
 
         /// <summary>
@@ -232,7 +232,7 @@ namespace clipboardplus.Model
         [SugarColumn(IsIgnore = true)]
         public string DeletedText
         {
-            get => Deleted == 1 ? "!!! 彻底删除" : "删除";
+            get => Deleted? "!!! 彻底删除" : "删除";
         }
         #endregion
     }

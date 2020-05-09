@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace clipboardplus.Model
 {
@@ -84,5 +85,191 @@ namespace clipboardplus.Model
         }
 
         #endregion
+
+        #region 方法
+        /// <summary>
+        /// 是否包含
+        /// </summary>
+        /// <param name="zone"></param>
+        /// <returns></returns>
+        public bool Contains(Zone zone)
+        {
+            bool isContain = (Id == zone.Id);
+            if (isContain) return isContain;
+            foreach(var n in Nodes)
+            {
+                isContain = n.Contains(zone);
+                if (isContain) return isContain;
+            }
+            return isContain;
+        }
+
+        #endregion
+    }
+
+    public class Condition : ObservableObject
+    {
+        /// <summary>
+        /// 开始时间
+        /// </summary>
+        private DateTime _startTime;
+        public DateTime StartTime
+        {
+            get => _startTime;
+            set { _startTime = value; RaisePropertyChanged(() => StartTime); }
+        }
+
+        /// <summary>
+        /// 结束时间
+        /// </summary>
+        private DateTime _endTime;
+        public DateTime EndTime
+        {
+            get => _endTime;
+            set { _endTime = value; RaisePropertyChanged(() => EndTime); }
+        }
+
+        /// <summary>
+        /// 分区
+        /// </summary>
+        private int _zone;
+        public int Zone
+        {
+            get => _zone;
+            set { _zone = value; RaisePropertyChanged(() => Zone); }
+        }
+
+        /// <summary>
+        /// 包含内容
+        /// </summary>
+        private bool _hasContent;
+        public bool HasContent
+        {
+            get => _hasContent;
+            set { _hasContent = value; RaisePropertyChanged(() => HasContent); }
+        }
+
+        /// <summary>
+        /// 包含回收站
+        /// </summary>
+        private bool _hasDeleted;
+        public bool HasDeleted
+        {
+            get => _hasDeleted;
+            set { _hasDeleted = value; RaisePropertyChanged(() => HasDeleted); }
+        }
+
+        /// <summary>
+        /// 包含回收站
+        /// </summary>
+        private int _type;
+        public int Type
+        {
+            get => _type;
+            set { _type = value; RaisePropertyChanged(() => Type); }
+        }
+
+        /// <summary>
+        /// 高级搜索
+        /// </summary>
+        private bool _advanced;
+        public bool Advanced
+        {
+            get => _advanced;
+            set { _advanced = value; RaisePropertyChanged(() => Advanced); }
+        }
+
+        /// <summary>
+        /// 搜索文本
+        /// </summary>
+        private string _searchText;
+        public string SearchText
+        {
+            get => _searchText;
+            set { _searchText = value; RaisePropertyChanged(() => SearchText); }
+        }
+
+        /// <summary>
+        /// 提示文本
+        /// </summary>
+        private string _searchPlaceholder;
+        public string SearchPlaceholder
+        {
+            get => _searchPlaceholder;
+            set { _searchPlaceholder = value; RaisePropertyChanged(() => SearchPlaceholder); }
+        }
+
+        /// <summary>
+        /// 存库开始时间
+        /// </summary>
+        public string StartTimeString
+        {
+            get => ((DateTimeOffset)StartTime).ToUnixTimeMilliseconds().ToString();
+        }
+
+        /// <summary>
+        /// 存库结束时间
+        /// </summary>
+        public string EndTimeString
+        {
+            get => ((DateTimeOffset)EndTime).ToUnixTimeMilliseconds().ToString();
+        }
+    };
+
+    /// <summary>
+    /// 快捷键模型
+    /// </summary>
+    public class HotKeyModel
+    {
+        /// <summary>
+        /// 设置项名称
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// 设置项快捷键是否可用
+        /// </summary>
+        public bool IsUsable { get; set; }
+
+        /// <summary>
+        /// 是否勾选Ctrl按键
+        /// </summary>
+        public bool IsSelectCtrl { get; set; }
+
+        /// <summary>
+        /// 是否勾选Shift按键
+        /// </summary>
+        public bool IsSelectShift { get; set; }
+
+        /// <summary>
+        /// 是否勾选Alt按键
+        /// </summary>
+        public bool IsSelectAlt { get; set; }
+
+        /// <summary>
+        /// 选中的按键
+        /// </summary>
+        public Keys SelectKey { get; set; }
+
+        /// <summary>
+        /// 快捷键按键集合
+        /// </summary>
+        public static Array Keys
+        {
+            get
+            {
+                return Enum.GetValues(typeof(Keys));
+            }
+        }
+    }
+
+    /// <summary>
+    /// 快捷键设置项枚举
+    /// </summary>
+    public enum EHotKeySetting
+    {
+        显示 = 0,
+        隐藏 = 1,
+        截图 = 2,
     }
 }

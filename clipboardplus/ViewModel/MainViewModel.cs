@@ -9,12 +9,11 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
-using CM = ClipboardMonitor;
+using Condition = clipboardplus.Model.Condition;
+using TabControl = System.Windows.Controls.TabControl;
 
 namespace clipboardplus.ViewModel
 {
@@ -104,6 +103,16 @@ namespace clipboardplus.ViewModel
         }
 
         /// <summary>
+        /// 分区树
+        /// </summary>
+        private ObservableCollection<Zone> _zoneList;
+        public ObservableCollection<Zone> ZoneList
+        {
+            get => _zoneList;
+            set { _zoneList = value; RaisePropertyChanged(() => ZoneList); }
+        }
+
+        /// <summary>
         /// 选择的记录
         /// </summary>
         private Record _selectedRecord;
@@ -144,14 +153,25 @@ namespace clipboardplus.ViewModel
         }
 
         /// <summary>
-        /// 根分区
+        /// 搜索条件
         /// </summary>
-        private Zone _rootZone;
-        public Zone RootZone
+        private Condition _searchCondition;
+        public Condition SearchCondition
         {
-            get => _rootZone;
-            set { _rootZone = value; RaisePropertyChanged(() => RootZone); }
+            get => _searchCondition;
+            set { _searchCondition = value; RaisePropertyChanged(() => SearchCondition); }
         }
+        
+        /// <summary>
+        /// 快捷键设置项集合
+        /// </summary>
+        private ObservableCollection<HotKeyModel> _hotKeyList = new ObservableCollection<HotKeyModel>();
+        public ObservableCollection<HotKeyModel> HotKeyList
+        {
+            get => _hotKeyList; 
+            set { _hotKeyList = value; RaisePropertyChanged(() => HotKeyList); }
+        }
+
         #endregion
 
         #region 命令
@@ -247,6 +267,37 @@ namespace clipboardplus.ViewModel
         }
 
         /// <summary>
+        /// 搜索框输入回车
+        /// </summary>
+        private RelayCommand _searchBarEnter;
+        public RelayCommand SearchBarEnter
+        {
+            get
+            {
+                return _searchBarEnter
+                    ?? (_searchBarEnter = new RelayCommand(() => {
+                        RecordList.Clear();
+                        RecordList.Add(new Record() { Id = -1 });
+                        ToolUtil.ToAsync((a) => LoadRecordList(a), 4);
+                        //SearchRecord();
+                    }));
+            }
+        }
+
+        /// <summary>
+        /// 注册快捷键
+        /// </summary>
+        private RelayCommand _btnSaveSetting;
+        public RelayCommand BtnSaveSetting
+        {
+            get
+            {
+                return _btnSaveSetting
+                    ?? (_btnSaveSetting = new RelayCommand(() => btnSaveSetting()));
+            }
+        }
+
+        /// <summary>
         /// 选择Tab触发
         /// </summary>
         private RelayCommand<MouseButtonEventArgs> _showRecycle;
@@ -283,17 +334,37 @@ namespace clipboardplus.ViewModel
         {
             try
             {
+                var list = HotKeySettingsManager.Instance.LoadDefaultHotKey();
+                list.ToList().ForEach(x => HotKeyList.Add(x));
+
                 SelectedTab = 0;
-                RootZone = new Zone() { Id = 0, Parent = 0, Name = "根目录", Nodes = new ObservableCollection<Zone>() };
+                SearchCondition = new Condition()
+                {
+                    StartTime = DateTime.Now,
+                    EndTime = DateTime.Now,
+                    Zone = 0,
+                    HasContent = false,
+                    HasDeleted = false,
+                    Type = 0,
+                    Advanced = false,
+                    SearchText = "",
+                    SearchPlaceholder = "请输入标题（左侧高级搜索）"
+                };
                 Console.WriteLine(" -----------------1-----------------\n");
                 Sqlutil = new SqlUtil<Record>(new StringBuilder("DataSource=D:/5_desktop"), DbType.Sqlite);
                 Console.WriteLine(" -----------------2-----------------\n");
-                RecordList = new ObservableCollection<Record>(Sqlutil.CurrentDb.GetPageList(r => r.Deleted == 0, new PageModel() { PageIndex = 1, PageSize = 10 }));
+                RecordList = new ObservableCollection<Record>(Sqlutil.CurrentDb.GetPageList(r => r.Deleted == false, new PageModel() { PageIndex = 1, PageSize = 10 }));
                 Console.WriteLine(" -----------------3-----------------\n");
-                ZoneTree = ToolUtil.getTrees(0, new ObservableCollection<Zone>(Sqlutil.ZoneDb.GetList(z => z.Parent != -1)));
+                var tempZone = Sqlutil.ZoneDb.GetSingle(z => z.Id == 0);
+                if(tempZone == null)
+                {
+                    tempZone = new Zone() { Id = 0, Parent = -1, Name = "根分区", Nodes = new ObservableCollection<Zone>() };
+                    Sqlutil.ZoneDb.Insert(tempZone);
+                }
+                ZoneList = new ObservableCollection<Zone>(Sqlutil.ZoneDb.GetList(z => z.Parent != -2));
+                ZoneTree = ToolUtil.getTrees(-1, ZoneList);
                 Console.WriteLine(" -----------------3.5-----------------\n");
                 SelectedZone = Sqlutil.ZoneDb.GetSingle(r => r.IsSelected == true );
-                ClipboardRecorderOpen();
             }
             catch (Exception e)
             {
@@ -304,73 +375,55 @@ namespace clipboardplus.ViewModel
         /// <summary>
         /// 剪贴监听函数
         /// </summary>
-        private void ClipboardListener(CM.ClipboardMonitor cm)
+        public void ClipboardListener()
         {
-            Console.WriteLine(" -----------------5-----------------\n");
-            ClipRecord = new Record();
-            ClipRecord.Time = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString();
-            ClipRecord.Origin = ToolUtil.ClipFrom();
-            if (cm.ClipboardContainsImage)
-            {
-                Console.WriteLine(" -----------------9-----------------\n");
-                ClipRecord.Type = 2;
-                ClipRecord.Title = "图片";
-                ClipRecord.ImageData = ToolUtil.ConvertToBytes(cm.ClipboardImage);
-                ClipRecord.MD5 = ToolUtil.GetMD5Hash(ClipRecord.ImageData) + ToolUtil.GetMD5Hash(ClipRecord.Origin, 0);
-                Console.WriteLine(" -----------------6-----------------\n");
-            }
-            else
-            {
-                Console.WriteLine(" -----------------10-----------------\n");
-                ClipRecord.Type = 1;
-                ClipRecord.Title = cm.ClipboardText.Trim().Length > 16 ? cm.ClipboardText.Trim().Substring(0, 16) : cm.ClipboardText.Trim();
-                ClipRecord.TextData = cm.ClipboardText;
-                ClipRecord.MD5 = ToolUtil.GetMD5Hash(ClipRecord.TextData, 0) + ToolUtil.GetMD5Hash(ClipRecord.Origin, 0);
-                Console.WriteLine(" -----------------7-----------------\n");
-            }
-            
-            //更新RecordList
-            var tempToList = RecordList.FirstOrDefault(r => r.MD5 == ClipRecord.MD5);
-            if(tempToList != null)
-            {
-                RecordList.Remove(tempToList);
-            }
-            RecordList.Insert(0, ClipRecord);
+            Console.WriteLine("\n\n\n\n\n -----------------%%%%%%%%%%%-----------------\n\n\n\n\n");
+            //Console.WriteLine(" -----------------5-----------------\n");
+            //ClipRecord = new Record();
+            //ClipRecord.Time = DateTime.Now;
+            ////ClipRecord.Origin = ToolUtil.ClipFrom();
+            //if (cm.ClipboardContainsImage)
+            //{
+            //    Console.WriteLine(" -----------------9-----------------\n");
+            //    ClipRecord.Type = 2;
+            //    ClipRecord.Title = "图片";
+            //    ClipRecord.ImageData = ToolUtil.ConvertToBytes(cm.ClipboardImage);
+            //    ClipRecord.MD5 = ToolUtil.GetMD5Hash(ClipRecord.ImageData) + ToolUtil.GetMD5Hash(ClipRecord.Origin, 0);
+            //    Console.WriteLine(" -----------------6-----------------\n");
+            //}
+            //else
+            //{
+            //    Console.WriteLine(" -----------------10-----------------\n");
+            //    ClipRecord.Type = 1;
+            //    ClipRecord.Title = cm.ClipboardText.Trim().Length > 16 ? cm.ClipboardText.Trim().Substring(0, 16) : cm.ClipboardText.Trim();
+            //    ClipRecord.TextData = cm.ClipboardText;
+            //    ClipRecord.MD5 = ToolUtil.GetMD5Hash(ClipRecord.TextData, 0) + ToolUtil.GetMD5Hash(ClipRecord.Origin, 0);
+            //    Console.WriteLine(" -----------------7-----------------\n");
+            //}
 
-            //更新DB
-            var tempToDB = Sqlutil.CurrentDb.GetSingle(r => r.MD5 == ClipRecord.MD5);
-            if (tempToDB != null)
-            {
-                ClipRecord.Id = tempToDB.Id;
-                Sqlutil.CurrentDb.Update(ClipRecord);
-            }
-            else
-            {
-                Sqlutil.CurrentDb.Insert(ClipRecord);
-            }
+            ////更新DB
+            //var tempToDB = Sqlutil.CurrentDb.GetSingle(r => r.MD5 == ClipRecord.MD5);
+            //if (tempToDB != null)
+            //{
+            //    ClipRecord.Id = tempToDB.Id;
+            //    Sqlutil.CurrentDb.Update(ClipRecord);
+            //}
+            //else
+            //{
+            //    Sqlutil.CurrentDb.Insert(ClipRecord);
+            //    ClipRecord.Id = Sqlutil.CurrentDb.GetSingle(r => r.MD5 == ClipRecord.MD5).Id;
+            //}
 
-            Console.WriteLine(" -----------------8-----------------\n");
-        }
-        
-        /// <summary>
-        /// 开启剪贴板记录器
-        /// </summary>
-        private void ClipboardRecorderOpen()
-        {
-            CM.ClipboardMonitor cm = new CM.ClipboardMonitor();
-            cm.ClipboardData += (sender, e) =>
-            {
-                try
-                {
-                    ClipboardListener(cm);
-                    Console.WriteLine(" -----------------4-----------------\n");
-                }
-                catch (Exception error)
-                {
-                    Console.WriteLine(error.Message);
-                }
-            };
-        }
+            ////更新RecordList
+            //var tempToList = RecordList.FirstOrDefault(r => r.MD5 == ClipRecord.MD5);
+            //if (tempToList != null)
+            //{
+            //    RecordList.Remove(tempToList);
+            //}
+            //RecordList.Insert(0, ClipRecord);
+
+            //Console.WriteLine(" -----------------8-----------------\n");
+        }       
 
         /// <summary>
         /// 改变文本编辑记录的内容
@@ -405,7 +458,7 @@ namespace clipboardplus.ViewModel
             ToolUtil.ToAsync(() => {
                 List<Record> temp = new List<Record>();
                 Thread.Sleep(500);
-                temp = Sqlutil.CurrentDb.GetPageList(r => r.Deleted == 0 && r.Zone == SelectedZone.Id, new PageModel() { PageIndex = 1, PageSize = 10 });
+                temp = Sqlutil.CurrentDb.GetPageList(r => r.Deleted == false && r.Zone == SelectedZone.Id, new PageModel() { PageIndex = 1, PageSize = 10 });
                 ToolUtil.ToSync((a) => a.ForEach(r => RecordList.Insert(0, r)), temp);
                 //Thread.Sleep(500);
                 ToolUtil.ToSync(() => {
@@ -434,12 +487,12 @@ namespace clipboardplus.ViewModel
         /// </summary>
         private void changeRecordList(SelectionChangedEventArgs e)
         {
-            RecordList.Clear();
-            RecordList.Add(new Record() { Id = -1 });
-
-            var temp = (e.OriginalSource as TabControl).SelectedIndex;
-            //异步加载记录列表
-            ToolUtil.ToAsync((a) => LoadRecordList(a), temp);
+            Console.WriteLine(e.OriginalSource.GetType().ToString() + "-------" + e.Source.GetType().ToString());
+            //RecordList.Clear();
+            //RecordList.Add(new Record() { Id = -1 });
+            //var temp = (e.Source as TabControl).SelectedIndex;
+            ////异步加载记录列表
+            //ToolUtil.ToAsync((a) => LoadRecordList(a), temp);
 
             e.Handled = true;
         }
@@ -455,13 +508,14 @@ namespace clipboardplus.ViewModel
             switch (index)
             {
                 case 0:
-                    temp = Sqlutil.CurrentDb.GetPageList(r => r.Deleted == 0, new PageModel() { PageIndex = 1, PageSize = 10 });
+                    temp = Sqlutil.CurrentDb.GetPageList(r => r.Deleted == false, new PageModel() { PageIndex = 1, PageSize = 10 });
                     break;
                 case 1:
-                    temp = Sqlutil.CurrentDb.GetPageList(r => r.Deleted == 0 && r.Zone == SelectedZone.Id, new PageModel() { PageIndex = 1, PageSize = 10 });
+                    temp = Sqlutil.CurrentDb.GetPageList(r => r.Deleted == false && r.Zone == SelectedZone.Id, new PageModel() { PageIndex = 1, PageSize = 10 });
                     break;
                 case 4:
-                    temp = Sqlutil.CurrentDb.GetPageList(r => r.Deleted == 0 && r.Type == 1, new PageModel() { PageIndex = 1, PageSize = 10 });
+                    Console.WriteLine("搜索");
+                    temp = SearchRecord();
                     break;
                 default:
                     break;
@@ -482,8 +536,12 @@ namespace clipboardplus.ViewModel
             var mi = e.OriginalSource as MenuItem;
             var zone = mi.DataContext as Zone;
             Console.WriteLine(zone.Name);
-            Sqlutil.ZoneDb.Update(z => new Zone() { Parent = zone.Id }, z => z.Id == SelectedZone.Id);
-            ZoneTree = ToolUtil.getTrees(0, new ObservableCollection<Zone>(Sqlutil.ZoneDb.GetList(z => z.Parent != -1)));
+            if (!SelectedZone.Contains(zone) && SelectedZone.Id != 0)
+            {
+                Sqlutil.ZoneDb.Update(z => new Zone() { Parent = zone.Id }, z => z.Id == SelectedZone.Id);
+                ZoneList = new ObservableCollection<Zone>(Sqlutil.ZoneDb.GetList(z => z.Parent != -2));
+                ZoneTree = ToolUtil.getTrees(-1, ZoneList);
+            }
             e.Handled = true;
         }
 
@@ -511,9 +569,9 @@ namespace clipboardplus.ViewModel
             if (type.Name.Equals("Record"))
             {
                 RecordList.Remove(SelectedRecord);
-                if (SelectedRecord.Deleted == 0)
+                if (SelectedRecord.Deleted == false)
                 {
-                    SelectedRecord.Deleted = 1;
+                    SelectedRecord.Deleted = true;
                     Sqlutil.CurrentDb.Update(SelectedRecord);
                 }
                 else
@@ -566,6 +624,7 @@ namespace clipboardplus.ViewModel
                         }
                         else if (SelectedRecord.Type == 2)
                         {
+                            Console.WriteLine(SelectedRecord.Type);
                             Clipboard.SetImage(ToolUtil.ConvertToBitmap(SelectedRecord.ImageData));
                         }
                         e.Handled = true;
@@ -585,7 +644,7 @@ namespace clipboardplus.ViewModel
             ToolUtil.ToAsync(() => {
                 List<Record> temp = new List<Record>();
                 Thread.Sleep(500);
-                temp = Sqlutil.CurrentDb.GetPageList(r => r.Deleted == 1, new PageModel() { PageIndex = 1, PageSize = 10 });
+                temp = Sqlutil.CurrentDb.GetPageList(r => r.Deleted == true, new PageModel() { PageIndex = 1, PageSize = 10 });
                 ToolUtil.ToSync((a) => a.ForEach(r => RecordList.Insert(0, r)), temp);
                 //Thread.Sleep(500);
                 ToolUtil.ToSync(() => {
@@ -596,6 +655,98 @@ namespace clipboardplus.ViewModel
         }
 
         /// <summary>
+        /// 搜索记录
+        /// </summary>
+        private List<Record> SearchRecord()
+        {
+            Console.WriteLine(SearchCondition.StartTimeString);
+            Console.WriteLine(SearchCondition.EndTimeString);
+            Console.WriteLine(SearchCondition.Zone);
+            Console.WriteLine(SearchCondition.HasContent);
+            Console.WriteLine(SearchCondition.HasDeleted);
+            Console.WriteLine(SearchCondition.Type);
+            Console.WriteLine(SearchCondition.Advanced);
+            Console.WriteLine(SearchCondition.SearchText);
+            Console.WriteLine(SearchCondition.SearchPlaceholder);
+            //1589009226000
+            //1589009226000
+            //0
+            //False
+            //False
+            //0
+            //False
+            //SelectedZone
+            //return Sqlutil.CurrentDb.GetPageList(r => r.Deleted == false && r.Type == 1, new PageModel() { PageIndex = 1, PageSize = 10 });
+            //SqlFunc
+
+            var queryable = Sqlutil.CurrentDb.AsQueryable();
+            if (SearchCondition.Advanced == false)
+            {
+                queryable = queryable.Where(r => r.Deleted == false);
+                if (SearchCondition.SearchText != "")
+                {
+                    queryable = queryable.Where(r => r.Title.Contains(SearchCondition.SearchText));
+                }
+                return queryable.ToPageList(1, 10);
+            }
+            
+            if(SearchCondition.StartTime < SearchCondition.EndTime)
+            {
+                queryable = queryable.Where(r => r.Time >= SearchCondition.StartTime && r.Time < SearchCondition.EndTime);
+            }
+            else if(SearchCondition.StartTime > SearchCondition.EndTime)
+            {
+                ToolUtil.ToSync(() => {
+                    SearchCondition.SearchPlaceholder = "时间区间错误，重新输入！";
+                });
+                return new List<Record>();
+            }
+
+            if(SearchCondition.HasDeleted == false)
+            {
+                queryable = queryable.Where(r => r.Deleted == false);
+            }
+
+            if(SearchCondition.Type != 0)
+            {
+                queryable = queryable.Where(r => r.Type == SearchCondition.Type);
+            }
+
+            //有点问题，对分区处理不好
+            if(SearchCondition.Zone != 0)
+            {
+                queryable = queryable.Where(r => r.Zone == SearchCondition.Zone);
+            }
+
+            if (SearchCondition.SearchText != "")
+            {
+
+                if (SearchCondition.HasContent == true)
+                {
+                    queryable = queryable.Where(r => r.Title.Contains(SearchCondition.SearchText) || r.TextData.Contains(SearchCondition.SearchText));
+                }
+                else
+                {
+                    queryable = queryable.Where(r => r.Title.Contains(SearchCondition.SearchText));
+                }
+            }
+
+            return queryable.ToPageList(1, 10);
+
+        }
+
+        /// <summary>
+        /// 保存设置
+        /// </summary>
+        /// <param name="e"></param>
+        private void btnSaveSetting()
+        {
+            if (!HotKeySettingsManager.Instance.RegisterGlobalHotKey(HotKeyList))
+                return;
+            //TODO 保存设置
+        }
+
+        /// <summary>
         /// 测试方法
         /// </summary>
         /// <param name="e"></param>
@@ -603,6 +754,7 @@ namespace clipboardplus.ViewModel
         {
             //MessageBox.Show("1");
             //Console.WriteLine(e.OriginalSource.GetType().ToString());
+            e.Handled = true;
         }
         #endregion
     }

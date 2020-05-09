@@ -8,6 +8,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:hc="https://handyorg.github.io/handycontrol"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:mvvm="http://www.galasoft.ch/mvvmlight"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:util="clr-namespace:clipboardplus.Util"
@@ -18,7 +19,8 @@
         Height="450" 
         Width="800"
         WindowStyle="None"
-        AllowsTransparency="True">
+        AllowsTransparency="True"
+        ShowInTaskbar="False">
 
     <!--Window.Clip window的显示范围-->
     <Window.Clip>
@@ -35,6 +37,19 @@
             <ColumnDefinition Width="300"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
+
+        <!--托盘图标-->
+        <hc:NotifyIcon Text="clipboardplus" 
+                       x:Name="notifyIcon"
+                       Visibility="Visible" 
+                       Icon="Resources/Images/clipboardplus.ico">
+            <hc:NotifyIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Click="winNormal" Header="主界面"/>
+                    <MenuItem Click="winExit" Header="退出"/>
+                </ContextMenu>
+            </hc:NotifyIcon.ContextMenu>
+        </hc:NotifyIcon>
 
         <!--左侧功能区-->
         <Grid>
@@ -68,7 +83,8 @@
                            MouseDoubleClick="windowDoubleClick" 
                            MouseRightButtonDown="windowMin"
                            BorderThickness="0,0,1,0"
-                           Margin="-1,0,0,0"/>
+                           Margin="-1,0,0,0">
+                    </Label>
                 </Grid>
 
                 <!--Tab功能选择-->
@@ -118,8 +134,7 @@
 
                                             <!--记录条目-->
                                             <Grid x:Name="recordGrid"
-                                                  Margin="5"
-                                                  MouseLeftButtonDown="showEditTab">
+                                                  Margin="5">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="40"/>
                                                     <ColumnDefinition Width="*"/>
@@ -362,6 +377,13 @@
                                                     <RowDefinition Height="auto"/>
                                                 </Grid.RowDefinitions>
 
+                                                <!--非按钮出发命令的方式-->
+                                                <i:Interaction.Triggers>
+                                                    <i:EventTrigger EventName="MouseLeftButtonDown">
+                                                        <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.RecordDoubleClick}" PassEventArgsToCommand="True"/>
+                                                    </i:EventTrigger>
+                                                </i:Interaction.Triggers>                                                
+                                                
                                                 <!--右键菜单-->
                                                 <Grid.ContextMenu>
                                                     <ContextMenu>
@@ -375,7 +397,7 @@
                                                                         <!--非按钮出发命令的方式-->
                                                                         <i:Interaction.Triggers>
                                                                             <i:EventTrigger EventName="Click">
-                                                                                <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.ZoneMenuSelected}" 
+                                                                                <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.RecordMenuSelected}" 
                                                                                                                  PassEventArgsToCommand="True"/>
                                                                             </i:EventTrigger>
                                                                         </i:Interaction.Triggers>
@@ -567,34 +589,22 @@
                                                         <Grid.ContextMenu>
                                                             <ContextMenu>
                                                                 <MenuItem Header="删除" Command="{Binding Source={StaticResource Locator},Path=Main.DeleteRecordOrZone}" CommandParameter="{Binding Source={StaticResource Locator},Path=Main.SelectedZone}"/>
-                                                                <MenuItem Header="移动至">
-                                                                    <MenuItem Header="{Binding Name}" DataContext="{Binding Source={StaticResource Locator},Path=Main.RootZone}">
-                                                                        <!--非按钮出发命令的方式-->
-                                                                        <i:Interaction.Triggers>
-                                                                            <i:EventTrigger EventName="Click">
-                                                                                <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.ZoneMenuSelected}" 
-                                                                                                                 PassEventArgsToCommand="True"/>
-                                                                            </i:EventTrigger>
-                                                                        </i:Interaction.Triggers>
-                                                                    </MenuItem>
-                                                                    <MenuItem ItemsSource="{Binding Source={StaticResource Locator},Path=Main.ZoneTree}"
-                                                                              Header="分区">
+                                                                <MenuItem Header="移动至" ItemsSource="{Binding Source={StaticResource Locator},Path=Main.ZoneTree}">
 
-                                                                        <MenuItem.ItemTemplate>
-                                                                            <HierarchicalDataTemplate ItemsSource="{Binding Nodes}">
-                                                                                <MenuItem Header="{Binding Name}">
+                                                                    <MenuItem.ItemTemplate>
+                                                                        <HierarchicalDataTemplate ItemsSource="{Binding Nodes}">
+                                                                            <MenuItem Header="{Binding Name}">
 
-                                                                                        <!--非按钮出发命令的方式-->
-                                                                                        <i:Interaction.Triggers>
-                                                                                            <i:EventTrigger EventName="Click">
-                                                                                                <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.ZoneMenuSelected}" 
-                                                                                                                 PassEventArgsToCommand="True"/>
-                                                                                            </i:EventTrigger>
-                                                                                        </i:Interaction.Triggers>
-                                                                                    </MenuItem>
-                                                                            </HierarchicalDataTemplate>
-                                                                        </MenuItem.ItemTemplate>
-                                                                    </MenuItem>
+                                                                                <!--非按钮出发命令的方式-->
+                                                                                <i:Interaction.Triggers>
+                                                                                    <i:EventTrigger EventName="Click">
+                                                                                        <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.ZoneMenuSelected}" 
+                                                                                                                PassEventArgsToCommand="True"/>
+                                                                                    </i:EventTrigger>
+                                                                                </i:Interaction.Triggers>
+                                                                            </MenuItem>
+                                                                        </HierarchicalDataTemplate>
+                                                                    </MenuItem.ItemTemplate>
                                                                 </MenuItem>
                                                             </ContextMenu>
                                                         </Grid.ContextMenu>
@@ -615,14 +625,87 @@
                     </TabItem>
 
                     <!--设置Tab-->
-                    <TabItem Header="&#xE115;" 
+                    <TabItem Header="&#xE115;"
                              Height="40" 
                              FontFamily="Segoe MDL2 Assets" 
                              FontSize="20">
                         <Grid>
+                            <ListBox FontFamily="微软雅黑"
+                                     Padding="0"
+                                     ItemsSource="{Binding Source={StaticResource Locator},Path=Main.HotKeyList}">
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemBaseStyle}">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="{StaticResource DarkDefaultBrush}" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="-10,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="128"/>
+                                                <ColumnDefinition Width="128"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="30"/>
+                                                <RowDefinition Height="30"/>
+                                                <RowDefinition Height="30"/>
+                                            </Grid.RowDefinitions>
+                                            <Border Grid.ColumnSpan="2"
+                                                    Grid.RowSpan="3"
+                                                    BorderThickness="0,0,0,1"
+                                                    BorderBrush="LightGray"/>
 
-                            <!--搜索列表-->
-
+                                            <CheckBox Grid.Column="0"
+                                                      HorizontalAlignment="Left"
+                                                      Margin="20,0"
+                                                      Content="{Binding Name}"
+                                                      IsChecked="{Binding IsUsable}"/>
+                                            <CheckBox Grid.Column="0"
+                                                      Grid.Row="1"
+                                                      HorizontalAlignment="Left"
+                                                      Margin="20,0"
+                                                      Content="Ctrl"
+                                                      IsChecked="{Binding IsSelectCtrl}"
+                                                      IsEnabled="{Binding IsUsable}"/>
+                                            <CheckBox Grid.Column="1"
+                                                      Grid.Row="1"
+                                                      HorizontalAlignment="Left"
+                                                      Margin="20,0"
+                                                      Content="Shift"
+                                                      IsChecked="{Binding IsSelectShift}"
+                                                      IsEnabled="{Binding IsUsable}"/>
+                                            <CheckBox Grid.Column="0"
+                                                      Grid.Row="2"
+                                                      HorizontalAlignment="Left"
+                                                      Margin="20,0"                                                      
+                                                      Content="Alt"
+                                                      IsChecked="{Binding IsSelectAlt}"
+                                                      IsEnabled="{Binding IsUsable}"/>
+                                            <ComboBox Grid.Column="1"
+                                                      Grid.Row="2"
+                                                      HorizontalAlignment="Left"
+                                                      Margin="20,0" 
+                                                      ItemsSource="{Binding Keys}"
+                                                      SelectedItem="{Binding SelectKey}"
+                                                      IsEnabled="{Binding IsUsable}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <Button Content="保存设置"
+                                    FontFamily="微软雅黑"
+                                    Padding="0"
+                                    Height="25"
+                                    Width="60"
+                                    Margin="10"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Bottom"
+                                    x:Name="btnSaveSetting"
+                                    Command="{Binding BtnSaveSetting}"/>
                         </Grid>
                     </TabItem>
 
@@ -683,6 +766,13 @@
                                                     <RowDefinition Height="auto"/>
                                                 </Grid.RowDefinitions>
 
+                                                <!--非按钮出发命令的方式-->
+                                                <i:Interaction.Triggers>
+                                                    <i:EventTrigger EventName="MouseLeftButtonDown">
+                                                        <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.RecordDoubleClick}" PassEventArgsToCommand="True"/>
+                                                    </i:EventTrigger>
+                                                </i:Interaction.Triggers>                                                
+                                                
                                                 <!--右键菜单-->
                                                 <Grid.ContextMenu>
                                                     <ContextMenu>
@@ -696,7 +786,7 @@
                                                                         <!--非按钮出发命令的方式-->
                                                                         <i:Interaction.Triggers>
                                                                             <i:EventTrigger EventName="Click">
-                                                                                <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.ZoneMenuSelected}" 
+                                                                                <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.RecordMenuSelected}" 
                                                                                                                  PassEventArgsToCommand="True"/>
                                                                             </i:EventTrigger>
                                                                         </i:Interaction.Triggers>
@@ -840,60 +930,43 @@
                 <ToolBarTray>
 
                     <!--日期选择器-->
-                    <ToolBar Header="时间">
-                        <DatePicker/>
+                    <ToolBar Header="自">
+                        <hc:DateTimePicker ShowClearButton="True" 
+                                           DateTimeFormat="yy-MM-dd HH:mm:ss"
+                                           DisplayDateTime="{x:Static system:DateTime.Now}"
+                                           SelectedDateTime="{Binding SearchCondition.StartTime}"
+                                           Style="{StaticResource DateTimePickerPlus}"
+                                           Width="121"/>
+                        <hc:DateTimePicker ShowClearButton="True"
+                                           Margin="5,0,0,0"
+                                           Width="140"
+                                           DateTimeFormat="yy-MM-dd HH:mm:ss"
+                                           DisplayDateTime="{x:Static system:DateTime.Now}"
+                                           SelectedDateTime="{Binding SearchCondition.EndTime}"
+                                           hc:InfoElement.TitleWidth="18"
+                                           hc:InfoElement.TitleAlignment="Left"
+                                           Style="{StaticResource DateTimePickerPlus}"
+                                           hc:InfoElement.Title="至"/>
                     </ToolBar>
 
                     <!--分区,内容选取-->
                     <ToolBar Band="1"
-                             Header="分区">
+                             Header="分区：">
 
                         <!--分区选择-->
-                        <ComboBox SelectedIndex="0"
-                                  IsEditable="True">
-                            <ComboBoxItem Content="不限"/>
-                            <ComboBoxItem Content="收藏"/>
-                            <ComboBoxItem Content="随笔"/>
+                        <ComboBox SelectedIndex="{Binding SearchCondition.Zone}"
+                                  IsEditable="True"
+                                  SelectedValuePath="Id"
+                                  DisplayMemberPath="Name"
+                                  ItemsSource="{Binding Source={StaticResource Locator},Path=Main.ZoneList}">
                         </ComboBox>
 
                         <!--包含内容-->
-                        <TextBlock Text="包含内容"
+                        <TextBlock Text="包含内容："
                                    Margin="5,0"
                                    VerticalAlignment="Center"/>
                         <ToggleButton BorderThickness="0" 
-                                      IsChecked="True"
-                                      Width="20"
-                                      Height="20"
-                                      Style="{StaticResource ToggleButtonFlip}">
-                            <hc:StatusSwitchElement.CheckedElement>
-                                <Border Background="{DynamicResource PrimaryBrush}">
-                                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="是" Foreground="{DynamicResource TextIconBrush}"/>
-                                </Border>
-                            </hc:StatusSwitchElement.CheckedElement>
-                            <Border Background="{DynamicResource DangerBrush}">
-                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="否" Foreground="{DynamicResource TextIconBrush}"/>
-                            </Border>
-                        </ToggleButton>
-                    </ToolBar>
-
-                    <!--种类,内容选取-->
-                    <ToolBar Band="2"
-                             Header="种类">
-
-                        <!--种类选择-->
-                        <ComboBox SelectedIndex="0"
-                                  IsEditable="True">
-                            <ComboBoxItem Content="不限"/>
-                            <ComboBoxItem Content="文本"/>
-                            <ComboBoxItem Content="图片"/>
-                        </ComboBox>
-
-                        <!--包含回收站-->
-                        <TextBlock Text="包含回收站"
-                                   Margin="5,0"
-                                   VerticalAlignment="Center"/>
-                        <ToggleButton BorderThickness="0" 
-                                      IsChecked="True"
+                                      IsChecked="{Binding SearchCondition.HasContent}"
                                       Width="20"
                                       Height="20"
                                       Style="{StaticResource ToggleButtonFlip}">
@@ -901,17 +974,58 @@
                                 <Border Background="{DynamicResource PrimaryBrush}">
                                     <TextBlock HorizontalAlignment="Center" 
                                                VerticalAlignment="Center" 
-                                               Text="是"
+                                               Text="&#xF78C;"
+                                               FontFamily="Segoe MDL2 Assets"
                                                Foreground="{DynamicResource TextIconBrush}"/>
                                 </Border>
                             </hc:StatusSwitchElement.CheckedElement>
                             <Border Background="{DynamicResource DangerBrush}">
                                 <TextBlock HorizontalAlignment="Center" 
-                                           VerticalAlignment="Center" 
-                                           Text="否" 
+                                           VerticalAlignment="Center"
+                                           Text="&#xF78A;" 
+                                           FontFamily="Segoe MDL2 Assets"
                                            Foreground="{DynamicResource TextIconBrush}"/>
                             </Border>
                         </ToggleButton>
+                    </ToolBar>
+
+                    <!--种类,内容选取-->
+                    <ToolBar Band="2"
+                             Header="种类：">
+
+                        <!--种类选择-->
+                        <ComboBox SelectedIndex="{Binding SearchCondition.Type}"
+                                  IsEditable="True">
+                            <ComboBoxItem Content="不限"/>
+                            <ComboBoxItem Content="文本"/>
+                            <ComboBoxItem Content="图片"/>
+                        </ComboBox>
+
+                        <!--包含回收站-->
+                        <TextBlock Text="包含回收站："
+                                   Margin="5,0"
+                                   VerticalAlignment="Center"/>
+                        <ToggleButton BorderThickness="0" 
+                                      IsChecked="{Binding SearchCondition.HasDeleted}"
+                                      Width="20"
+                                      Height="20"
+                                      Style="{StaticResource ToggleButtonFlip}">
+                            <hc:StatusSwitchElement.CheckedElement>
+                                <Border Background="{DynamicResource PrimaryBrush}">
+                                    <TextBlock HorizontalAlignment="Center" 
+                                               VerticalAlignment="Center" 
+                                               Text="&#xF78C;"
+                                               FontFamily="Segoe MDL2 Assets"
+                                               Foreground="{DynamicResource TextIconBrush}"/>
+                                </Border>
+                            </hc:StatusSwitchElement.CheckedElement>
+                            <Border Background="{DynamicResource DangerBrush}">
+                                <TextBlock HorizontalAlignment="Center" 
+                                           VerticalAlignment="Center"
+                                           Text="&#xF78A;" 
+                                           FontFamily="Segoe MDL2 Assets"
+                                           Foreground="{DynamicResource TextIconBrush}"/>
+                            </Border>                        </ToggleButton>
                     </ToolBar>
                 </ToolBarTray>
             </Grid>
@@ -922,9 +1036,11 @@
 
                 <!--展示高级搜索-->
                 <ToggleButton HorizontalAlignment="Left"
+                              ToolTip="展开：开启高级搜索 收起：关闭高级搜索"
                               hc:BorderElement.CornerRadius="15"
                               Checked="advancedSearchShow" 
                               Unchecked="advancedSearchHide" 
+                              IsChecked="{Binding SearchCondition.Advanced}"
                               Margin="10,0"
                               Height="30" 
                               Width="30" 
@@ -935,14 +1051,21 @@
                 <!--搜索框-->
                 <hc:SearchBar GotFocus="showSearchTab"
                               ShowClearButton="True" 
+                              Text="{Binding SearchCondition.SearchText,UpdateSourceTrigger=PropertyChanged}"
                               Style="{StaticResource SearchBarPlus}" 
                               Width="200" 
                               Height="30" 
                               HorizontalAlignment="Left" 
-                              Margin="50,0,0,0"/>
+                              Margin="50,0,0,0"
+                              hc:InfoElement.Placeholder="{Binding SearchCondition.SearchPlaceholder}">
+                    <hc:SearchBar.InputBindings>
+                        <KeyBinding Command="{Binding SearchBarEnter}" Key="Enter"/>
+                    </hc:SearchBar.InputBindings>
+                </hc:SearchBar>
 
                 <!--头像-->
-                <hc:Gravatar Style="{StaticResource GravatarCircleImg}" 
+                <hc:Gravatar Style="{StaticResource GravatarCircleImg}"
+                             ToolTip="打开个人中心"
                              Grid.Row="1" 
                              Width="30" 
                              Height="30" 
