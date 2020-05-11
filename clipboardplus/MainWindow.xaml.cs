@@ -24,17 +24,18 @@ namespace clipboardplus
         public MainWindow()
         {
             InitializeComponent();
-            wsl = WindowState;
             //DataContext = main;
             HotKeySettingsManager.Instance.RegisterGlobalHotKeyEvent += Instance_RegisterGlobalHotKeyEvent;
             SizeChanged += MainWindow_SizeChanged;
             StateChanged += MainWindow_StateChanged;
             htmlBoxToggle.IsChecked = true;
             imageEditToggle.IsChecked = true;
+            searchBar.Focus();
         }
         #region 属性
 
-        WindowState wsl;
+        bool canLoad = true;
+
         #endregion
 
         #region clipboard参数
@@ -111,14 +112,15 @@ namespace clipboardplus
                     if (sid == m_HotKeySettings[EHotKeySetting.显示])
                     {
                         hotkeySetting = EHotKeySetting.显示;
-                        winNor();
+                        if(IsActive == false)
+                        {
+                            winNor(true);
+                        }
+                        else
+                        {
+                            winMin();
+                        }
                         //TODO 执行显示操作
-                    }
-                    else if (sid == m_HotKeySettings[EHotKeySetting.隐藏])
-                    {
-                        hotkeySetting = EHotKeySetting.隐藏;
-                        winMin();
-                        //TODO 执行隐藏操作
                     }
                     else if (sid == m_HotKeySettings[EHotKeySetting.截图])
                     {
@@ -137,14 +139,22 @@ namespace clipboardplus
         /// </summary>
         public void ClipboardPlus()
         {
-            try
+            bool getClip = false;
+            int num = 3;
+            while (!getClip && num > 0)
             {
-                (DataContext as MainViewModel).ClipboardListener();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-                //MessageBox.Show(e.ToString());
+                try
+                {
+                    (DataContext as MainViewModel).ClipboardListener();
+                    getClip = true;
+                    num--;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.ToString());
+                    num--;
+                    //MessageBox.Show(e.ToString());
+                }
             }
         }
         #endregion
@@ -453,6 +463,31 @@ namespace clipboardplus
         }
 
         /// <summary>
+        ///WPF查找元素的子元素
+        /// </summary>
+        /// <typeparam name="childItem"></typeparam>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        private childItem FindVisualChild<childItem>(DependencyObject obj) where childItem : DependencyObject
+        {
+            Console.WriteLine(obj.GetType()+"999999999999999999999999");
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(obj, i);
+                Console.WriteLine(child.GetType() + "999999999999999999999999");
+                if (child != null && child is childItem)
+                    return (childItem)child;
+                else
+                {
+                    childItem childOfChild = FindVisualChild<childItem>(child);
+                    if (childOfChild != null)
+                        return childOfChild;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
         /// 窗口正常
         /// </summary>
         /// <param name="sender"></param>
@@ -466,10 +501,28 @@ namespace clipboardplus
         /// <summary>
         /// 窗口正常
         /// </summary>
-        private void winNor()
+        private void winNor(bool FollowMouse = false)
         {
+            if (FollowMouse)
+            {
+                Activate();
+                var transform = PresentationSource.FromVisual(this).CompositionTarget.TransformFromDevice;
+                var mouse = transform.Transform(GetMousePosition());
+                Left = mouse.X + 10;
+                Top = mouse.Y;
+            }
             Show();
-            this.WindowState = wsl;
+            this.WindowState = WindowState.Normal;
+        }
+
+        /// <summary>
+        /// 获取鼠标位置
+        /// </summary>
+        /// <returns></returns>
+        public Point GetMousePosition()
+        {
+            System.Drawing.Point point = System.Windows.Forms.Control.MousePosition;
+            return new Point(point.X,point.Y); 
         }
 
         /// <summary>
@@ -478,15 +531,111 @@ namespace clipboardplus
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void winExit(object sender, RoutedEventArgs e)
+                {
+                    notifyIcon.Visibility = Visibility.Collapsed;
+                    Environment.Exit(0);
+                    e.Handled = true;
+                }
+
+        /// <summary>
+        /// 功能Tab区选择改变
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void leftTabChange(object sender, SelectionChangedEventArgs e)
         {
-            notifyIcon.Visibility = Visibility.Collapsed;
-            Environment.Exit(0);
+            Console.WriteLine((e.OriginalSource.GetType().Name != "TabControl") + ">>>>>>>>>>>>>>>>>>>" + e.OriginalSource.GetType().ToString());
+            if (e.OriginalSource.GetType().Name != "TabControl")
+            {
+                e.Handled = true;
+            }
+        }
+
+        /// <summary>
+        /// 搜索蓝获取焦点
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void searchBarFocus(object sender, CanExecuteRoutedEventArgs e)
+        {
+            switch (tabList.SelectedIndex){
+                case 0:
+                    Console.WriteLine("historyList");
+                    //historyList.Focus();
+                    //Console.WriteLine(historyList.ItemContainerGenerator.ContainerFromIndex(1).GetType());
+                    if(historyList.SelectedIndex == -1)
+                    {
+                        historyList.SelectedIndex = 0;
+                    }
+                    (historyList.ItemContainerGenerator.ContainerFromIndex(historyList.SelectedIndex) as ListBoxItem).Focus();
+                    break;
+                case 1:
+                    Console.WriteLine("pageList");
+                    if (pageList.SelectedIndex == -1)
+                    {
+                        pageList.SelectedIndex = 0;
+                    }
+                    (pageList.ItemContainerGenerator.ContainerFromIndex(pageList.SelectedIndex) as ListBoxItem).Focus();
+                    break;
+                case 4:
+                    Console.WriteLine("searchList");
+                    if (searchList.SelectedIndex == -1)
+                    {
+                        searchList.SelectedIndex = 0;
+                    }
+                    (searchList.ItemContainerGenerator.ContainerFromIndex(searchList.SelectedIndex) as ListBoxItem).Focus();
+                    break;
+            }
             e.Handled = true;
+        }
+
+        /// <summary>
+        /// 滚动条滚动
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BeScrolled(object sender, ScrollChangedEventArgs e)
+        {
+            ScrollViewer sv = e.OriginalSource as ScrollViewer;
+            double dVer = sv.VerticalOffset;
+            if (sv != null && ToolUtil.IsVerticalScrollBarAtButtom(sv, dVer))
+            {
+                //do something
+                //MessageBox.Show("asd");
+                if (canLoad)
+                {
+                    canLoad = false;
+                    (DataContext as MainViewModel).LoadNewRecordList();
+                    Task.Run(async () => {
+                        await Task.Delay(1000);
+                        canLoad = true;
+                    });
+                }
+                sv.ScrollToVerticalOffset(dVer);
+            }
+        }
+
+        /// <summary>
+        /// 搜索栏获取焦点
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void searchBarFocued(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Tab)
+            {
+                searchBar.Focus();
+                e.Handled = true;
+            }
+            else if(e.Key == Key.Enter)
+            {
+                winMin();
+            }
         }
 
         private void test(object sender, SelectionChangedEventArgs e)
         {
-            e.Handled = true;
+
             //loadingCircle.Visibility = Visibility.Visible;
             //Thread.Sleep(1000);
             //loadingCircle.Visibility = Visibility.Collapsed;
@@ -500,7 +649,8 @@ namespace clipboardplus
 
         private void test(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            e.Handled = true;
+
+            //e.Handled = true;
             //MessageBox.Show("e");
             //Console.WriteLine("e");
             //MessageBox.Show(e.OriginalSource.GetType().ToString()+sender.GetType().ToString()+testtree.SelectedItem.GetType().ToString()+e.NewValue.GetType().ToString());
@@ -508,11 +658,20 @@ namespace clipboardplus
 
         private void test(object sender, DependencyPropertyChangedEventArgs e)
         {
+
         }
 
         private void test(object sender, KeyEventArgs e)
         {
-            e.Handled = true;
+
         }
+
+        private void test(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        [DllImport("user32.dll")]
+        public static extern bool GetCursorPos(out Point lpPoint);
     }
 }

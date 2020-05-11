@@ -2,7 +2,9 @@
 using GalaSoft.MvvmLight;
 using SqlSugar;
 using System;
+using System.IO;
 using System.Windows;
+using System.Windows.Media.Imaging;
 
 namespace clipboardplus.Model
 {
@@ -171,6 +173,32 @@ namespace clipboardplus.Model
         }
 
         /// <summary>
+        /// 显示的图片数据
+        /// </summary>
+        [SugarColumn(IsIgnore = true)]
+        public byte[] ImageSource
+        {
+            get
+            {
+                if (ImageData != null)
+                {
+                    return ImageData;
+                }
+                else
+                {
+                    //FileStream fs = File.OpenRead(new Uri("/Resources/Images/clipboardplus.ico", UriKind.Relative).AbsolutePath);
+                    //byte[] Mybyte = new byte[fs.Length];
+                    //fs.Read(Mybyte, 0, Mybyte.Length);
+                    //fs.Close();
+
+
+                    return ToolUtil.ConvertToBytes(new BitmapImage(new Uri("pack://application:,,,/Resources/Images/clipboardplus.ico")));
+                    //return ToolUtil.ConvertToBytes(new BitmapImage(new Uri("/Resources/Images/clipboardplus.ico",UriKind.Relative)));
+                }
+            }
+        }
+
+        /// <summary>
         /// 记录的文件大小
         /// </summary>
         [SugarColumn(IsIgnore = true)]
@@ -195,6 +223,15 @@ namespace clipboardplus.Model
         public Visibility TextShow
         {
             get => Type == 1 ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        /// <summary>
+        /// 记录的时间格式化
+        /// </summary>
+        [SugarColumn(IsIgnore = true)]
+        public Visibility ImageShow
+        {
+            get => Type == 2 ? Visibility.Visible : Visibility.Collapsed;
         }
 
         /// <summary>

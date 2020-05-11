@@ -30,9 +30,8 @@ namespace clipboardplus.Util
         public ObservableCollection<HotKeyModel> LoadDefaultHotKey()
         {
             var hotKeyList = new ObservableCollection<HotKeyModel>();
-            hotKeyList.Add(new HotKeyModel { Name = EHotKeySetting.显示.ToString(), IsUsable = true, IsSelectCtrl = true, IsSelectAlt = true, IsSelectShift = false, SelectKey = Keys.C });
-            hotKeyList.Add(new HotKeyModel { Name = EHotKeySetting.隐藏.ToString(), IsUsable = true, IsSelectCtrl = true, IsSelectAlt = true, IsSelectShift = false, SelectKey = Keys.V });
-            hotKeyList.Add(new HotKeyModel { Name = EHotKeySetting.截图.ToString(), IsUsable = true, IsSelectCtrl = true, IsSelectAlt = true, IsSelectShift = false, SelectKey = Keys.X });
+            hotKeyList.Add(new HotKeyModel { Name = EHotKeySetting.显示.ToString(), IsUsable = true, IsSelectCtrl = false, IsSelectAlt = true, IsSelectShift = false, SelectKey = Keys.X });
+            hotKeyList.Add(new HotKeyModel { Name = EHotKeySetting.截图.ToString(), IsUsable = true, IsSelectCtrl = false, IsSelectAlt = true, IsSelectShift = false, SelectKey = Keys.S });
             return hotKeyList;
         }
 

@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Forms;
 
 namespace clipboardplus.Model
@@ -82,6 +83,17 @@ namespace clipboardplus.Model
         {
             get => _isSelected;
             set { _isSelected = value; RaisePropertyChanged(() => IsSelected); }
+        }
+
+        /// <summary>
+        /// 是否重命名
+        /// </summary>
+        private Visibility _isRename = Visibility.Collapsed;
+        [SugarColumn(IsIgnore = true)]
+        public Visibility IsRename
+        {
+            get => _isRename;
+            set { _isRename = value; RaisePropertyChanged(() => IsRename); }
         }
 
         #endregion
@@ -254,11 +266,17 @@ namespace clipboardplus.Model
         /// <summary>
         /// 快捷键按键集合
         /// </summary>
-        public static Array Keys
+        public static List<Keys> MyKeys
         {
             get
             {
-                return Enum.GetValues(typeof(Keys));
+                List<Keys> keys = new List<Keys>();
+                var temp = Enum.GetValues(typeof(Keys));
+                foreach(var i in temp)
+                {
+                    keys.Add((Keys)i);
+                }
+                return keys.Where(k => k.CompareTo(Keys.A) >= 0 && k.CompareTo(Keys.Z) <= 0).ToList();
             }
         }
     }
