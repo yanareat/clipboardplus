@@ -1,17 +1,25 @@
-﻿// // Copyright (c) Microsoft. All rights reserved.
-// // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+//---------------------------------------------------------------------------
+// 
+// File: HtmlLexicalAnalyzer.cs
+//
+// Copyright (C) Microsoft Corporation.  All rights reserved.
+//
+// Description: Lexical analyzer for Html-to-Xaml converter
+//
+//---------------------------------------------------------------------------
 
 using System;
-using System.Diagnostics;
 using System.IO;
+using System.Diagnostics;
+using System.Collections;
 using System.Text;
 
-namespace clipboardplus.Converter
+namespace HTMLConverter
 {
     /// <summary>
-    ///     lexical analyzer class
-    ///     recognizes tokens as groups of characters separated by arbitrary amounts of whitespace
-    ///     also classifies tokens according to type
+    /// lexical analyzer class
+    /// recognizes tokens as groups of characters separated by arbitrary amounts of whitespace
+    /// also classifies tokens according to type
     /// </summary>
     internal class HtmlLexicalAnalyzer
     {
@@ -24,25 +32,30 @@ namespace clipboardplus.Converter
         #region Constructors
 
         /// <summary>
-        ///     initializes the _inputStringReader member with the string to be read
-        ///     also sets initial values for _nextCharacterCode and _nextTokenType
+        /// initializes the _inputStringReader member with the string to be read
+        /// also sets initial values for _nextCharacterCode and _nextTokenType
         /// </summary>
         /// <param name="inputTextString">
-        ///     text string to be parsed for xml content
+        /// text string to be parsed for xml content
         /// </param>
         internal HtmlLexicalAnalyzer(string inputTextString)
         {
+            if (string.IsNullOrEmpty(inputTextString))
+            {
+                inputTextString = string.Empty;
+            }
+
             _inputStringReader = new StringReader(inputTextString);
             _nextCharacterCode = 0;
-            NextCharacter = ' ';
+            _nextCharacter = ' ';
             _lookAheadCharacterCode = _inputStringReader.Read();
             _lookAheadCharacter = (char)_lookAheadCharacterCode;
             _previousCharacter = ' ';
             _ignoreNextWhitespace = true;
             _nextToken = new StringBuilder(100);
-            NextTokenType = HtmlTokenType.Text;
+            _nextTokenType = HtmlTokenType.Text;
             // read the first character so we have some value for the NextCharacter property
-            GetNextCharacter();
+            this.GetNextCharacter();
         }
 
         #endregion Constructors
@@ -56,135 +69,139 @@ namespace clipboardplus.Converter
         #region Internal Methods
 
         /// <summary>
-        ///     retrieves next recognizable token from input string
-        ///     and identifies its type
-        ///     if no valid token is found, the output parameters are set to null
-        ///     if end of stream is reached without matching any token, token type
-        ///     paramter is set to EOF
+        /// retrieves next recognizable token from input string 
+        /// and identifies its type
+        /// if no valid token is found, the output parameters are set to null
+        /// if end of stream is reached without matching any token, token type
+        /// paramter is set to EOF
         /// </summary>
         internal void GetNextContentToken()
         {
-            Debug.Assert(NextTokenType != HtmlTokenType.Eof);
+            Debug.Assert(_nextTokenType != HtmlTokenType.EOF);
             _nextToken.Length = 0;
-            if (IsAtEndOfStream)
+            if (this.IsAtEndOfStream)
             {
-                NextTokenType = HtmlTokenType.Eof;
+                _nextTokenType = HtmlTokenType.EOF;
                 return;
             }
 
-            if (IsAtTagStart)
+            if (this.IsAtTagStart)
             {
-                GetNextCharacter();
+                this.GetNextCharacter();
 
-                if (NextCharacter == '/')
+                if (this.NextCharacter == '/')
                 {
                     _nextToken.Append("</");
-                    NextTokenType = HtmlTokenType.ClosingTagStart;
+                    _nextTokenType = HtmlTokenType.ClosingTagStart;
 
                     // advance
-                    GetNextCharacter();
+                    this.GetNextCharacter();
                     _ignoreNextWhitespace = false; // Whitespaces after closing tags are significant
                 }
                 else
                 {
-                    NextTokenType = HtmlTokenType.OpeningTagStart;
+                    _nextTokenType = HtmlTokenType.OpeningTagStart;
                     _nextToken.Append("<");
                     _ignoreNextWhitespace = true; // Whitespaces after opening tags are insignificant
                 }
             }
-            else if (IsAtDirectiveStart)
+            else if (this.IsAtDirectiveStart)
             {
                 // either a comment or CDATA
-                GetNextCharacter();
+                this.GetNextCharacter();
                 if (_lookAheadCharacter == '[')
                 {
                     // cdata
-                    ReadDynamicContent();
+                    this.ReadDynamicContent();
                 }
                 else if (_lookAheadCharacter == '-')
                 {
-                    ReadComment();
+                    this.ReadComment();
                 }
                 else
                 {
                     // neither a comment nor cdata, should be something like DOCTYPE
                     // skip till the next tag ender
-                    ReadUnknownDirective();
+                    this.ReadUnknownDirective();
                 }
             }
             else
             {
                 // read text content, unless you encounter a tag
-                NextTokenType = HtmlTokenType.Text;
-                while (!IsAtTagStart && !IsAtEndOfStream && !IsAtDirectiveStart)
+                _nextTokenType = HtmlTokenType.Text;
+                while (!this.IsAtTagStart && !this.IsAtEndOfStream && !this.IsAtDirectiveStart)
                 {
-                    if (NextCharacter == '<' && !IsNextCharacterEntity && _lookAheadCharacter == '?')
+                    if (this.NextCharacter == '<' && !this.IsNextCharacterEntity && _lookAheadCharacter == '?')
                     {
                         // ignore processing directive
-                        SkipProcessingDirective();
+                        this.SkipProcessingDirective();
                     }
                     else
                     {
-                        if (NextCharacter <= ' ')
+                        if (this.NextCharacter <= ' ')
                         {
                             //  Respect xml:preserve or its equivalents for whitespace processing
                             if (_ignoreNextWhitespace)
                             {
+                               // int bb = 0;
+                                _nextToken.Append(NextCharacter);
                                 // Ignore repeated whitespaces
                             }
                             else
                             {
                                 // Treat any control character sequence as one whitespace
-                                _nextToken.Append(' ');
+                               // _nextToken.Append(' ');
+                                _nextToken.Append(NextCharacter);
+
                             }
                             _ignoreNextWhitespace = true; // and keep ignoring the following whitespaces
                         }
                         else
                         {
-                            _nextToken.Append(NextCharacter);
+                            _nextToken.Append(this.NextCharacter);
                             _ignoreNextWhitespace = false;
                         }
-                        GetNextCharacter();
+                        this.GetNextCharacter();
                     }
                 }
             }
         }
 
         /// <summary>
-        ///     Unconditionally returns a token which is one of: TagEnd, EmptyTagEnd, Name, Atom or EndOfStream
-        ///     Does not guarantee token reader advancing.
+        /// Unconditionally returns a token which is one of: TagEnd, EmptyTagEnd, Name, Atom or EndOfStream
+        /// Does not guarantee token reader advancing.
         /// </summary>
         internal void GetNextTagToken()
         {
             _nextToken.Length = 0;
-            if (IsAtEndOfStream)
+            if (this.IsAtEndOfStream)
             {
-                NextTokenType = HtmlTokenType.Eof;
+                _nextTokenType = HtmlTokenType.EOF;
                 return;
             }
 
-            SkipWhiteSpace();
+            this.SkipWhiteSpace();
 
-            if (NextCharacter == '>' && !IsNextCharacterEntity)
+            if (this.NextCharacter == '>' && !this.IsNextCharacterEntity)
             {
                 // &gt; should not end a tag, so make sure it's not an entity
-                NextTokenType = HtmlTokenType.TagEnd;
+                _nextTokenType = HtmlTokenType.TagEnd;
                 _nextToken.Append('>');
-                GetNextCharacter();
+                this.GetNextCharacter();
                 // Note: _ignoreNextWhitespace must be set appropriately on tag start processing
             }
-            else if (NextCharacter == '/' && _lookAheadCharacter == '>')
+            else if (this.NextCharacter == '/' && _lookAheadCharacter == '>')
             {
                 // could be start of closing of empty tag
-                NextTokenType = HtmlTokenType.EmptyTagEnd;
+                _nextTokenType = HtmlTokenType.EmptyTagEnd;
                 _nextToken.Append("/>");
-                GetNextCharacter();
-                GetNextCharacter();
+                this.GetNextCharacter();
+                this.GetNextCharacter();
                 _ignoreNextWhitespace = false; // Whitespace after no-scope tags are sifnificant
             }
-            else if (IsGoodForNameStart(NextCharacter))
+            else if (IsGoodForNameStart(this.NextCharacter))
             {
-                NextTokenType = HtmlTokenType.Name;
+                _nextTokenType = HtmlTokenType.Name;
 
                 // starts a name
                 // we allow character entities here
@@ -192,89 +209,89 @@ namespace clipboardplus.Converter
                 // just stop and return whatever is in the token
                 // if the parser is not expecting end of file after this it will call
                 // the get next token function and throw an exception
-                while (IsGoodForName(NextCharacter) && !IsAtEndOfStream)
+                while (IsGoodForName(this.NextCharacter) && !this.IsAtEndOfStream)
                 {
-                    _nextToken.Append(NextCharacter);
-                    GetNextCharacter();
+                    _nextToken.Append(this.NextCharacter);
+                    this.GetNextCharacter();
                 }
             }
             else
             {
                 // Unexpected type of token for a tag. Reprot one character as Atom, expecting that HtmlParser will ignore it.
-                NextTokenType = HtmlTokenType.Atom;
-                _nextToken.Append(NextCharacter);
-                GetNextCharacter();
+                _nextTokenType = HtmlTokenType.Atom;
+                _nextToken.Append(this.NextCharacter);
+                this.GetNextCharacter();
             }
         }
 
         /// <summary>
-        ///     Unconditionally returns equal sign token. Even if there is no
-        ///     real equal sign in the stream, it behaves as if it were there.
-        ///     Does not guarantee token reader advancing.
+        /// Unconditionally returns equal sign token. Even if there is no
+        /// real equal sign in the stream, it behaves as if it were there.
+        /// Does not guarantee token reader advancing.
         /// </summary>
         internal void GetNextEqualSignToken()
         {
-            Debug.Assert(NextTokenType != HtmlTokenType.Eof);
+            Debug.Assert(_nextTokenType != HtmlTokenType.EOF);
             _nextToken.Length = 0;
 
             _nextToken.Append('=');
-            NextTokenType = HtmlTokenType.EqualSign;
+            _nextTokenType = HtmlTokenType.EqualSign;
 
-            SkipWhiteSpace();
+            this.SkipWhiteSpace();
 
-            if (NextCharacter == '=')
+            if (this.NextCharacter == '=')
             {
                 // '=' is not in the list of entities, so no need to check for entities here
-                GetNextCharacter();
+                this.GetNextCharacter();
             }
         }
 
         /// <summary>
-        ///     Unconditionally returns an atomic value for an attribute
-        ///     Even if there is no appropriate token it returns Atom value
-        ///     Does not guarantee token reader advancing.
+        /// Unconditionally returns an atomic value for an attribute
+        /// Even if there is no appropriate token it returns Atom value
+        /// Does not guarantee token reader advancing.
         /// </summary>
         internal void GetNextAtomToken()
         {
-            Debug.Assert(NextTokenType != HtmlTokenType.Eof);
+            Debug.Assert(_nextTokenType != HtmlTokenType.EOF);
             _nextToken.Length = 0;
 
-            SkipWhiteSpace();
+            this.SkipWhiteSpace();
 
-            NextTokenType = HtmlTokenType.Atom;
+            _nextTokenType = HtmlTokenType.Atom;
 
-            if ((NextCharacter == '\'' || NextCharacter == '"') && !IsNextCharacterEntity)
+            if ((this.NextCharacter == '\'' || this.NextCharacter == '"') && !this.IsNextCharacterEntity)
             {
-                var startingQuote = NextCharacter;
-                GetNextCharacter();
+                char startingQuote = this.NextCharacter;
+                this.GetNextCharacter();
 
                 // Consume all characters between quotes
-                while (!(NextCharacter == startingQuote && !IsNextCharacterEntity) && !IsAtEndOfStream)
+                while (!(this.NextCharacter == startingQuote && !this.IsNextCharacterEntity) && !this.IsAtEndOfStream)
                 {
-                    _nextToken.Append(NextCharacter);
-                    GetNextCharacter();
+                    _nextToken.Append(this.NextCharacter);
+                    this.GetNextCharacter();
                 }
-                if (NextCharacter == startingQuote)
+                if (this.NextCharacter == startingQuote)
                 {
-                    GetNextCharacter();
+                    this.GetNextCharacter();
                 }
 
                 // complete the quoted value
-                // NOTE: our recovery here is different from IE's
+                // NOTE: our recovery here is different from IE's id:293 gh:294
                 // IE keeps reading until it finds a closing quote or end of file
                 // if end of file, it treats current value as text
                 // if it finds a closing quote at any point within the text, it eats everything between the quotes
-                // TODO: Suggestion:
+                // TODO: Suggestion: id:302 gh:304
                 // however, we could stop when we encounter end of file or an angle bracket of any kind
                 // and assume there was a quote there
                 // so the attribute value may be meaningless but it is never treated as text
             }
             else
             {
-                while (!IsAtEndOfStream && !char.IsWhiteSpace(NextCharacter) && NextCharacter != '>')
+                while (!this.IsAtEndOfStream && !Char.IsWhiteSpace(this.NextCharacter) && this.NextCharacter != '>')
                 {
-                    _nextToken.Append(NextCharacter);
-                    GetNextCharacter();
+                    _nextToken.Append(this.NextCharacter);
+                    this.GetNextCharacter();
                 }
             }
         }
@@ -289,9 +306,21 @@ namespace clipboardplus.Converter
 
         #region Internal Properties
 
-        internal HtmlTokenType NextTokenType { get; private set; }
+        internal HtmlTokenType NextTokenType
+        {
+            get
+            {
+                return _nextTokenType;
+            }
+        }
 
-        internal string NextToken => _nextToken.ToString();
+        internal string NextToken
+        {
+            get
+            {
+                return _nextToken.ToString();
+            }
+        }
 
         #endregion Internal Properties
 
@@ -304,13 +333,13 @@ namespace clipboardplus.Converter
         #region Private Methods
 
         /// <summary>
-        ///     Advances a reading position by one character code
-        ///     and reads the next availbale character from a stream.
-        ///     This character becomes available as NextCharacter property.
+        /// Advances a reading position by one character code
+        /// and reads the next availbale character from a stream.
+        /// This character becomes available as NextCharacter property.
         /// </summary>
         /// <remarks>
-        ///     Throws InvalidOperationException if attempted to be called on EndOfStream
-        ///     condition.
+        /// Throws InvalidOperationException if attempted to be called on EndOfStream
+        /// condition.
         /// </remarks>
         private void GetNextCharacter()
         {
@@ -319,95 +348,93 @@ namespace clipboardplus.Converter
                 throw new InvalidOperationException("GetNextCharacter method called at the end of a stream");
             }
 
-            _previousCharacter = NextCharacter;
+            _previousCharacter = _nextCharacter;
 
-            NextCharacter = _lookAheadCharacter;
+            _nextCharacter = _lookAheadCharacter;
             _nextCharacterCode = _lookAheadCharacterCode;
             // next character not an entity as of now
-            IsNextCharacterEntity = false;
+            _isNextCharacterEntity = false;
 
-            ReadLookAheadCharacter();
+            this.ReadLookAheadCharacter();
 
-            if (NextCharacter == '&')
+            if (_nextCharacter == '&')
             {
                 if (_lookAheadCharacter == '#')
                 {
                     // numeric entity - parse digits - &#DDDDD;
                     int entityCode;
                     entityCode = 0;
-                    ReadLookAheadCharacter();
+                    this.ReadLookAheadCharacter();
 
                     // largest numeric entity is 7 characters
-                    for (var i = 0; i < 7 && char.IsDigit(_lookAheadCharacter); i++)
+                    for (int i = 0; i < 7 && Char.IsDigit(_lookAheadCharacter); i++)
                     {
-                        entityCode = 10 * entityCode + (_lookAheadCharacterCode - '0');
-                        ReadLookAheadCharacter();
+                        entityCode = 10 * entityCode + (_lookAheadCharacterCode - (int)'0');
+                        this.ReadLookAheadCharacter();
                     }
                     if (_lookAheadCharacter == ';')
                     {
                         // correct format - advance
-                        ReadLookAheadCharacter();
+                        this.ReadLookAheadCharacter();
                         _nextCharacterCode = entityCode;
 
                         // if this is out of range it will set the character to '?'
-                        NextCharacter = (char)_nextCharacterCode;
+                        _nextCharacter = (char)_nextCharacterCode;
 
                         // as far as we are concerned, this is an entity
-                        IsNextCharacterEntity = true;
+                        _isNextCharacterEntity = true;
                     }
                     else
                     {
                         // not an entity, set next character to the current lookahread character
                         // we would have eaten up some digits
-                        NextCharacter = _lookAheadCharacter;
+                        _nextCharacter = _lookAheadCharacter;
                         _nextCharacterCode = _lookAheadCharacterCode;
-                        ReadLookAheadCharacter();
-                        IsNextCharacterEntity = false;
+                        this.ReadLookAheadCharacter();
+                        _isNextCharacterEntity = false;
                     }
                 }
-                else if (char.IsLetter(_lookAheadCharacter))
+                else if (Char.IsLetter(_lookAheadCharacter))
                 {
                     // entity is written as a string
-                    var entity = "";
+                    string entity = "";
 
                     // maximum length of string entities is 10 characters
-                    for (var i = 0;
-                        i < 10 && (char.IsLetter(_lookAheadCharacter) || char.IsDigit(_lookAheadCharacter));
-                        i++)
+                    for (int i = 0; i < 10 && (Char.IsLetter(_lookAheadCharacter) || Char.IsDigit(_lookAheadCharacter)); i++)
                     {
                         entity += _lookAheadCharacter;
-                        ReadLookAheadCharacter();
+                        this.ReadLookAheadCharacter();
                     }
                     if (_lookAheadCharacter == ';')
                     {
                         // advance
-                        ReadLookAheadCharacter();
+                        this.ReadLookAheadCharacter();
 
                         if (HtmlSchema.IsEntity(entity))
                         {
-                            NextCharacter = HtmlSchema.EntityCharacterValue(entity);
-                            _nextCharacterCode = NextCharacter;
-                            IsNextCharacterEntity = true;
+                            _nextCharacter = HtmlSchema.EntityCharacterValue(entity);
+                            _nextCharacterCode = (int)_nextCharacter;
+                            _isNextCharacterEntity = true;
                         }
                         else
                         {
                             // just skip the whole thing - invalid entity
                             // move on to the next character
-                            NextCharacter = _lookAheadCharacter;
+                            _nextCharacter = _lookAheadCharacter;
                             _nextCharacterCode = _lookAheadCharacterCode;
-                            ReadLookAheadCharacter();
+                            this.ReadLookAheadCharacter();
 
                             // not an entity
-                            IsNextCharacterEntity = false;
+                            _isNextCharacterEntity = false;
                         }
                     }
                     else
                     {
                         // skip whatever we read after the ampersand
                         // set next character and move on
-                        NextCharacter = _lookAheadCharacter;
-                        ReadLookAheadCharacter();
-                        IsNextCharacterEntity = false;
+                        _nextCharacter = _lookAheadCharacter;
+                        this.ReadLookAheadCharacter();
+                        _isNextCharacterEntity = false;
                     }
                 }
             }
@@ -423,270 +450,286 @@ namespace clipboardplus.Converter
         }
 
         /// <summary>
-        ///     skips whitespace in the input string
-        ///     leaves the first non-whitespace character available in the NextCharacter property
-        ///     this may be the end-of-file character, it performs no checking
+        /// skips whitespace in the input string
+        /// leaves the first non-whitespace character available in the NextCharacter property
+        /// this may be the end-of-file character, it performs no checking 
         /// </summary>
         private void SkipWhiteSpace()
         {
-            // TODO: handle character entities while processing comments, cdata, and directives
-            // TODO: SUGGESTION: we could check if lookahead and previous characters are entities also
+            // TODO: handle character entities while processing comments, cdata, and directives id:323 gh:324
+            // TODO: SUGGESTION: we could check if lookahead and previous characters are entities also id:263 gh:264
             while (true)
             {
-                if (NextCharacter == '<' && (_lookAheadCharacter == '?' || _lookAheadCharacter == '!'))
+                if (_nextCharacter == '<' && (_lookAheadCharacter == '?' || _lookAheadCharacter == '!'))
                 {
-                    GetNextCharacter();
+                    this.GetNextCharacter();
 
                     if (_lookAheadCharacter == '[')
                     {
                         // Skip CDATA block and DTDs(?)
-                        while (!IsAtEndOfStream &&
-                               !(_previousCharacter == ']' && NextCharacter == ']' && _lookAheadCharacter == '>'))
+                        while (!this.IsAtEndOfStream && !(_previousCharacter == ']' && _nextCharacter == ']' && _lookAheadCharacter == '>'))
                         {
-                            GetNextCharacter();
+                            this.GetNextCharacter();
                         }
-                        if (NextCharacter == '>')
+                        if (_nextCharacter == '>')
                         {
-                            GetNextCharacter();
+                            this.GetNextCharacter();
                         }
                     }
                     else
                     {
                         // Skip processing instruction, comments
-                        while (!IsAtEndOfStream && NextCharacter != '>')
+                        while (!this.IsAtEndOfStream && _nextCharacter != '>')
                         {
-                            GetNextCharacter();
+                            this.GetNextCharacter();
                         }
-                        if (NextCharacter == '>')
+                        if (_nextCharacter == '>')
                         {
-                            GetNextCharacter();
+                            this.GetNextCharacter();
                         }
                     }
                 }
 
 
-                if (!char.IsWhiteSpace(NextCharacter))
+                if (!Char.IsWhiteSpace(this.NextCharacter))
                 {
                     break;
                 }
 
-                GetNextCharacter();
+                this.GetNextCharacter();
             }
         }
 
         /// <summary>
-        ///     checks if a character can be used to start a name
-        ///     if this check is true then the rest of the name can be read
+        /// checks if a character can be used to start a name
+        /// if this check is true then the rest of the name can be read
         /// </summary>
         /// <param name="character">
-        ///     character value to be checked
+        /// character value to be checked
         /// </param>
         /// <returns>
-        ///     true if the character can be the first character in a name
-        ///     false otherwise
+        /// true if the character can be the first character in a name
+        /// false otherwise
         /// </returns>
-        private bool IsGoodForNameStart(char character) => character == '_' || char.IsLetter(character);
+        private bool IsGoodForNameStart(char character)
+        {
+            return character == '_' || Char.IsLetter(character);
+        }
 
         /// <summary>
-        ///     checks if a character can be used as a non-starting character in a name
-        ///     uses the IsExtender and IsCombiningCharacter predicates to see
-        ///     if a character is an extender or a combining character
+        /// checks if a character can be used as a non-starting character in a name
+        /// uses the IsExtender and IsCombiningCharacter predicates to see
+        /// if a character is an extender or a combining character
         /// </summary>
         /// <param name="character">
-        ///     character to be checked for validity in a name
+        /// character to be checked for validity in a name
         /// </param>
         /// <returns>
-        ///     true if the character can be a valid part of a name
+        /// true if the character can be a valid part of a name
         /// </returns>
-        private bool IsGoodForName(char character) => IsGoodForNameStart(character) ||
+        private bool IsGoodForName(char character)
+        {
+            // we are not concerned with escaped characters in names
+            // we assume that character entities are allowed as part of a name
+            return
+                this.IsGoodForNameStart(character) ||
                 character == '.' ||
                 character == '-' ||
                 character == ':' ||
-                char.IsDigit(character) ||
+                Char.IsDigit(character) ||
                 IsCombiningCharacter(character) ||
                 IsExtender(character);
+        }
 
         /// <summary>
-        ///     identifies a character as being a combining character, permitted in a name
-        ///     TODO: only a placeholder for now but later to be replaced with comparisons against
-        ///     the list of combining characters in the XML documentation
+        /// identifies a character as being a combining character, permitted in a name
+        /// TODO: only a placeholder for now but later to be replaced with comparisons against id:283 gh:284
+        /// the list of combining characters in the XML documentation
         /// </summary>
         /// <param name="character">
-        ///     character to be checked
+        /// character to be checked
         /// </param>
         /// <returns>
-        ///     true if the character is a combining character, false otherwise
+        /// true if the character is a combining character, false otherwise
         /// </returns>
-        private bool IsCombiningCharacter(char character) => false;
+        private bool IsCombiningCharacter(char character)
+        {
+            // TODO: put actual code with checks against all combining characters here id:294 gh:295
+            return false;
+        }
 
         /// <summary>
-        ///     identifies a character as being an extender, permitted in a name
-        ///     TODO: only a placeholder for now but later to be replaced with comparisons against
-        ///     the list of extenders in the XML documentation
+        /// identifies a character as being an extender, permitted in a name
+        /// TODO: only a placeholder for now but later to be replaced with comparisons against id:303 gh:302
+        /// the list of extenders in the XML documentation
         /// </summary>
         /// <param name="character">
-        ///     character to be checked
+        /// character to be checked
         /// </param>
         /// <returns>
-        ///     true if the character is an extender, false otherwise
+        /// true if the character is an extender, false otherwise
         /// </returns>
-        private bool IsExtender(char character) => false;
+        private bool IsExtender(char character)
+        {
+            // TODO: put actual code with checks against all extenders here id:324 gh:325
+            return false;
+        }
 
         /// <summary>
-        ///     skips dynamic content starting with '<![' and ending with ']>'
+        /// skips dynamic content starting with '<![' and ending with ']>' 
         /// </summary>
         private void ReadDynamicContent()
         {
             // verify that we are at dynamic content, which may include CDATA
-            Debug.Assert(_previousCharacter == '<' && NextCharacter == '!' && _lookAheadCharacter == '[');
+            Debug.Assert(_previousCharacter == '<' && _nextCharacter == '!' && _lookAheadCharacter == '[');
 
             // Let's treat this as empty text
-            NextTokenType = HtmlTokenType.Text;
+            _nextTokenType = HtmlTokenType.Text;
             _nextToken.Length = 0;
 
             // advance twice, once to get the lookahead character and then to reach the start of the cdata
-            GetNextCharacter();
-            GetNextCharacter();
+            this.GetNextCharacter();
+            this.GetNextCharacter();
 
-            // NOTE: 10/12/2004: modified this function to check when called if's reading CDATA or something else
+            // NOTE: 10/12/2004: modified this function to check when called if's reading CDATA or something else id:264 gh:265
             // some directives may start with a <![ and then have some data and they will just end with a ]>
             // this function is modified to stop at the sequence ]> and not ]]>
             // this means that CDATA and anything else expressed in their own set of [] within the <! [...]>
             // directive cannot contain a ]> sequence. However it is doubtful that cdata could contain such
             // sequence anyway, it probably stops at the first ]
-            while (!(NextCharacter == ']' && _lookAheadCharacter == '>') && !IsAtEndOfStream)
+            while (!(_nextCharacter == ']' && _lookAheadCharacter == '>') && !this.IsAtEndOfStream)
             {
                 // advance
-                GetNextCharacter();
+                this.GetNextCharacter();
             }
 
-            if (!IsAtEndOfStream)
+            if (!this.IsAtEndOfStream)
             {
                 // advance, first to the last >
-                GetNextCharacter();
+                this.GetNextCharacter();
 
                 // then advance past it to the next character after processing directive
-                GetNextCharacter();
+                this.GetNextCharacter();
             }
         }
 
         /// <summary>
-        ///     skips comments starting with '<!-' and ending with '-->'
-        ///     NOTE: 10/06/2004: processing changed, will now skip anything starting with
-        ///     the "<!-"  sequence and ending in "!>" or "->", because in practice many html pages do not
-        ///     use the full comment specifying conventions
+        /// skips comments starting with '<!-' and ending with '-->' 
+        /// NOTE: 10/06/2004: processing changed, will now skip anything starting with id:284 gh:285
+        /// the "<!-"  sequence and ending in "!>" or "->", because in practice many html pages do not
+        /// use the full comment specifying conventions
         /// </summary>
         private void ReadComment()
         {
             // verify that we are at a comment
-            Debug.Assert(_previousCharacter == '<' && NextCharacter == '!' && _lookAheadCharacter == '-');
+            Debug.Assert(_previousCharacter == '<' && _nextCharacter == '!' && _lookAheadCharacter == '-');
 
             // Initialize a token
-            NextTokenType = HtmlTokenType.Comment;
+            _nextTokenType = HtmlTokenType.Comment;
             _nextToken.Length = 0;
 
             // advance to the next character, so that to be at the start of comment value
-            GetNextCharacter(); // get first '-'
-            GetNextCharacter(); // get second '-'
-            GetNextCharacter(); // get first character of comment content
+            this.GetNextCharacter(); // get first '-'
+            this.GetNextCharacter(); // get second '-'
+            this.GetNextCharacter(); // get first character of comment content
 
             while (true)
             {
                 // Read text until end of comment
                 // Note that in many actual html pages comments end with "!>" (while xml standard is "-->")
-                while (!IsAtEndOfStream &&
-                       !(NextCharacter == '-' && _lookAheadCharacter == '-' ||
-                         NextCharacter == '!' && _lookAheadCharacter == '>'))
+                while (!this.IsAtEndOfStream && !(_nextCharacter == '-' && _lookAheadCharacter == '-' || _nextCharacter == '!' && _lookAheadCharacter == '>'))
                 {
-                    _nextToken.Append(NextCharacter);
-                    GetNextCharacter();
+                    _nextToken.Append(this.NextCharacter);
+                    this.GetNextCharacter();
                 }
 
                 // Finish comment reading
-                GetNextCharacter();
-                if (_previousCharacter == '-' && NextCharacter == '-' && _lookAheadCharacter == '>')
+                this.GetNextCharacter();
+                if (_previousCharacter == '-' && _nextCharacter == '-' && _lookAheadCharacter == '>')
                 {
                     // Standard comment end. Eat it and exit the loop
-                    GetNextCharacter(); // get '>'
+                    this.GetNextCharacter(); // get '>'
                     break;
                 }
-                if (_previousCharacter == '!' && NextCharacter == '>')
+                else if (_previousCharacter == '!' && _nextCharacter == '>')
                 {
                     // Nonstandard but possible comment end - '!>'. Exit the loop
                     break;
                 }
-                // Not an end. Save character and continue continue reading
-                _nextToken.Append(_previousCharacter);
+                else
+                {
+                    // Not an end. Save character and continue continue reading
+                    _nextToken.Append(_previousCharacter);
+                    continue;
+                }
             }
 
             // Read end of comment combination
-            if (NextCharacter == '>')
+            if (_nextCharacter == '>')
             {
-                GetNextCharacter();
+                this.GetNextCharacter();
             }
         }
 
         /// <summary>
-        ///     skips past unknown directives that start with "<!" but are not comments or Cdata
-        /// ignores content of such directives until the next ">"
-        ///     character
-        ///     applies to directives such as DOCTYPE, etc that we do not presently support
+        /// skips past unknown directives that start with "<!" but are not comments or Cdata
+        /// ignores content of such directives until the next ">" character
+        /// applies to directives such as DOCTYPE, etc that we do not presently support
         /// </summary>
         private void ReadUnknownDirective()
         {
             // verify that we are at an unknown directive
-            Debug.Assert(_previousCharacter == '<' && NextCharacter == '!' &&
-                         !(_lookAheadCharacter == '-' || _lookAheadCharacter == '['));
+            Debug.Assert(_previousCharacter == '<' && _nextCharacter == '!' && !(_lookAheadCharacter == '-' || _lookAheadCharacter == '['));
 
             // Let's treat this as empty text
-            NextTokenType = HtmlTokenType.Text;
+            _nextTokenType = HtmlTokenType.Text;
             _nextToken.Length = 0;
 
             // advance to the next character
-            GetNextCharacter();
+            this.GetNextCharacter();
 
             // skip to the first tag end we find
-            while (!(NextCharacter == '>' && !IsNextCharacterEntity) && !IsAtEndOfStream)
+            while (!(_nextCharacter == '>' && !IsNextCharacterEntity) && !this.IsAtEndOfStream)
             {
-                GetNextCharacter();
+                this.GetNextCharacter();
             }
 
-            if (!IsAtEndOfStream)
+            if (!this.IsAtEndOfStream)
             {
                 // advance past the tag end
-                GetNextCharacter();
+                this.GetNextCharacter();
             }
         }
 
         /// <summary>
-        ///     skips processing directives starting with the characters '<?' and ending with '?>'
-        ///     NOTE: 10/14/2004: IE also ends processing directives with a />, so this function is
-        ///     being modified to recognize that condition as well
+        /// skips processing directives starting with the characters '<?' and ending with '?>' 
+        /// NOTE: 10/14/2004: IE also ends processing directives with a />, so this function is id:295 gh:296
+        /// being modified to recognize that condition as well
         /// </summary>
         private void SkipProcessingDirective()
         {
             // verify that we are at a processing directive
-            Debug.Assert(NextCharacter == '<' && _lookAheadCharacter == '?');
+            Debug.Assert(_nextCharacter == '<' && _lookAheadCharacter == '?');
 
             // advance twice, once to get the lookahead character and then to reach the start of the drective
-            GetNextCharacter();
-            GetNextCharacter();
+            this.GetNextCharacter();
+            this.GetNextCharacter();
 
-            while (!((NextCharacter == '?' || NextCharacter == '/') && _lookAheadCharacter == '>') && !IsAtEndOfStream)
+            while (!((_nextCharacter == '?' || _nextCharacter == '/') && _lookAheadCharacter == '>') && !this.IsAtEndOfStream)
             {
                 // advance
                 // we don't need to check for entities here because '?' is not an entity
                 // and even though > is an entity there is no entity processing when reading lookahead character
-                GetNextCharacter();
+                this.GetNextCharacter();
             }
 
-            if (!IsAtEndOfStream)
+            if (!this.IsAtEndOfStream)
             {
                 // advance, first to the last >
-                GetNextCharacter();
+                this.GetNextCharacter();
 
                 // then advance past it to the next character after processing directive
-                GetNextCharacter();
+                this.GetNextCharacter();
             }
         }
 
@@ -700,23 +743,54 @@ namespace clipboardplus.Converter
 
         #region Private Properties
 
-        private char NextCharacter { get; set; }
+        private char NextCharacter
+        {
+            get
+            {
+                return _nextCharacter;
+            }
+        }
 
-        private bool IsAtEndOfStream => _nextCharacterCode == -1;
+        private bool IsAtEndOfStream
+        {
+            get
+            {
+                return _nextCharacterCode == -1;
+            }
+        }
 
         private bool IsAtTagStart
-            => NextCharacter == '<' && (_lookAheadCharacter == '/' || IsGoodForNameStart(_lookAheadCharacter)) &&
-               !IsNextCharacterEntity;
+        {
+            get
+            {
+                return _nextCharacter == '<' && (_lookAheadCharacter == '/' || IsGoodForNameStart(_lookAheadCharacter)) && !_isNextCharacterEntity;
+            }
+        }
 
-        private bool IsAtTagEnd => (NextCharacter == '>' || (NextCharacter == '/' && _lookAheadCharacter == '>')) &&
-                                   !IsNextCharacterEntity;
+        private bool IsAtTagEnd
+        {
+            // check if at end of empty tag or regular tag
+            get
+            {
+                return (_nextCharacter == '>' || (_nextCharacter == '/' && _lookAheadCharacter == '>')) && !_isNextCharacterEntity;
+            }
+        }
 
         private bool IsAtDirectiveStart
-            => (NextCharacter == '<' && _lookAheadCharacter == '!' && !IsNextCharacterEntity);
+        {
+            get
+            {
+                return (_nextCharacter == '<' && _lookAheadCharacter == '!' && !this.IsNextCharacterEntity);
+            }
+        }
 
         private bool IsNextCharacterEntity
-        { // check if next character is an entity
-            get; set;
+        {
+            // check if next character is an entity
+            get
+            {
+                return _isNextCharacterEntity;
+            }
         }
 
         #endregion Private Properties
@@ -730,17 +804,20 @@ namespace clipboardplus.Converter
         #region Private Fields
 
         // string reader which will move over input text
-        private readonly StringReader _inputStringReader;
+        private StringReader _inputStringReader;
         // next character code read from input that is not yet part of any token
         // and the character it represents
         private int _nextCharacterCode;
+        private char _nextCharacter;
         private int _lookAheadCharacterCode;
         private char _lookAheadCharacter;
         private char _previousCharacter;
         private bool _ignoreNextWhitespace;
+        private bool _isNextCharacterEntity;
 
         // store token and type in local variables before copying them to output parameters
-        private readonly StringBuilder _nextToken;
+        StringBuilder _nextToken;
+        HtmlTokenType _nextTokenType;
 
         #endregion Private Fields
     }

@@ -61,6 +61,7 @@
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="ReachFramework" />
     <Reference Include="SqlSugar, Version=5.0.0.14, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\sqlSugar.5.0.0.14\lib\SqlSugar.dll</HintPath>
     </Reference>
@@ -72,6 +73,7 @@
       <HintPath>..\..\System.Data.SQLite.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Printing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -95,19 +97,25 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Converter\HtmlToXamlConverter.cs" />
-    <Compile Include="Converter\HtmlParser.cs" />
-    <Compile Include="Converter\CssStylesheet.cs" />
-    <Compile Include="Converter\HtmlSchema.cs" />
-    <Compile Include="Converter\HtmlLexicalAnalyzer.cs" />
-    <Compile Include="Converter\HtmlTokenType.cs" />
-    <Compile Include="Converter\HtmlCssParser.cs" />
-    <Compile Include="Converter\HtmlFromXamlConverter.cs" />
-    <Compile Include="Converter\HtmlEncodedTextWriter.cs" />
+    <Compile Include="Controls\YanaRichTextBox.xaml.cs">
+      <DependentUpon>YanaRichTextBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Converter\DocxReader.cs" />
+    <Compile Include="Converter\DocxToFlowDocumentConverter.cs" />
+    <Compile Include="Converter\htmlcssparser.cs" />
+    <Compile Include="Converter\htmlfromxamlconverter.cs" />
+    <Compile Include="Converter\htmllexicalanalyzer.cs" />
+    <Compile Include="Converter\htmlparser.cs" />
+    <Compile Include="Converter\htmlschema.cs" />
+    <Compile Include="Converter\HTMLToFlowConverter.cs" />
+    <Compile Include="Converter\HTMLToFlowConverter.style.cs" />
+    <Compile Include="Converter\HTMLToFlowConverter.table.cs" />
+    <Compile Include="Converter\htmltokentype.cs" />
+    <Compile Include="Converter\XPSHelper.cs" />
+    <Compile Include="Converter\XPStoFlowDocument.cs" />
     <Compile Include="Model\Record.cs" />
     <Compile Include="Model\Zone.cs" />
     <Compile Include="Util\HotKeySettingsManager.cs" />
-    <Compile Include="Util\HtmlRichTextBoxBehavior.cs" />
     <Compile Include="Util\SqlUtil.cs" />
     <Compile Include="Util\ToolUtil.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
@@ -115,6 +123,22 @@
     <Compile Include="Window1.xaml.cs">
       <DependentUpon>Window1.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Yana\Core.cs" />
+    <Compile Include="Yana\DocRuler.cs" />
+    <Compile Include="Yana\DocumentPaginator.cs" />
+    <Compile Include="Yana\HyperlinkHelper.cs" />
+    <Compile Include="Yana\ImageHelper.cs" />
+    <Compile Include="Yana\PrintPreview.cs" />
+    <Compile Include="Yana\resizingadorner.cs" />
+    <Compile Include="Yana\SearchHelper.cs" />
+    <Compile Include="Yana\SelectionHighlightAdorner.cs" />
+    <Compile Include="Yana\WpfPayload.cs" />
+    <Compile Include="Yana\YanaHelper.cs" />
+    <Compile Include="Controls\YanaRichTextBox.cmd.cs" />
+    <Page Include="Controls\YanaRichTextBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -182,6 +206,16 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PdfSharp.Xps\PdfSharp.Xps.csproj">
+      <Project>{0bc3964b-a3bc-49d5-9b7c-463299b5a166}</Project>
+      <Name>PdfSharp.Xps</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PdfSharp\PdfSharp-WPF.csproj">
+      <Project>{02fcc0bb-2aa2-43ba-8d2f-66d168b87a1d}</Project>
+      <Name>PdfSharp-WPF</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

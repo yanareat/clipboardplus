@@ -1,0 +1,379 @@
+﻿<UserControl x:Class="clipboardplus.Controls.YanaRichTextBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:hc="https://handyorg.github.io/handycontrol"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:clipboardplus.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="600">
+    <Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="32"/>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <!--工具栏-->
+            <ToolBarTray Grid.RowSpan="2"
+                         x:Name="toolBarTray"
+                         Margin="0,1">
+                <ToolBar Padding="0" 
+                         FontFamily="微软雅黑" 
+                         Margin="0">
+                    <ToggleButton IsChecked="False"
+                                  Checked="toolBarShow"
+                                  Unchecked="toolBarHide"
+                                  Margin="0,0,10,0"
+                                    Content="&#xE167;"
+                                    FontWeight="Bold"
+                                    FontSize="14"
+                                    FontFamily="Segoe MDL2 Assets"/>
+                    <hc:ButtonGroup>
+                        <Button Content="洞"/>
+                        <Button Content="保"/>
+                        <Button Content="文"/>
+                    </hc:ButtonGroup>
+                    <hc:ButtonGroup>
+                        <Button Content="&#xE10E;"
+                                Click="UndoClick"
+                                FontWeight="Bold"
+                                FontFamily="Segoe MDL2 Assets"/>
+                        <Button Content="&#xE10D;"
+                                Click="RedoClick"
+                                FontFamily="Segoe MDL2 Assets"
+                                FontWeight="Bold"/>
+                    </hc:ButtonGroup>
+                    <hc:ButtonGroup>
+                        <Button Content="&#xE10E;"
+                                Click="UndoClick"
+                                FontWeight="Bold"
+                                FontFamily="Segoe MDL2 Assets"/>
+                        <Button Content="&#xE10D;"
+                                Click="RedoClick"
+                                FontFamily="Segoe MDL2 Assets"
+                                FontWeight="Bold"/>
+                        <Button Content="&#xE10D;"
+                                Click="RedoClick"
+                                FontFamily="Segoe MDL2 Assets"
+                                FontWeight="Bold"/>
+                    </hc:ButtonGroup>
+                    <hc:ButtonGroup>
+                        <Button Content="&#xE19B;"
+                                Click="ToggleBoldClick"
+                                FontFamily="Segoe MDL2 Assets"/>
+                        <Button Content="&#xE8DB;"
+                                Click="ToggleItalicClick"
+                                FontFamily="Segoe MDL2 Assets"
+                                FontWeight="Bold"/>
+                        <Button Content="&#xE8DC;"
+                                Click="ToggleUnderlineClick"
+                                FontWeight="Bold"
+                                FontFamily="Segoe MDL2 Assets"/>
+                    </hc:ButtonGroup>
+                    <hc:ButtonGroup>
+                        <ToggleButton IsChecked="False"
+                                      Content="&#xE186;"
+                                      FontWeight="Bold"
+                                      FontSize="14"
+                                      FontFamily="Segoe MDL2 Assets"
+                                      x:Name="fontColor"/>
+                        <ToggleButton IsChecked="False"
+                                        Content="&#xE790;"
+                                        FontWeight="Bold"
+                                        FontSize="14"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        x:Name="fontBackground"/>
+                        <ToggleButton IsChecked="False"
+                                        Content="&#xE167;"
+                                        FontWeight="Bold"
+                                        FontSize="14"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        x:Name="textHyperlink"/>
+                    </hc:ButtonGroup>
+                    <Popup PopupAnimation="Fade"
+                           HorizontalOffset="-100"
+                            PlacementTarget="{Binding ElementName=fontColor}"
+                            Placement="Bottom"
+                            StaysOpen="True" 
+                            IsOpen="{Binding IsChecked,ElementName=fontColor,Mode=OneWay}">
+                        <hc:ColorPicker SelectedColorChanged="fontColorSelected"
+                                        Canceled="fontColorDeselected"/>
+                    </Popup>
+                    <Popup PopupAnimation="Fade"
+                           HorizontalOffset="-100"
+                            PlacementTarget="{Binding ElementName=fontBackground}"
+                            Placement="Bottom"
+                            StaysOpen="True" 
+                            IsOpen="{Binding IsChecked,ElementName=fontBackground,Mode=OneWay}">
+                        <hc:ColorPicker SelectedColorChanged="fontBackgroundSelected"
+                                        Canceled="fontBackgroundDeselected"/>
+                    </Popup>
+                    <Popup PopupAnimation="Fade"
+                            PlacementTarget="{Binding ElementName=textHyperlink}"
+                            Placement="Bottom"
+                            StaysOpen="True" 
+                            HorizontalOffset="-50"
+                            IsOpen="{Binding IsChecked,ElementName=textHyperlink,Mode=OneWay}" 
+                            AllowsTransparency="True">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="40"/>
+                                <RowDefinition Height="40"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.RowSpan="2"
+                                    CornerRadius="5"
+                                    Background="White"
+                                    Grid.ColumnSpan="2"
+                                    BorderThickness="1"
+                                    BorderBrush="LightGray"/>
+                            <TextBox x:Name="linkText"
+                                    Margin="5,5,5,0"
+                                    Grid.ColumnSpan="2"
+                                    BorderThickness="1"/>
+                            <Button Click="selectedToText"
+                                    Grid.Row="1"
+                                    FontSize="16"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    Content="&#xF78A;"
+                                    Width="50"/>
+                            <Button Click="selectedToLink"
+                                    Background="{StaticResource PrimaryBrush}"
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    FontSize="16"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    Foreground="White"
+                                    Content="&#xF78C;"
+                                    Width="50"/>
+                        </Grid>
+                    </Popup>
+                </ToolBar>
+                <ToolBar Padding="0" 
+                         FontFamily="微软雅黑" 
+                         Margin="0"
+                         Band="1">
+                    <hc:ButtonGroup>
+                        <Button Content="&#xE1A2;"
+                                x:Name="bn_AlignLeft"
+                                Click="AlignLeftClick"
+                                FontFamily="Segoe MDL2 Assets"/>
+                        <Button Content="&#xE1A1;"
+                                x:Name="bn_AlignCenter"
+                                Click="AlignCenterClick"
+                                FontFamily="Segoe MDL2 Assets"
+                                FontWeight="Bold"/>
+                        <Button Content="&#xE1A0;"
+                                x:Name="bn_AlignRight"
+                                Click="AlignRightClick"
+                                FontWeight="Bold"
+                                FontFamily="Segoe MDL2 Assets"/>
+                        <Button Content="&#xE700;"
+                                x:Name="bn_AlignJustify"
+                                Click="AlignJustifyClick"
+                                FontWeight="Bold"
+                                FontFamily="Segoe MDL2 Assets"/>
+                    </hc:ButtonGroup>
+                    <hc:ButtonGroup>
+                        <Button Content="&#xe6f4;"
+                                x:Name="bn_Bullet"
+                                Click="ToggleNumberingClick"
+                                FontSize="20"
+                                FontFamily="/clipboardplus;component/Resources/Font/#iconfont"/>
+                        <Button Content="&#xe6f5;"
+                                x:Name="bn_Numeric"
+                                Click="ToggleBulletsClick"
+                                FontFamily="/clipboardplus;component/Resources/Font/#iconfont"
+                                FontSize="20"/>
+                        <Button Content="&#xE290;"
+                                Click="DecreaseIndentationClick"
+                                FontSize="16"
+                                FontFamily="Segoe MDL2 Assets"/>
+                        <Button Content="&#xE291;"
+                                Click="IncreaseIndentationClick"
+                                FontFamily="Segoe MDL2 Assets"
+                                FontSize="16"/>
+                    </hc:ButtonGroup>
+                    <hc:ButtonGroup>
+                        <Button Content="&#xE1C6;"
+                                Click="DecreaseFontSizeClick"
+                                FontWeight="Bold"
+                                FontSize="16"
+                                FontFamily="Segoe MDL2 Assets"/>
+                        <Button Content="&#xE1C7;"
+                                FontSize="16"
+                                Click="IncreaseFontSizeClick"
+                                FontFamily="Segoe MDL2 Assets"
+                                FontWeight="Bold"/>
+                    </hc:ButtonGroup>
+                    <ComboBox IsEditable="True"
+                              x:Name="cb_FontName"
+                            ItemsSource="{Binding Source={x:Static Fonts.SystemFontFamilies}}"
+                            SelectionChanged="fontNameSelected">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Source}"
+                                        FontFamily="{Binding Source}"
+                                        FontSize="12"
+                                        ToolTip="{Binding Source}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <ComboBox IsEditable="True"
+                              x:Name="cb_FontSIze"
+                              DisplayMemberPath="Name"
+                              SelectedValuePath="Id"
+                              SelectionChanged="fontSizeSelected">
+                    </ComboBox>
+                    <!--<Separator Margin="5,0"/>
+                                <Button Content="&#xE167;"
+                                        FontFamily="Segoe MDL2 Assets"/>
+                                <Separator Margin="5,0"/>
+                                <ToggleButton HorizontalAlignment="Stretch"
+                                              Grid.Row="1" 
+                                              Grid.Column="2" 
+                                              Content="翻译" 
+                                              IsChecked="{Binding IsOpen,ElementName=DrawerRight}"/>
+                                <ToggleButton BorderThickness="0"
+                                                  x:Name="htmlBoxToggle1"
+                                              Checked="htmlBoxHide"
+                                              Unchecked="htmlBoxShow"
+                                              Margin="5,0"
+                                              FontSize="16"
+                                              FontFamily="Segoe MDL2 Assets"
+                                      Width="30"
+                                      Height="30"
+                                      Style="{StaticResource ToggleButtonFlip}">
+                                    <hc:StatusSwitchElement.CheckedElement>
+                                        <Border Background="{DynamicResource DefaultBrush}">
+                                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xF614;" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                        </Border>
+                                    </hc:StatusSwitchElement.CheckedElement>
+                                    <Border Background="{DynamicResource DefaultBrush}">
+                                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xF617;" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                    </Border>
+                                </ToggleButton>-->
+                </ToolBar>
+                <ToolBar Padding="0"
+                        FontFamily="微软雅黑"
+                        Margin="0"
+                        Band="2">
+                    <hc:ButtonGroup>
+                        <Button Content="&#xE1C6;"
+                                Click="DecreaseFontSizeClick"
+                                FontWeight="Bold"
+                                FontSize="16"
+                                FontFamily="Segoe MDL2 Assets"/>
+                        <Button Content="&#xE1C7;"
+                                FontSize="16"
+                                Click="IncreaseFontSizeClick"
+                                FontFamily="Segoe MDL2 Assets"
+                                FontWeight="Bold"/>
+                        <Button Content="&#xE1C6;"
+                                Click="DecreaseFontSizeClick"
+                                FontWeight="Bold"
+                                FontSize="16"
+                                FontFamily="Segoe MDL2 Assets"/>
+                        <Button Content="&#xE1C7;"
+                                FontSize="16"
+                                Click="IncreaseFontSizeClick"
+                                FontFamily="Segoe MDL2 Assets"
+                                FontWeight="Bold"/>
+                        <Button Content="&#xE1C6;"
+                                Click="DecreaseFontSizeClick"
+                                FontWeight="Bold"
+                                FontSize="16"
+                                FontFamily="Segoe MDL2 Assets"/>
+                        <Button Content="&#xE1C7;"
+                                FontSize="16"
+                                Click="IncreaseFontSizeClick"
+                                FontFamily="Segoe MDL2 Assets"
+                                FontWeight="Bold"/>
+                        <Button Content="&#xE1C6;"
+                                Click="DecreaseFontSizeClick"
+                                FontWeight="Bold"
+                                FontSize="16"
+                                FontFamily="Segoe MDL2 Assets"/>
+                    </hc:ButtonGroup>
+                    <hc:ButtonGroup>
+                        <Button Content="&#xE1C6;"
+                                Click="DecreaseFontSizeClick"
+                                FontWeight="Bold"
+                                FontSize="16"
+                                FontFamily="Segoe MDL2 Assets"/>
+                        <Button Content="&#xE1C7;"
+                                FontSize="16"
+                                Click="IncreaseFontSizeClick"
+                                FontFamily="Segoe MDL2 Assets"
+                                FontWeight="Bold"/>
+                        <Button Content="&#xE1C6;"
+                                Click="DecreaseFontSizeClick"
+                                FontWeight="Bold"
+                                FontSize="16"
+                                FontFamily="Segoe MDL2 Assets"/>
+                        <Button Content="&#xE1C7;"
+                                FontSize="16"
+                                Click="IncreaseFontSizeClick"
+                                FontFamily="Segoe MDL2 Assets"
+                                FontWeight="Bold"/>
+                        <Button Content="&#xE1C6;"
+                                Click="DecreaseFontSizeClick"
+                                FontWeight="Bold"
+                                FontSize="16"
+                                FontFamily="Segoe MDL2 Assets"/>
+                        <Button Content="&#xE1C7;"
+                                FontSize="16"
+                                Click="IncreaseFontSizeClick"
+                                FontFamily="Segoe MDL2 Assets"
+                                FontWeight="Bold"/>
+                        <Button Content="&#xE1C6;"
+                                Click="DecreaseFontSizeClick"
+                                FontWeight="Bold"
+                                FontSize="16"
+                                FontFamily="Segoe MDL2 Assets"/>
+                        <Button Content="&#xE1C6;"
+                                Click="DecreaseFontSizeClick"
+                                FontWeight="Bold"
+                                FontSize="16"
+                                FontFamily="Segoe MDL2 Assets"/>
+                    </hc:ButtonGroup>
+                    
+
+                </ToolBar>
+                <ToolBar Band="3">
+                    
+                </ToolBar>
+            </ToolBarTray>
+            <Grid Grid.RowSpan="2"
+                  Grid.Row="1"
+                  Name="rtbGrid"
+                  Margin="0,-1,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <hc:TextBox x:Name="SearchTermTextBox"
+                         hc:InfoElement.Placeholder="Search/Command [CTRL+Q]"
+                         KeyDown="SearchTermTextBox_KeyDown"
+                         TextChanged="SearchTermTextBox_TextChanged"/>
+                <RichTextBox Grid.Row="1"
+                             x:Name="richTextBox"
+                             AcceptsReturn="True"
+                             AcceptsTab="True"
+                             AllowDrop="False"
+                             IsUndoEnabled="True"
+                             CommandManager.PreviewExecuted="richTextBox_PreviewExecuted"
+                             ScrollViewer.ScrollChanged="richTextBox_ScrollChanged"
+                             SpellCheck.IsEnabled="False"/>
+                <ProgressBar x:Name="progressGrid"
+                             Grid.Row="1"
+                             Panel.ZIndex="1"
+                             Visibility="Collapsed" />
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

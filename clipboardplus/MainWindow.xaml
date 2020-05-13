@@ -12,12 +12,13 @@
         xmlns:mvvm="http://www.galasoft.ch/mvvmlight"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:util="clr-namespace:clipboardplus.Util"
-        xmlns:local="clr-namespace:clipboardplus"
+        xmlns:local="clr-namespace:clipboardplus" 
+        xmlns:control="clr-namespace:clipboardplus.Controls"
         mc:Ignorable="d"
         DataContext="{Binding Source={StaticResource Locator},Path=Main}"
         Title="MainWindow" 
         Height="450" 
-        Width="800"
+        Width="900"
         WindowStyle="None"
         AllowsTransparency="True"
         ShowInTaskbar="False">
@@ -45,56 +46,56 @@
         <RectangleGeometry x:Name="windowClip"
                            RadiusX="5"
                            RadiusY="5"
-                           Rect="0,0,800,450"/>
+                           Rect="0,0,900,450"/>
         <!--Rect="起点x,起点y,宽度,高度"-->
     </Window.Clip>
+    <Grid>
+        <!--全局Grid-->
+        <Grid x:Name="globalGrid" Panel.ZIndex="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-    <!--全局Grid-->
-    <Grid x:Name="globalGrid">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="300"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-
-        <!--托盘图标-->
-        <hc:NotifyIcon Text="clipboardplus" 
+            <!--托盘图标-->
+            <hc:NotifyIcon Text="clipboardplus" 
                        x:Name="notifyIcon"
                        Visibility="Visible" 
                        Icon="Resources/Images/icon.ico">
-            <hc:NotifyIcon.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Click="winNormal" Header="主界面"/>
-                    <MenuItem Click="winExit" Header="退出"/>
-                </ContextMenu>
-            </hc:NotifyIcon.ContextMenu>
-        </hc:NotifyIcon>
+                <hc:NotifyIcon.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Click="winNormal" Header="主界面"/>
+                        <MenuItem Click="winExit" Header="退出"/>
+                    </ContextMenu>
+                </hc:NotifyIcon.ContextMenu>
+            </hc:NotifyIcon>
 
-        <!--左侧功能区-->
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="50"/>
-            </Grid.RowDefinitions>
+            <!--左侧功能区-->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="50"/>
+                </Grid.RowDefinitions>
 
-            <!--功能tab选择区-->
-            <Grid Grid.RowSpan="2"
+                <!--功能tab选择区-->
+                <Grid Grid.RowSpan="2"
                   Panel.ZIndex="1"
                   x:Name="tabGrid">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="120"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="40"/>
-                </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="120"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="40"/>
+                    </Grid.ColumnDefinitions>
 
-                <!--窗体控制栏-->
-                <Grid Grid.Row="1"
+                    <!--窗体控制栏-->
+                    <Grid Grid.Row="1"
                       Grid.Column="1"
                       Panel.ZIndex="1">
-                    <Label HorizontalAlignment="Stretch" 
+                        <Label HorizontalAlignment="Stretch" 
                            hc:BorderElement.CornerRadius="0" 
                            VerticalAlignment="Stretch" 
                            MouseMove="windowMove" 
@@ -102,11 +103,11 @@
                            MouseRightButtonDown="windowMin"
                            BorderThickness="0,0,1,0"
                            Margin="-1,0,0,0">
-                    </Label>
-                </Grid>
+                        </Label>
+                    </Grid>
 
-                <!--Tab功能选择-->
-                <TabControl Grid.RowSpan="2"
+                    <!--Tab功能选择-->
+                    <TabControl Grid.RowSpan="2"
                             Grid.ColumnSpan="2"
                             TabStripPlacement="Right"
                             Panel.ZIndex="0"
@@ -115,104 +116,104 @@
                             SelectionChanged="leftTabChange"
                             SelectedIndex="{Binding SelectedLeftTab}">
 
-                    <!--非按钮出发命令的方式-->
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="SelectionChanged">
-                            <mvvm:EventToCommand Command="{Binding TabSelectionChanged}" PassEventArgsToCommand="True"/>
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
+                        <!--非按钮出发命令的方式-->
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="SelectionChanged">
+                                <mvvm:EventToCommand Command="{Binding TabSelectionChanged}" PassEventArgsToCommand="True"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
 
-                    <!--历史记录Tab-->
-                    <TabItem Header="&#xE81C;" 
+                        <!--历史记录Tab-->
+                        <TabItem Header="&#xE81C;" 
                              Height="40" 
                              FontFamily="Segoe MDL2 Assets" 
                              FontSize="20">
-                        <Grid>
+                            <Grid>
 
-                            <!--历史记录列表-->
-                            <ListBox FontFamily="微软雅黑"
+                                <!--历史记录列表-->
+                                <ListBox FontFamily="微软雅黑"
                                      ItemsSource="{Binding RecordList}"
                                      x:Name="historyList"                                     
                                      KeyDown="searchBarFocued">
 
-                                <!--非按钮出发命令的方式-->
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="SelectionChanged">
-                                        <mvvm:EventToCommand Command="{Binding SelectionChanged}" PassEventArgsToCommand="True"/>
-                                    </i:EventTrigger>
-                                    <i:EventTrigger EventName="KeyDown">
-                                        <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.SendToClip}" PassEventArgsToCommand="True"/>
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
+                                    <!--非按钮出发命令的方式-->
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="SelectionChanged">
+                                            <mvvm:EventToCommand Command="{Binding SelectionChanged}" PassEventArgsToCommand="True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="KeyDown">
+                                            <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.SendToClip}" PassEventArgsToCommand="True"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
 
-                                <!--<ListBox.ItemContainerStyle>
+                                    <!--<ListBox.ItemContainerStyle>
                                     <Style>
                                         <EventSetter Event="KeyDown" Handler="test"/>
                                     </Style>
                                 </ListBox.ItemContainerStyle>-->
 
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
 
-                                        <Grid Margin="-10,0"
+                                            <Grid Margin="-10,0"
                                                Background="Transparent">
 
-                                            <!--右键菜单-->
-                                            <Grid.ContextMenu>
-                                                <ContextMenu>
-                                                    <MenuItem Header="{Binding DeletedText}" Command="{Binding Source={StaticResource Locator},Path=Main.DeleteRecordOrZone}" CommandParameter="{Binding Source={StaticResource Locator},Path=Main.SelectedRecord}"/>
-                                                    <MenuItem ItemsSource="{Binding Source={StaticResource Locator},Path=Main.ZoneTree}"
+                                                <!--右键菜单-->
+                                                <Grid.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="{Binding DeletedText}" Command="{Binding Source={StaticResource Locator},Path=Main.DeleteRecordOrZone}" CommandParameter="{Binding Source={StaticResource Locator},Path=Main.SelectedRecord}"/>
+                                                        <MenuItem ItemsSource="{Binding Source={StaticResource Locator},Path=Main.ZoneTree}"
                                                                   Header="移动至">
-                                                        <MenuItem.ItemTemplate>
-                                                            <HierarchicalDataTemplate ItemsSource="{Binding Nodes}">
-                                                                <MenuItem Header="{Binding Name}">
+                                                            <MenuItem.ItemTemplate>
+                                                                <HierarchicalDataTemplate ItemsSource="{Binding Nodes}">
+                                                                    <MenuItem Header="{Binding Name}">
 
-                                                                    <!--非按钮出发命令的方式-->
-                                                                    <i:Interaction.Triggers>
-                                                                        <i:EventTrigger EventName="Click">
-                                                                            <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.RecordMenuSelected}" 
+                                                                        <!--非按钮出发命令的方式-->
+                                                                        <i:Interaction.Triggers>
+                                                                            <i:EventTrigger EventName="Click">
+                                                                                <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.RecordMenuSelected}" 
                                                                                                                  PassEventArgsToCommand="True"/>
-                                                                        </i:EventTrigger>
-                                                                    </i:Interaction.Triggers>
-                                                                </MenuItem>
-                                                            </HierarchicalDataTemplate>
-                                                        </MenuItem.ItemTemplate>
-                                                    </MenuItem>
-                                                </ContextMenu>
-                                            </Grid.ContextMenu>
+                                                                            </i:EventTrigger>
+                                                                        </i:Interaction.Triggers>
+                                                                    </MenuItem>
+                                                                </HierarchicalDataTemplate>
+                                                            </MenuItem.ItemTemplate>
+                                                        </MenuItem>
+                                                    </ContextMenu>
+                                                </Grid.ContextMenu>
 
-                                            <!--边框-->
-                                            <Border Grid.ColumnSpan="2" 
+                                                <!--边框-->
+                                                <Border Grid.ColumnSpan="2" 
                                                     Grid.RowSpan="3" 
                                                     BorderThickness="0,0,0,1"
                                                     BorderBrush="LightGray"/>
 
-                                            <!--记录条目-->
-                                            <Grid x:Name="recordGrid"
+                                                <!--记录条目-->
+                                                <Grid x:Name="recordGrid"
                                                   Margin="5">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="40"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="auto"/>
-                                                    <RowDefinition Height="auto"/>
-                                                    <RowDefinition Height="auto"/>
-                                                </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="40"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="auto"/>
+                                                        <RowDefinition Height="auto"/>
+                                                        <RowDefinition Height="auto"/>
+                                                    </Grid.RowDefinitions>
 
 
 
-                                                <!--非按钮出发命令的方式-->
-                                                <i:Interaction.Triggers>
-                                                    <i:EventTrigger EventName="MouseLeftButtonDown">
-                                                        <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.RecordDoubleClick}" PassEventArgsToCommand="True"/>
-                                                    </i:EventTrigger>
-                                                </i:Interaction.Triggers>
+                                                    <!--非按钮出发命令的方式-->
+                                                    <i:Interaction.Triggers>
+                                                        <i:EventTrigger EventName="MouseLeftButtonDown">
+                                                            <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.RecordDoubleClick}" PassEventArgsToCommand="True"/>
+                                                        </i:EventTrigger>
+                                                    </i:Interaction.Triggers>
 
 
 
-                                                <!--标识图标-->
-                                                <!--<Border VerticalAlignment="Center"
+                                                    <!--标识图标-->
+                                                    <!--<Border VerticalAlignment="Center"
                                                  Grid.RowSpan="3">
                                                     <Path Fill="Black" 
                                                           Data="{Binding TypeIcon}" 
@@ -223,7 +224,7 @@
                                                         </Path.RenderTransform>
                                                     </Path>
                                                 </Border>-->
-                                                <!--<Label Content="{Binding TypeIcon}"
+                                                    <!--<Label Content="{Binding TypeIcon}"
                                                        FontFamily="Segoe MDL2 Assets" 
                                                        FontSize="24"
                                                        BorderThickness="0"
@@ -231,19 +232,19 @@
                                                        Padding="0"
                                                        Background="Transparent"
                                                        Foreground="Black"/>-->
-                                                <TextBlock Text="{Binding TypeIcon}"
+                                                    <TextBlock Text="{Binding TypeIcon}"
                                                            VerticalAlignment="Center"
                                                            HorizontalAlignment="Center"
                                                            Grid.RowSpan="3"
                                                            FontFamily="Segoe MDL2 Assets" 
                                                            FontSize="24"/>
 
-                                                <!--testCommand-->
-                                                <!--<Button DataContext="{Binding Source={StaticResource Locator},Path=Main}"
+                                                    <!--testCommand-->
+                                                    <!--<Button DataContext="{Binding Source={StaticResource Locator},Path=Main}"
                                                 Command="{Binding ChangTitle}"/>-->
 
-                                                <!--标题-->
-                                                <TextBlock Grid.Column="1"
+                                                    <!--标题-->
+                                                    <TextBlock Grid.Column="1"
                                                            FontWeight="Black"
                                                            Text="{Binding Title}"
                                                            ToolTip="{Binding Title}"
@@ -257,10 +258,10 @@
                                                             <mvvm:EventToCommand Command="{Binding ChangTitle}"/>
                                                         </i:EventTrigger>
                                                     </i:Interaction.Triggers>-->
-                                                </TextBlock>
+                                                    </TextBlock>
 
-                                                <!--记录图片内容-->
-                                                <Image Source="{Binding ImageSource}"
+                                                    <!--记录图片内容-->
+                                                    <Image Source="{Binding ImageSource}"
                                                        ToolTip="{Binding ImageSize}"
                                                        MinWidth="206"
                                                        Visibility="{Binding ImageShow}"
@@ -268,8 +269,8 @@
                                                        Grid.Row="1"
                                                        MaxHeight="120"/>
 
-                                                <!--记录文本内容-->
-                                                <TextBlock Text="{Binding TextData}"
+                                                    <!--记录文本内容-->
+                                                    <TextBlock Text="{Binding TextData}"
                                                            ToolTip="{Binding TextData}"
                                                            Grid.Column="1"
                                                            Grid.Row="1"
@@ -278,37 +279,37 @@
                                                            Visibility="{Binding TextShow}"
                                                            TextTrimming="CharacterEllipsis"/>
 
-                                                <!--记录时间-->
-                                                <TextBlock Grid.Column="1"
+                                                    <!--记录时间-->
+                                                    <TextBlock Grid.Column="1"
                                                            Foreground="DarkGray"
                                                Grid.Row="2"
                                                FontSize="10"
                                                Text="{Binding TimeFormat}"
                                                TextTrimming="CharacterEllipsis"/>
 
-                                                <!--记录来源-->
-                                                <TextBlock Grid.Column="1"
+                                                    <!--记录来源-->
+                                                    <TextBlock Grid.Column="1"
                                                            Foreground="DarkGray"
                                                            Grid.Row="2"
                                                            FontSize="10"
                                                            HorizontalAlignment="Right"
                                                            Text="{Binding OriginText}"
                                                            TextTrimming="CharacterEllipsis"/>
-                                            </Grid>
+                                                </Grid>
 
-                                            <!--加载动画-->
-                                            <Grid Background="White"
+                                                <!--加载动画-->
+                                                <Grid Background="White"
                                                   MinWidth="260"
                                                   Grid.RowSpan="2"
                                                   Visibility="{Binding LoadFlag}">
-                                                <hc:LoadingCircle/>
+                                                    <hc:LoadingCircle/>
+                                                </Grid>
                                             </Grid>
-                                        </Grid>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
 
-                            <hc:GotoTop Animated="True" 
+                                <hc:GotoTop Animated="True" 
                                         AutoHiding="True" 
                                         AnimationTime="500" 
                                         BorderThickness="0"
@@ -324,22 +325,22 @@
                                         HorizontalAlignment="Right" 
                                         VerticalAlignment="Bottom" 
                                         Margin="0,0,10,10">
-                                <hc:GotoTop.Effect>
-                                    <DropShadowEffect ShadowDepth="3"/>
-                                </hc:GotoTop.Effect>
-                            </hc:GotoTop>
-                        </Grid>
-                    </TabItem>
+                                    <hc:GotoTop.Effect>
+                                        <DropShadowEffect ShadowDepth="3"/>
+                                    </hc:GotoTop.Effect>
+                                </hc:GotoTop>
+                            </Grid>
+                        </TabItem>
 
-                    <!--笔记本Tab-->
-                    <TabItem Header="&#xE838;" 
+                        <!--笔记本Tab-->
+                        <TabItem Header="&#xE838;" 
                              Height="40" 
                              FontFamily="Segoe MDL2 Assets" 
                              FontSize="20">
-                        <Grid>
+                            <Grid>
 
-                            <!--展示分区-->
-                            <ToggleButton Panel.ZIndex="1"
+                                <!--展示分区-->
+                                <ToggleButton Panel.ZIndex="1"
                                           Content="&#xE728;" 
                                           hc:BorderElement.CornerRadius="15" 
                                           Background="{StaticResource PrimaryBrush}" 
@@ -352,12 +353,12 @@
                                           Margin="0,0,10,50" 
                                           BorderThickness="0"
                                           IsChecked="{Binding IsOpen,ElementName=DrawerLeft}">
-                                <ToggleButton.Effect>
-                                    <DropShadowEffect ShadowDepth="3"/>
-                                </ToggleButton.Effect>
-                            </ToggleButton>
+                                    <ToggleButton.Effect>
+                                        <DropShadowEffect ShadowDepth="3"/>
+                                    </ToggleButton.Effect>
+                                </ToggleButton>
 
-                            <hc:GotoTop Animated="True" 
+                                <hc:GotoTop Animated="True" 
                                         AutoHiding="True" 
                                         AnimationTime="500" 
                                         Panel.ZIndex="1"
@@ -374,86 +375,86 @@
                                         HorizontalAlignment="Right" 
                                         VerticalAlignment="Bottom" 
                                         Margin="0,0,10,10">
-                                <hc:GotoTop.Effect>
-                                    <DropShadowEffect ShadowDepth="3"/>
-                                </hc:GotoTop.Effect>
-                            </hc:GotoTop>
+                                    <hc:GotoTop.Effect>
+                                        <DropShadowEffect ShadowDepth="3"/>
+                                    </hc:GotoTop.Effect>
+                                </hc:GotoTop>
 
-                            <!--笔记本列表-->
-                            <ListBox FontFamily="微软雅黑"
+                                <!--笔记本列表-->
+                                <ListBox FontFamily="微软雅黑"
                                      ItemsSource="{Binding RecordList}"
                                      x:Name="pageList"
                                      KeyDown="searchBarFocued">
 
-                                <!--非按钮出发命令的方式-->
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="SelectionChanged">
-                                        <mvvm:EventToCommand Command="{Binding SelectionChanged}" PassEventArgsToCommand="True"/>
-                                    </i:EventTrigger>
-                                    <i:EventTrigger EventName="KeyDown">
-                                        <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.SendToClip}" PassEventArgsToCommand="True"/>
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
+                                    <!--非按钮出发命令的方式-->
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="SelectionChanged">
+                                            <mvvm:EventToCommand Command="{Binding SelectionChanged}" PassEventArgsToCommand="True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="KeyDown">
+                                            <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.SendToClip}" PassEventArgsToCommand="True"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
 
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
 
-                                        <Grid Margin="-10,0" Background="Transparent">
+                                            <Grid Margin="-10,0" Background="Transparent">
 
-                                            <!--右键菜单-->
-                                            <Grid.ContextMenu>
-                                                <ContextMenu>
-                                                    <MenuItem Header="{Binding DeletedText}" Command="{Binding Source={StaticResource Locator},Path=Main.DeleteRecordOrZone}" CommandParameter="{Binding Source={StaticResource Locator},Path=Main.SelectedRecord}"/>
-                                                    <MenuItem ItemsSource="{Binding Source={StaticResource Locator},Path=Main.ZoneTree}"
+                                                <!--右键菜单-->
+                                                <Grid.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="{Binding DeletedText}" Command="{Binding Source={StaticResource Locator},Path=Main.DeleteRecordOrZone}" CommandParameter="{Binding Source={StaticResource Locator},Path=Main.SelectedRecord}"/>
+                                                        <MenuItem ItemsSource="{Binding Source={StaticResource Locator},Path=Main.ZoneTree}"
                                                                   Header="移动至">
-                                                        <MenuItem.ItemTemplate>
-                                                            <HierarchicalDataTemplate ItemsSource="{Binding Nodes}">
-                                                                <MenuItem Header="{Binding Name}">
+                                                            <MenuItem.ItemTemplate>
+                                                                <HierarchicalDataTemplate ItemsSource="{Binding Nodes}">
+                                                                    <MenuItem Header="{Binding Name}">
 
-                                                                    <!--非按钮出发命令的方式-->
-                                                                    <i:Interaction.Triggers>
-                                                                        <i:EventTrigger EventName="Click">
-                                                                            <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.RecordMenuSelected}" 
+                                                                        <!--非按钮出发命令的方式-->
+                                                                        <i:Interaction.Triggers>
+                                                                            <i:EventTrigger EventName="Click">
+                                                                                <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.RecordMenuSelected}" 
                                                                                                                  PassEventArgsToCommand="True"/>
-                                                                        </i:EventTrigger>
-                                                                    </i:Interaction.Triggers>
-                                                                </MenuItem>
-                                                            </HierarchicalDataTemplate>
-                                                        </MenuItem.ItemTemplate>
-                                                    </MenuItem>
-                                                </ContextMenu>
-                                            </Grid.ContextMenu>
+                                                                            </i:EventTrigger>
+                                                                        </i:Interaction.Triggers>
+                                                                    </MenuItem>
+                                                                </HierarchicalDataTemplate>
+                                                            </MenuItem.ItemTemplate>
+                                                        </MenuItem>
+                                                    </ContextMenu>
+                                                </Grid.ContextMenu>
 
-                                            <!--边框-->
-                                            <Border Grid.ColumnSpan="2" 
+                                                <!--边框-->
+                                                <Border Grid.ColumnSpan="2" 
                                                     Grid.RowSpan="3" 
                                                     BorderThickness="0,0,0,1"
                                                     BorderBrush="LightGray"/>
 
-                                            <!--记录条目-->
-                                            <Grid x:Name="recordGrid"
+                                                <!--记录条目-->
+                                                <Grid x:Name="recordGrid"
                                                   Margin="5">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="40"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="auto"/>
-                                                    <RowDefinition Height="auto"/>
-                                                    <RowDefinition Height="auto"/>
-                                                </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="40"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="auto"/>
+                                                        <RowDefinition Height="auto"/>
+                                                        <RowDefinition Height="auto"/>
+                                                    </Grid.RowDefinitions>
 
-                                                <!--非按钮出发命令的方式-->
-                                                <i:Interaction.Triggers>
-                                                    <i:EventTrigger EventName="MouseLeftButtonDown">
-                                                        <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.RecordDoubleClick}" PassEventArgsToCommand="True"/>
-                                                    </i:EventTrigger>
-                                                </i:Interaction.Triggers>
+                                                    <!--非按钮出发命令的方式-->
+                                                    <i:Interaction.Triggers>
+                                                        <i:EventTrigger EventName="MouseLeftButtonDown">
+                                                            <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.RecordDoubleClick}" PassEventArgsToCommand="True"/>
+                                                        </i:EventTrigger>
+                                                    </i:Interaction.Triggers>
 
 
 
-                                                <!--标识图标-->
-                                                <!--<Border VerticalAlignment="Center"
+                                                    <!--标识图标-->
+                                                    <!--<Border VerticalAlignment="Center"
                                                  Grid.RowSpan="3">
                                                     <Path Fill="Black" 
                                                           Data="{Binding TypeIcon}" 
@@ -464,7 +465,7 @@
                                                         </Path.RenderTransform>
                                                     </Path>
                                                 </Border>-->
-                                                <!--<Label Content="{Binding TypeIcon}"
+                                                    <!--<Label Content="{Binding TypeIcon}"
                                                        FontFamily="Segoe MDL2 Assets" 
                                                        FontSize="24"
                                                        BorderThickness="0"
@@ -472,19 +473,19 @@
                                                        Padding="0"
                                                        Background="Transparent"
                                                        Foreground="Black"/>-->
-                                                <TextBlock Text="{Binding TypeIcon}"
+                                                    <TextBlock Text="{Binding TypeIcon}"
                                                            VerticalAlignment="Center"
                                                            HorizontalAlignment="Center"
                                                            Grid.RowSpan="3"
                                                            FontFamily="Segoe MDL2 Assets" 
                                                            FontSize="24"/>
 
-                                                <!--testCommand-->
-                                                <!--<Button DataContext="{Binding Source={StaticResource Locator},Path=Main}"
+                                                    <!--testCommand-->
+                                                    <!--<Button DataContext="{Binding Source={StaticResource Locator},Path=Main}"
                                                 Command="{Binding ChangTitle}"/>-->
 
-                                                <!--标题-->
-                                                <TextBlock Grid.Column="1"
+                                                    <!--标题-->
+                                                    <TextBlock Grid.Column="1"
                                                            FontWeight="Black"
                                                            Text="{Binding Title}"
                                                            ToolTip="{Binding Title}"
@@ -498,10 +499,10 @@
                                                             <mvvm:EventToCommand Command="{Binding ChangTitle}"/>
                                                         </i:EventTrigger>
                                                     </i:Interaction.Triggers>-->
-                                                </TextBlock>
+                                                    </TextBlock>
 
-                                                <!--记录图片内容-->
-                                                <Image Source="{Binding ImageSource}"
+                                                    <!--记录图片内容-->
+                                                    <Image Source="{Binding ImageSource}"
                                                        ToolTip="{Binding ImageSize}"
                                                        Visibility="{Binding ImageShow}"
                                                        MinWidth="206"
@@ -509,8 +510,8 @@
                                                        Grid.Row="1"
                                                        MaxHeight="120"/>
 
-                                                <!--记录文本内容-->
-                                                <TextBlock Text="{Binding TextData}"
+                                                    <!--记录文本内容-->
+                                                    <TextBlock Text="{Binding TextData}"
                                                            ToolTip="{Binding TextData}"
                                                            Grid.Column="1"
                                                            Grid.Row="1"
@@ -519,308 +520,308 @@
                                                            Visibility="{Binding TextShow}"
                                                            TextTrimming="CharacterEllipsis"/>
 
-                                                <!--记录时间-->
-                                                <TextBlock Grid.Column="1"
+                                                    <!--记录时间-->
+                                                    <TextBlock Grid.Column="1"
                                                            Foreground="DarkGray"
                                                Grid.Row="2"
                                                FontSize="10"
                                                Text="{Binding TimeFormat}"
                                                TextTrimming="CharacterEllipsis"/>
 
-                                                <!--记录来源-->
-                                                <TextBlock Grid.Column="1"
+                                                    <!--记录来源-->
+                                                    <TextBlock Grid.Column="1"
                                                            Foreground="DarkGray"
                                                            Grid.Row="2"
                                                            FontSize="10"
                                                            HorizontalAlignment="Right"
                                                            Text="{Binding OriginText}"
                                                            TextTrimming="CharacterEllipsis"/>
-                                            </Grid>
+                                                </Grid>
 
-                                            <!--加载动画-->
-                                            <Grid Background="White"
+                                                <!--加载动画-->
+                                                <Grid Background="White"
                                                   Grid.RowSpan="2"
                                                   MinWidth="260"
                                                   Visibility="{Binding LoadFlag}">
-                                                <hc:LoadingCircle/>
+                                                    <hc:LoadingCircle/>
+                                                </Grid>
                                             </Grid>
-                                        </Grid>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
 
-                            <!--分区抽屉-->
-                            <hc:Drawer Name="DrawerLeft" 
+                                <!--分区抽屉-->
+                                <hc:Drawer Name="DrawerLeft" 
                                        Dock="Left" 
                                        MaskCanClose="True" 
                                        ShowMode="Push">
-                                <Border Background="{DynamicResource RegionBrush}"
+                                    <Border Background="{DynamicResource RegionBrush}"
                                         Width="200" 
                                         BorderBrush="{DynamicResource BorderBrush}">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
 
-                                        <!--标题-->
-                                        <TextBlock Margin="10,0,0,0"
+                                            <!--标题-->
+                                            <TextBlock Margin="10,0,0,0"
                                                    Text="分区" 
                                                    Style="{StaticResource TextBlockTitle}" 
                                                    HorizontalAlignment="Left"/>
 
-                                        <!--关闭按钮-->
-                                        <Button CommandTarget="{Binding}" Command="hc:ControlCommands.Close" Grid.Row="0" HorizontalAlignment="Right" Foreground="{DynamicResource PrimaryTextBrush}" Style="{StaticResource ButtonIcon}" hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}"/>
+                                            <!--关闭按钮-->
+                                            <Button CommandTarget="{Binding}" Command="hc:ControlCommands.Close" Grid.Row="0" HorizontalAlignment="Right" Foreground="{DynamicResource PrimaryTextBrush}" Style="{StaticResource ButtonIcon}" hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}"/>
 
-                                        <!--回收站-->
-                                        <TextBlock Text="&#xE74D;"
+                                            <!--回收站-->
+                                            <TextBlock Text="&#xE74D;"
                                                    FontFamily="Segoe MDL2 Assets"
                                                    FontSize="16"
                                                    VerticalAlignment="Center"
                                                    Margin="10,0"
                                                    Grid.Row="2"/>
-                                        <Label Grid.Row="2"                                                                                                
+                                            <Label Grid.Row="2"                                                                                                
                                                VerticalAlignment="Stretch"                                                 
                                                HorizontalAlignment="Stretch"                                                 
                                                HorizontalContentAlignment="Left"                                                
                                                Content="回收站"
                                                Margin="25,0,0,0"
                                                BorderThickness="0">
-                                            <!--非按钮出发命令的方式-->
-                                            <i:Interaction.Triggers>
-                                                <i:EventTrigger EventName="MouseDown">
-                                                    <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.ShowRecycle}" 
+                                                <!--非按钮出发命令的方式-->
+                                                <i:Interaction.Triggers>
+                                                    <i:EventTrigger EventName="MouseDown">
+                                                        <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.ShowRecycle}" 
                                                                          PassEventArgsToCommand="True"/>
-                                                </i:EventTrigger>
-                                            </i:Interaction.Triggers>
-                                        </Label>
+                                                    </i:EventTrigger>
+                                                </i:Interaction.Triggers>
+                                            </Label>
 
-                                        <!--树状分区-->
-                                        <TreeView Grid.Row="1" 
+                                            <!--树状分区-->
+                                            <TreeView Grid.Row="1" 
                                                   Margin="0" 
                                                   ItemsSource="{Binding Source={StaticResource Locator},Path=Main.ZoneTree}"
                                                   x:Name="testtree"
                                                   SelectedItemChanged="test">
 
-                                            <!--非按钮出发命令的方式-->
-                                            <i:Interaction.Triggers>
-                                                <i:EventTrigger EventName="SelectedItemChanged">
-                                                    <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.ZoneSelectionChanged}" 
+                                                <!--非按钮出发命令的方式-->
+                                                <i:Interaction.Triggers>
+                                                    <i:EventTrigger EventName="SelectedItemChanged">
+                                                        <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.ZoneSelectionChanged}" 
                                                                                      PassEventArgsToCommand="True"/>
-                                                </i:EventTrigger>
-                                            </i:Interaction.Triggers>
+                                                    </i:EventTrigger>
+                                                </i:Interaction.Triggers>
 
-                                            <TreeView.ItemContainerStyle>
-                                                <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource TreeViewItemBaseStyle}">
-                                                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-                                                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-                                                    <Setter Property="FontWeight" Value="Normal" />
-                                                    <Style.Triggers>
-                                                        <Trigger Property="IsSelected" Value="True">
-                                                            <Setter Property="FontWeight" Value="Bold" />
-                                                        </Trigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TreeView.ItemContainerStyle>
+                                                <TreeView.ItemContainerStyle>
+                                                    <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource TreeViewItemBaseStyle}">
+                                                        <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                                                        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                                                        <Setter Property="FontWeight" Value="Normal" />
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsSelected" Value="True">
+                                                                <Setter Property="FontWeight" Value="Bold" />
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TreeView.ItemContainerStyle>
 
-                                            <TreeView.ItemTemplate>
-                                                <HierarchicalDataTemplate ItemsSource="{Binding Nodes}">
-                                                    <Grid Width="100"
+                                                <TreeView.ItemTemplate>
+                                                    <HierarchicalDataTemplate ItemsSource="{Binding Nodes}">
+                                                        <Grid Width="100"
                                                           Height="30"
                                                           PreviewMouseRightButtonDown="MouseRightButtonSelectZone">
 
-                                                        <!--非按钮出发命令的方式-->
-                                                        <i:Interaction.Triggers>
-                                                            <i:EventTrigger EventName="MouseLeftButtonDown">
-                                                                <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.ZoneDoubleClick}" PassEventArgsToCommand="True"/>
-                                                            </i:EventTrigger>
-                                                        </i:Interaction.Triggers>
+                                                            <!--非按钮出发命令的方式-->
+                                                            <i:Interaction.Triggers>
+                                                                <i:EventTrigger EventName="MouseLeftButtonDown">
+                                                                    <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.ZoneDoubleClick}" PassEventArgsToCommand="True"/>
+                                                                </i:EventTrigger>
+                                                            </i:Interaction.Triggers>
 
-                                                        <!--右键菜单-->
-                                                        <Grid.ContextMenu>
-                                                            <ContextMenu>
-                                                                <MenuItem Header="新建" 
+                                                            <!--右键菜单-->
+                                                            <Grid.ContextMenu>
+                                                                <ContextMenu>
+                                                                    <MenuItem Header="新建" 
                                                                           Command="{Binding Source={StaticResource Locator},Path=Main.NewRecordOrZone}"
                                                                           CommandParameter="{Binding Source={StaticResource Locator},Path=Main.SelectedZone}"/>
-                                                                <MenuItem Header="删除" 
+                                                                    <MenuItem Header="删除" 
                                                                           Command="{Binding Source={StaticResource Locator},Path=Main.DeleteRecordOrZone}"
                                                                           CommandParameter="{Binding Source={StaticResource Locator},Path=Main.SelectedZone}"/>
-                                                                <MenuItem Header="移动至" ItemsSource="{Binding Source={StaticResource Locator},Path=Main.ZoneTree}">
+                                                                    <MenuItem Header="移动至" ItemsSource="{Binding Source={StaticResource Locator},Path=Main.ZoneTree}">
 
-                                                                    <MenuItem.ItemTemplate>
-                                                                        <HierarchicalDataTemplate ItemsSource="{Binding Nodes}">
-                                                                            <MenuItem Header="{Binding Name}">
+                                                                        <MenuItem.ItemTemplate>
+                                                                            <HierarchicalDataTemplate ItemsSource="{Binding Nodes}">
+                                                                                <MenuItem Header="{Binding Name}">
 
-                                                                                <!--非按钮出发命令的方式-->
-                                                                                <i:Interaction.Triggers>
-                                                                                    <i:EventTrigger EventName="Click">
-                                                                                        <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.ZoneMenuSelected}" 
+                                                                                    <!--非按钮出发命令的方式-->
+                                                                                    <i:Interaction.Triggers>
+                                                                                        <i:EventTrigger EventName="Click">
+                                                                                            <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.ZoneMenuSelected}" 
                                                                                                                 PassEventArgsToCommand="True"/>
-                                                                                    </i:EventTrigger>
-                                                                                </i:Interaction.Triggers>
-                                                                            </MenuItem>
-                                                                        </HierarchicalDataTemplate>
-                                                                    </MenuItem.ItemTemplate>
-                                                                </MenuItem>
-                                                            </ContextMenu>
-                                                        </Grid.ContextMenu>
+                                                                                        </i:EventTrigger>
+                                                                                    </i:Interaction.Triggers>
+                                                                                </MenuItem>
+                                                                            </HierarchicalDataTemplate>
+                                                                        </MenuItem.ItemTemplate>
+                                                                    </MenuItem>
+                                                                </ContextMenu>
+                                                            </Grid.ContextMenu>
 
-                                                        <!--分区条目-->
-                                                        <TextBlock Text="{Binding Name}"
+                                                            <!--分区条目-->
+                                                            <TextBlock Text="{Binding Name}"
                                                                    VerticalAlignment="Center">
 
-                                                        </TextBlock>
+                                                            </TextBlock>
 
-                                                        <TextBox Visibility="{Binding IsRename}"
+                                                            <TextBox Visibility="{Binding IsRename}"
                                                                  Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}">
-                                                            <TextBox.InputBindings>
-                                                                <KeyBinding Command="{Binding Source={StaticResource Locator},Path=Main.RenameBarEnter}" Key="Enter"/>
-                                                            </TextBox.InputBindings>
-                                                        </TextBox>
-                                                    </Grid>
-                                                </HierarchicalDataTemplate>
-                                            </TreeView.ItemTemplate>
-                                        </TreeView>
-                                    </Grid>
-                                </Border>
-                            </hc:Drawer>
-                        </Grid>
-                    </TabItem>
+                                                                <TextBox.InputBindings>
+                                                                    <KeyBinding Command="{Binding Source={StaticResource Locator},Path=Main.RenameBarEnter}" Key="Enter"/>
+                                                                </TextBox.InputBindings>
+                                                            </TextBox>
+                                                        </Grid>
+                                                    </HierarchicalDataTemplate>
+                                                </TreeView.ItemTemplate>
+                                            </TreeView>
+                                        </Grid>
+                                    </Border>
+                                </hc:Drawer>
+                            </Grid>
+                        </TabItem>
 
-                    <!--设置Tab-->
-                    <TabItem Header="&#xE115;"
+                        <!--设置Tab-->
+                        <TabItem Header="&#xE115;"
                              Height="40" 
                              FontFamily="Segoe MDL2 Assets" 
                              FontSize="20">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="50"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="50"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
 
-                            <!--开机自启动-->
-                            <TextBlock Text="开机自启动："
+                                <!--开机自启动-->
+                                <TextBlock Text="开机自启动："
                                        FontFamily="微软雅黑"
                                        FontSize="14"
                                        Margin="15,0,0,0"
                                        HorizontalAlignment="Left"
                                        VerticalAlignment="Center"/>
-                            <ToggleButton BorderThickness="0" 
+                                <ToggleButton BorderThickness="0" 
                                           IsChecked="{Binding IsSetMeAutoStart}"
                                           HorizontalAlignment="Left"
                                           Margin="95,0,0,0"
                                           Width="20"
                                           Height="20"
                                           Style="{StaticResource ToggleButtonFlip}">
-                                <hc:StatusSwitchElement.CheckedElement>
-                                    <Border Background="{DynamicResource PrimaryBrush}">
-                                        <TextBlock HorizontalAlignment="Center" 
+                                    <hc:StatusSwitchElement.CheckedElement>
+                                        <Border Background="{DynamicResource PrimaryBrush}">
+                                            <TextBlock HorizontalAlignment="Center" 
                                                VerticalAlignment="Center" 
                                                Text="&#xF78C;"
                                                FontFamily="Segoe MDL2 Assets"
                                                Foreground="{DynamicResource TextIconBrush}"/>
-                                    </Border>
-                                </hc:StatusSwitchElement.CheckedElement>
-                                <Border Background="{DynamicResource DangerBrush}">
-                                    <TextBlock HorizontalAlignment="Center" 
+                                        </Border>
+                                    </hc:StatusSwitchElement.CheckedElement>
+                                    <Border Background="{DynamicResource DangerBrush}">
+                                        <TextBlock HorizontalAlignment="Center" 
                                            VerticalAlignment="Center"
                                            Text="&#xF78A;" 
                                            FontFamily="Segoe MDL2 Assets"
                                            Foreground="{DynamicResource TextIconBrush}"/>
-                                </Border>
-                            </ToggleButton>
+                                    </Border>
+                                </ToggleButton>
 
-                            <!--桌面快捷方式-->
-                            <TextBlock Text="桌面快捷方式："
+                                <!--桌面快捷方式-->
+                                <TextBlock Text="桌面快捷方式："
                                        FontFamily="微软雅黑"
                                        FontSize="14"
                                        Margin="130,0,0,0"
                                        HorizontalAlignment="Left"
                                        VerticalAlignment="Center"/>
-                            <ToggleButton BorderThickness="0" 
+                                <ToggleButton BorderThickness="0" 
                                           IsChecked="{Binding IsCreateDesktopQuick}"
                                           HorizontalAlignment="Left"
                                           Margin="225,0,0,0"
                                           Width="20"
                                           Height="20"
                                           Style="{StaticResource ToggleButtonFlip}">
-                                <hc:StatusSwitchElement.CheckedElement>
-                                    <Border Background="{DynamicResource PrimaryBrush}">
-                                        <TextBlock HorizontalAlignment="Center" 
+                                    <hc:StatusSwitchElement.CheckedElement>
+                                        <Border Background="{DynamicResource PrimaryBrush}">
+                                            <TextBlock HorizontalAlignment="Center" 
                                                VerticalAlignment="Center" 
                                                Text="&#xF78C;"
                                                FontFamily="Segoe MDL2 Assets"
                                                Foreground="{DynamicResource TextIconBrush}"/>
-                                    </Border>
-                                </hc:StatusSwitchElement.CheckedElement>
-                                <Border Background="{DynamicResource DangerBrush}">
-                                    <TextBlock HorizontalAlignment="Center" 
+                                        </Border>
+                                    </hc:StatusSwitchElement.CheckedElement>
+                                    <Border Background="{DynamicResource DangerBrush}">
+                                        <TextBlock HorizontalAlignment="Center" 
                                            VerticalAlignment="Center"
                                            Text="&#xF78A;" 
                                            FontFamily="Segoe MDL2 Assets"
                                            Foreground="{DynamicResource TextIconBrush}"/>
-                                </Border>
-                            </ToggleButton>
+                                    </Border>
+                                </ToggleButton>
 
-                            <ListBox FontFamily="微软雅黑"
+                                <ListBox FontFamily="微软雅黑"
                                      Padding="0"
                                      Grid.Row="1"
                                      ItemsSource="{Binding Source={StaticResource Locator},Path=Main.HotKeyList}">
-                                <ListBox.ItemContainerStyle>
-                                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemBaseStyle}">
-                                        <Style.Triggers>
-                                            <Trigger Property="IsSelected" Value="True">
-                                                <Setter Property="Background" Value="{StaticResource DarkDefaultBrush}" />
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </ListBox.ItemContainerStyle>
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid Margin="-10,0">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="80"/>
-                                                <ColumnDefinition Width="70"/>
-                                                <ColumnDefinition Width="110"/>
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="25"/>
-                                                <RowDefinition Height="41"/>
-                                            </Grid.RowDefinitions>
-                                            <Border Grid.ColumnSpan="3"
+                                    <ListBox.ItemContainerStyle>
+                                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemBaseStyle}">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter Property="Background" Value="{StaticResource DarkDefaultBrush}" />
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ListBox.ItemContainerStyle>
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="-10,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="80"/>
+                                                    <ColumnDefinition Width="70"/>
+                                                    <ColumnDefinition Width="110"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="25"/>
+                                                    <RowDefinition Height="41"/>
+                                                </Grid.RowDefinitions>
+                                                <Border Grid.ColumnSpan="3"
                                                     Grid.RowSpan="2"
                                                     BorderThickness="0,0,0,1"
                                                     BorderBrush="LightGray"/>
 
-                                            <CheckBox Grid.Column="0"
+                                                <CheckBox Grid.Column="0"
                                                       Grid.RowSpan="2"
                                                       HorizontalAlignment="Left"
                                                       Margin="20,0,0,0"
                                                       Content="{Binding Name}"
                                                       IsChecked="{Binding IsUsable}"/>
-                                            <CheckBox Grid.Column="1"
+                                                <CheckBox Grid.Column="1"
                                                       Grid.Row="0"
                                                       HorizontalAlignment="Left"
                                                       Margin="20,5,0,0"
                                                       Content="Ctrl"
                                                       IsChecked="{Binding IsSelectCtrl}"
                                                       IsEnabled="{Binding IsUsable}"/>
-                                            <CheckBox Grid.Column="2"
+                                                <CheckBox Grid.Column="2"
                                                       Grid.Row="0"
                                                       HorizontalAlignment="Left"
                                                       Margin="20,5,0,0"
                                                       Content="Shift"
                                                       IsChecked="{Binding IsSelectShift}"
                                                       IsEnabled="{Binding IsUsable}"/>
-                                            <CheckBox Grid.Column="1"
+                                                <CheckBox Grid.Column="1"
                                                       Grid.Row="1"
                                                       HorizontalAlignment="Left"
                                                       Margin="20,0,0,0"                                                      
                                                       Content="Alt"
                                                       IsChecked="{Binding IsSelectAlt}"
                                                       IsEnabled="{Binding IsUsable}"/>
-                                            <ComboBox Grid.Column="2"
+                                                <ComboBox Grid.Column="2"
                                                       Grid.Row="1"
                                                       IsEditable="True"
                                                       HorizontalAlignment="Left"
@@ -828,11 +829,11 @@
                                                       ItemsSource="{Binding MyKeys}"
                                                       SelectedItem="{Binding SelectKey}"
                                                       IsEnabled="{Binding IsUsable}"/>
-                                        </Grid>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                            <Button Content="保存设置"
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                                <Button Content="保存设置"
                                     FontFamily="微软雅黑"
                                     Grid.Row="1"
                                     Padding="0"
@@ -843,108 +844,108 @@
                                     VerticalAlignment="Bottom"
                                     x:Name="btnSaveSetting"
                                     Command="{Binding BtnSaveSetting}"/>
-                        </Grid>
-                    </TabItem>
+                            </Grid>
+                        </TabItem>
 
-                    <!--个人信息Tab-->
-                    <TabItem Header="&#xE13D;" 
+                        <!--个人信息Tab-->
+                        <TabItem Header="&#xE13D;" 
                              Height="40" 
                              FontFamily="Segoe MDL2 Assets" 
                              FontSize="20"
                              x:Name="personalCenterTab">
-                        <Grid>
+                            <Grid>
 
-                            <!--搜索列表-->
+                                <!--搜索列表-->
 
-                        </Grid>
-                    </TabItem>
+                            </Grid>
+                        </TabItem>
 
-                    <!--搜索Tab-->
-                    <TabItem Header="&#xE721;" 
+                        <!--搜索Tab-->
+                        <TabItem Header="&#xE721;" 
                              Height="40" 
                              FontFamily="Segoe MDL2 Assets" 
                              FontSize="20"
                              x:Name="searchTab">
-                        <Grid>
+                            <Grid>
 
-                            <!--<hc:ScrollViewer ScrollChanged="BeScrolled" CanMouseWheel="True">-->
+                                <!--<hc:ScrollViewer ScrollChanged="BeScrolled" CanMouseWheel="True">-->
 
 
-                            <!--搜索列表-->
-                            <ListBox FontFamily="微软雅黑"
+                                <!--搜索列表-->
+                                <ListBox FontFamily="微软雅黑"
                                      x:Name="searchList"
                                      ItemsSource="{Binding RecordList}"
                                      KeyDown="searchBarFocued">
 
-                                <!--非按钮出发命令的方式-->
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="SelectionChanged">
-                                        <mvvm:EventToCommand Command="{Binding SelectionChanged}" PassEventArgsToCommand="True"/>
-                                    </i:EventTrigger>
-                                    <i:EventTrigger EventName="KeyDown">
-                                        <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.SendToClip}" PassEventArgsToCommand="True"/>
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
+                                    <!--非按钮出发命令的方式-->
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="SelectionChanged">
+                                            <mvvm:EventToCommand Command="{Binding SelectionChanged}" PassEventArgsToCommand="True"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="KeyDown">
+                                            <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.SendToClip}" PassEventArgsToCommand="True"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
 
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
 
-                                        <Grid Margin="-10,0" Background="Transparent">
+                                            <Grid Margin="-10,0" Background="Transparent">
 
-                                            <!--右键菜单-->
-                                            <Grid.ContextMenu>
-                                                <ContextMenu>
-                                                    <MenuItem Header="{Binding DeletedText}" Command="{Binding Source={StaticResource Locator},Path=Main.DeleteRecordOrZone}" CommandParameter="{Binding Source={StaticResource Locator},Path=Main.SelectedRecord}"/>
-                                                    <MenuItem ItemsSource="{Binding Source={StaticResource Locator},Path=Main.ZoneTree}"
+                                                <!--右键菜单-->
+                                                <Grid.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="{Binding DeletedText}" Command="{Binding Source={StaticResource Locator},Path=Main.DeleteRecordOrZone}" CommandParameter="{Binding Source={StaticResource Locator},Path=Main.SelectedRecord}"/>
+                                                        <MenuItem ItemsSource="{Binding Source={StaticResource Locator},Path=Main.ZoneTree}"
                                                                   Header="移动至">
-                                                        <MenuItem.ItemTemplate>
-                                                            <HierarchicalDataTemplate ItemsSource="{Binding Nodes}">
-                                                                <MenuItem Header="{Binding Name}">
+                                                            <MenuItem.ItemTemplate>
+                                                                <HierarchicalDataTemplate ItemsSource="{Binding Nodes}">
+                                                                    <MenuItem Header="{Binding Name}">
 
-                                                                    <!--非按钮出发命令的方式-->
-                                                                    <i:Interaction.Triggers>
-                                                                        <i:EventTrigger EventName="Click">
-                                                                            <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.RecordMenuSelected}" 
+                                                                        <!--非按钮出发命令的方式-->
+                                                                        <i:Interaction.Triggers>
+                                                                            <i:EventTrigger EventName="Click">
+                                                                                <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.RecordMenuSelected}" 
                                                                                                                  PassEventArgsToCommand="True"/>
-                                                                        </i:EventTrigger>
-                                                                    </i:Interaction.Triggers>
-                                                                </MenuItem>
-                                                            </HierarchicalDataTemplate>
-                                                        </MenuItem.ItemTemplate>
-                                                    </MenuItem>
-                                                </ContextMenu>
-                                            </Grid.ContextMenu>
+                                                                            </i:EventTrigger>
+                                                                        </i:Interaction.Triggers>
+                                                                    </MenuItem>
+                                                                </HierarchicalDataTemplate>
+                                                            </MenuItem.ItemTemplate>
+                                                        </MenuItem>
+                                                    </ContextMenu>
+                                                </Grid.ContextMenu>
 
-                                            <!--边框-->
-                                            <Border Grid.ColumnSpan="2" 
+                                                <!--边框-->
+                                                <Border Grid.ColumnSpan="2" 
                                                     Grid.RowSpan="3" 
                                                     BorderThickness="0,0,0,1"
                                                     BorderBrush="LightGray"/>
 
-                                            <!--记录条目-->
-                                            <Grid x:Name="recordGrid"
+                                                <!--记录条目-->
+                                                <Grid x:Name="recordGrid"
                                                   Margin="5">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="40"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="auto"/>
-                                                    <RowDefinition Height="auto"/>
-                                                    <RowDefinition Height="auto"/>
-                                                </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="40"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="auto"/>
+                                                        <RowDefinition Height="auto"/>
+                                                        <RowDefinition Height="auto"/>
+                                                    </Grid.RowDefinitions>
 
-                                                <!--非按钮出发命令的方式-->
-                                                <i:Interaction.Triggers>
-                                                    <i:EventTrigger EventName="MouseLeftButtonDown">
-                                                        <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.RecordDoubleClick}" PassEventArgsToCommand="True"/>
-                                                    </i:EventTrigger>
-                                                </i:Interaction.Triggers>
+                                                    <!--非按钮出发命令的方式-->
+                                                    <i:Interaction.Triggers>
+                                                        <i:EventTrigger EventName="MouseLeftButtonDown">
+                                                            <mvvm:EventToCommand Command="{Binding Source={StaticResource Locator},Path=Main.RecordDoubleClick}" PassEventArgsToCommand="True"/>
+                                                        </i:EventTrigger>
+                                                    </i:Interaction.Triggers>
 
 
 
-                                                <!--标识图标-->
-                                                <!--<Border VerticalAlignment="Center"
+                                                    <!--标识图标-->
+                                                    <!--<Border VerticalAlignment="Center"
                                                  Grid.RowSpan="3">
                                                     <Path Fill="Black" 
                                                           Data="{Binding TypeIcon}" 
@@ -955,7 +956,7 @@
                                                         </Path.RenderTransform>
                                                     </Path>
                                                 </Border>-->
-                                                <!--<Label Content="{Binding TypeIcon}"
+                                                    <!--<Label Content="{Binding TypeIcon}"
                                                        FontFamily="Segoe MDL2 Assets" 
                                                        FontSize="24"
                                                        BorderThickness="0"
@@ -963,19 +964,19 @@
                                                        Padding="0"
                                                        Background="Transparent"
                                                        Foreground="Black"/>-->
-                                                <TextBlock Text="{Binding TypeIcon}"
+                                                    <TextBlock Text="{Binding TypeIcon}"
                                                            VerticalAlignment="Center"
                                                            HorizontalAlignment="Center"
                                                            Grid.RowSpan="3"
                                                            FontFamily="Segoe MDL2 Assets" 
                                                            FontSize="24"/>
 
-                                                <!--testCommand-->
-                                                <!--<Button DataContext="{Binding Source={StaticResource Locator},Path=Main}"
+                                                    <!--testCommand-->
+                                                    <!--<Button DataContext="{Binding Source={StaticResource Locator},Path=Main}"
                                                 Command="{Binding ChangTitle}"/>-->
 
-                                                <!--标题-->
-                                                <TextBlock Grid.Column="1"
+                                                    <!--标题-->
+                                                    <TextBlock Grid.Column="1"
                                                            FontWeight="Black"
                                                            Text="{Binding Title}"
                                                            ToolTip="{Binding Title}"
@@ -989,10 +990,10 @@
                                                             <mvvm:EventToCommand Command="{Binding ChangTitle}"/>
                                                         </i:EventTrigger>
                                                     </i:Interaction.Triggers>-->
-                                                </TextBlock>
+                                                    </TextBlock>
 
-                                                <!--记录图片内容-->
-                                                <Image Source="{Binding ImageSource}"
+                                                    <!--记录图片内容-->
+                                                    <Image Source="{Binding ImageSource}"
                                                        ToolTip="{Binding ImageSize}"
                                                        MinWidth="206"
                                                        Visibility="{Binding ImageShow}"
@@ -1000,8 +1001,8 @@
                                                        Grid.Row="1"
                                                        MaxHeight="120"/>
 
-                                                <!--记录文本内容-->
-                                                <TextBlock Text="{Binding TextData}"
+                                                    <!--记录文本内容-->
+                                                    <TextBlock Text="{Binding TextData}"
                                                            ToolTip="{Binding TextData}"
                                                            Grid.Column="1"
                                                            Grid.Row="1"
@@ -1010,41 +1011,41 @@
                                                            Visibility="{Binding TextShow}"
                                                            TextTrimming="CharacterEllipsis"/>
 
-                                                <!--记录时间-->
-                                                <TextBlock Grid.Column="1"
+                                                    <!--记录时间-->
+                                                    <TextBlock Grid.Column="1"
                                                            Foreground="DarkGray"
                                                Grid.Row="2"
                                                FontSize="10"
                                                Text="{Binding TimeFormat}"
                                                TextTrimming="CharacterEllipsis"/>
 
-                                                <!--记录来源-->
-                                                <TextBlock Grid.Column="1"
+                                                    <!--记录来源-->
+                                                    <TextBlock Grid.Column="1"
                                                            Foreground="DarkGray"
                                                            Grid.Row="2"
                                                            FontSize="10"
                                                            HorizontalAlignment="Right"
                                                            Text="{Binding OriginText}"
                                                            TextTrimming="CharacterEllipsis"/>
-                                            </Grid>
+                                                </Grid>
 
-                                            <!--加载动画-->
-                                            <Grid Background="White"
+                                                <!--加载动画-->
+                                                <Grid Background="White"
                                                   MinWidth="260"
                                                   Grid.RowSpan="2"
                                                   Visibility="{Binding LoadFlag}">
-                                                <hc:LoadingCircle/>
+                                                    <hc:LoadingCircle/>
+                                                </Grid>
                                             </Grid>
-                                        </Grid>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
 
 
-                            </ListBox>
+                                </ListBox>
 
-                            <!--</hc:ScrollViewer>-->
+                                <!--</hc:ScrollViewer>-->
 
-                            <hc:GotoTop Animated="True" 
+                                <hc:GotoTop Animated="True" 
                                         AutoHiding="True" 
                                         AnimationTime="500" 
                                         BorderThickness="0"
@@ -1060,35 +1061,35 @@
                                         HorizontalAlignment="Right" 
                                         VerticalAlignment="Bottom" 
                                         Margin="0,0,10,10">
-                                <hc:GotoTop.Effect>
-                                    <DropShadowEffect ShadowDepth="3"/>
-                                </hc:GotoTop.Effect>
-                            </hc:GotoTop>
-                        </Grid>
-                    </TabItem>
-                </TabControl>
+                                    <hc:GotoTop.Effect>
+                                        <DropShadowEffect ShadowDepth="3"/>
+                                    </hc:GotoTop.Effect>
+                                </hc:GotoTop>
+                            </Grid>
+                        </TabItem>
+                    </TabControl>
 
-            </Grid>
+                </Grid>
 
-            <!--高级搜索设置区-->
-            <Border Grid.Row="1" 
+                <!--高级搜索设置区-->
+                <Border Grid.Row="1" 
                     BorderBrush="LightGray"
                     BorderThickness="0,1,1,0"/>
-            <Grid Grid.Row="1"
+                <Grid Grid.Row="1"
                   Panel.ZIndex="0">
 
-                <!--工具自动调节控件-->
-                <ToolBarTray>
+                    <!--工具自动调节控件-->
+                    <ToolBarTray>
 
-                    <!--日期选择器-->
-                    <ToolBar Header="自">
-                        <hc:DateTimePicker ShowClearButton="True" 
+                        <!--日期选择器-->
+                        <ToolBar Header="自">
+                            <hc:DateTimePicker ShowClearButton="True" 
                                            DateTimeFormat="yy-MM-dd HH:mm:ss"
                                            DisplayDateTime="{x:Static system:DateTime.Now}"
                                            SelectedDateTime="{Binding SearchCondition.StartTime}"
                                            Style="{StaticResource DateTimePickerPlus}"
                                            Width="121"/>
-                        <hc:DateTimePicker ShowClearButton="True"
+                            <hc:DateTimePicker ShowClearButton="True"
                                            Margin="5,0,0,0"
                                            Width="140"
                                            DateTimeFormat="yy-MM-dd HH:mm:ss"
@@ -1098,96 +1099,96 @@
                                            hc:InfoElement.TitleAlignment="Left"
                                            Style="{StaticResource DateTimePickerPlus}"
                                            hc:InfoElement.Title="至"/>
-                    </ToolBar>
+                        </ToolBar>
 
-                    <!--分区,内容选取-->
-                    <ToolBar Band="1"
+                        <!--分区,内容选取-->
+                        <ToolBar Band="1"
                              Header="分区：">
 
-                        <!--分区选择-->
-                        <ComboBox SelectedIndex="{Binding SearchCondition.Zone}"
+                            <!--分区选择-->
+                            <ComboBox SelectedIndex="{Binding SearchCondition.Zone}"
                                   IsEditable="True"
                                   SelectedValuePath="Id"
                                   DisplayMemberPath="Name"
                                   ItemsSource="{Binding Source={StaticResource Locator},Path=Main.ZoneList}">
-                        </ComboBox>
+                            </ComboBox>
 
-                        <!--包含内容-->
-                        <TextBlock Text="包含内容："
+                            <!--包含内容-->
+                            <TextBlock Text="包含内容："
                                    Margin="5,0"
                                    VerticalAlignment="Center"/>
-                        <ToggleButton BorderThickness="0" 
+                            <ToggleButton BorderThickness="0" 
                                       IsChecked="{Binding SearchCondition.HasContent}"
                                       Width="20"
                                       Height="20"
                                       Style="{StaticResource ToggleButtonFlip}">
-                            <hc:StatusSwitchElement.CheckedElement>
-                                <Border Background="{DynamicResource PrimaryBrush}">
-                                    <TextBlock HorizontalAlignment="Center" 
+                                <hc:StatusSwitchElement.CheckedElement>
+                                    <Border Background="{DynamicResource PrimaryBrush}">
+                                        <TextBlock HorizontalAlignment="Center" 
                                                VerticalAlignment="Center" 
                                                Text="&#xF78C;"
                                                FontFamily="Segoe MDL2 Assets"
                                                Foreground="{DynamicResource TextIconBrush}"/>
-                                </Border>
-                            </hc:StatusSwitchElement.CheckedElement>
-                            <Border Background="{DynamicResource DangerBrush}">
-                                <TextBlock HorizontalAlignment="Center" 
+                                    </Border>
+                                </hc:StatusSwitchElement.CheckedElement>
+                                <Border Background="{DynamicResource DangerBrush}">
+                                    <TextBlock HorizontalAlignment="Center" 
                                            VerticalAlignment="Center"
                                            Text="&#xF78A;" 
                                            FontFamily="Segoe MDL2 Assets"
                                            Foreground="{DynamicResource TextIconBrush}"/>
-                            </Border>
-                        </ToggleButton>
-                    </ToolBar>
+                                </Border>
+                            </ToggleButton>
+                        </ToolBar>
 
-                    <!--种类,内容选取-->
-                    <ToolBar Band="2"
+                        <!--种类,内容选取-->
+                        <ToolBar Band="2"
                              Header="种类：">
 
-                        <!--种类选择-->
-                        <ComboBox SelectedIndex="{Binding SearchCondition.Type}"
+                            <!--种类选择-->
+                            <ComboBox SelectedIndex="{Binding SearchCondition.Type}"
                                   IsEditable="True">
-                            <ComboBoxItem Content="不限"/>
-                            <ComboBoxItem Content="文本"/>
-                            <ComboBoxItem Content="图片"/>
-                        </ComboBox>
+                                <ComboBoxItem Content="不限"/>
+                                <ComboBoxItem Content="文本"/>
+                                <ComboBoxItem Content="图片"/>
+                            </ComboBox>
 
-                        <!--包含回收站-->
-                        <TextBlock Text="包含回收站："
+                            <!--包含回收站-->
+                            <TextBlock Text="包含回收站："
                                    Margin="5,0"
                                    VerticalAlignment="Center"/>
-                        <ToggleButton BorderThickness="0" 
+                            <ToggleButton BorderThickness="0" 
                                       IsChecked="{Binding SearchCondition.HasDeleted}"
                                       Width="20"
                                       Height="20"
                                       Style="{StaticResource ToggleButtonFlip}">
-                            <hc:StatusSwitchElement.CheckedElement>
-                                <Border Background="{DynamicResource PrimaryBrush}">
-                                    <TextBlock HorizontalAlignment="Center" 
+                                <hc:StatusSwitchElement.CheckedElement>
+                                    <Border Background="{DynamicResource PrimaryBrush}">
+                                        <TextBlock HorizontalAlignment="Center" 
                                                VerticalAlignment="Center" 
                                                Text="&#xF78C;"
                                                FontFamily="Segoe MDL2 Assets"
                                                Foreground="{DynamicResource TextIconBrush}"/>
-                                </Border>
-                            </hc:StatusSwitchElement.CheckedElement>
-                            <Border Background="{DynamicResource DangerBrush}">
-                                <TextBlock HorizontalAlignment="Center" 
+                                    </Border>
+                                </hc:StatusSwitchElement.CheckedElement>
+                                <Border Background="{DynamicResource DangerBrush}">
+                                    <TextBlock HorizontalAlignment="Center" 
                                            VerticalAlignment="Center"
                                            Text="&#xF78A;" 
                                            FontFamily="Segoe MDL2 Assets"
                                            Foreground="{DynamicResource TextIconBrush}"/>
-                            </Border>
-                        </ToggleButton>
-                    </ToolBar>
-                </ToolBarTray>
-            </Grid>
+                                </Border>
+                            </ToggleButton>
+                        </ToolBar>
+                    </ToolBarTray>
+                </Grid>
 
-            <!--搜索框区-->
-            <Grid Grid.Row="2"
+                <!--搜索框区-->
+                <Grid Grid.Row="2"
                   Background="{StaticResource PrimaryBrush}">
 
-                <!--展示高级搜索-->
-                <ToggleButton HorizontalAlignment="Left"
+                    <!--展示高级搜索-->
+                    <ToggleButton HorizontalAlignment="Left"
                               ToolTip="展开：开启高级搜索 收起：关闭高级搜索"
                               hc:BorderElement.CornerRadius="15"
                               Checked="advancedSearchShow" 
@@ -1200,8 +1201,8 @@
                               hc:IconSwitchElement.Geometry="{StaticResource RightGeometry}" 
                               hc:IconSwitchElement.GeometrySelected="{StaticResource UpGeometry}"/>
 
-                <!--搜索框-->
-                <hc:SearchBar ShowClearButton="True" 
+                    <!--搜索框-->
+                    <hc:SearchBar ShowClearButton="True" 
                               Text="{Binding SearchCondition.SearchText,UpdateSourceTrigger=PropertyChanged}"
                               Style="{StaticResource SearchBarPlus}" 
                               Width="200" 
@@ -1210,13 +1211,13 @@
                               x:Name="searchBar"
                               Margin="50,0,0,0"
                               hc:InfoElement.Placeholder="{Binding SearchCondition.SearchPlaceholder}">
-                    <hc:SearchBar.InputBindings>
-                        <KeyBinding Command="{Binding SearchBarEnter}" Key="Enter"/>
-                    </hc:SearchBar.InputBindings>
-                </hc:SearchBar>
+                        <hc:SearchBar.InputBindings>
+                            <KeyBinding Command="{Binding SearchBarEnter}" Key="Enter"/>
+                        </hc:SearchBar.InputBindings>
+                    </hc:SearchBar>
 
-                <!--头像-->
-                <hc:Gravatar Style="{StaticResource GravatarCircleImg}"
+                    <!--头像-->
+                    <hc:Gravatar Style="{StaticResource GravatarCircleImg}"
                              ToolTip="打开个人中心"
                              Grid.Row="1" 
                              Width="30" 
@@ -1225,199 +1226,112 @@
                              MouseLeftButtonDown="showPersonalCenter" 
                              MouseRightButtonDown="showEditZone" 
                              Margin="10,0">
-                    <Image Source="/Resources/Images/gravatar.jpeg"/>
-                </hc:Gravatar>
+                        <Image Source="/Resources/Images/gravatar.jpeg"/>
+                    </hc:Gravatar>
+                </Grid>
             </Grid>
-        </Grid>
 
-        <!--右侧编辑区-->
-        <Grid Grid.Column="1">
+            <!--右侧编辑区-->
+            <Grid Grid.Column="1">
 
-            <!--不同格式Tab-->
-            <TabControl TabStripPlacement="Bottom"
+                <!--不同格式Tab-->
+                <TabControl TabStripPlacement="Bottom"
                         SelectedIndex="{Binding SelectedTab}">
 
-                <!--文本编辑Tab-->
-                <TabItem Header="&#xE164;" 
+                    <!--文本编辑Tab-->
+                    <TabItem Header="&#xE164;" 
                          FontFamily="Segoe MDL2 Assets"
                          FontSize="16"
                          x:Name="textTab"
                          DataContext="{Binding ToEditTextRecord}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="40"/>
-                            <RowDefinition Height="20"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="40"/>
+                                <RowDefinition Height="20"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
 
-                        <!--标题-->
-                        <TextBox FontFamily="微软雅黑"
+                            <!--标题-->
+                            <TextBox FontFamily="微软雅黑"
                                  BorderThickness="0,0,0,1"
                                  FontSize="20"
                                  Text="{Binding Title}"/>
 
-                        <!--时间-->
-                        <TextBlock Grid.Row="1"
+                            <!--时间-->
+                            <TextBlock Grid.Row="1"
                                    FontFamily="微软雅黑"
                                    Text="{Binding TimeFormat}"
                                    Margin="10,0"/>
 
-                        <!--来源-->
-                        <TextBlock Grid.Row="1"
+                            <!--来源-->
+                            <TextBlock Grid.Row="1"
                                    FontFamily="微软雅黑"
                                    Text="{Binding OriginText}"
                                    HorizontalAlignment="Right"
                                    Margin="10,0"/>
 
-                        <!--边框-->
-                        <Border BorderThickness="0,1,0,0"
+                            <!--边框-->
+                            <Border BorderThickness="0,1,0,0"
                                 BorderBrush="LightGray"
                                 Grid.Row="2"/>
 
-                        <!--自定义富文本框-->
-                        <Grid Grid.Row="2">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="40"/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
+                            <Button Click="test"
+                                    Content="ads"/>
 
-                            <!--工具栏-->
-                            <ToolBarTray Grid.ColumnSpan="2"
-                                         Margin="0,1">
-                                <ToolBar Padding="5" FontFamily="微软雅黑">
-                                    <hc:ButtonGroup>
-                                        <Button Content="&#xE19B;"
-                                            FontFamily="Segoe MDL2 Assets"/>
-                                        <Button Content="&#xE8DB;"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            FontWeight="Bold"/>
-                                        <Button Content="&#xE8DC;"
-                                            FontWeight="Bold"
-                                            FontFamily="Segoe MDL2 Assets"/>
-                                    </hc:ButtonGroup>
-                                    <Separator Margin="5,0"/>
-                                    <hc:ButtonGroup>
-                                        <Button Content="&#xE1C6;"
-                                            FontWeight="Bold"
-                                            FontFamily="Segoe MDL2 Assets"/>
-                                        <Button Content="&#xE1C7;"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            FontWeight="Bold"/>
-                                        <Button Content="&#xE185;"
-                                            FontWeight="Bold"
-                                            FontFamily="Segoe MDL2 Assets"/>
-                                    </hc:ButtonGroup>
-                                    <Separator Margin="5,0"/>
-                                    <Button Content="&#xE167;"
-                                        FontFamily="Segoe MDL2 Assets"/>
-                                    <Separator Margin="5,0"/>
-                                    <ToggleButton HorizontalAlignment="Stretch"
-                                              Grid.Row="1" 
-                                              Grid.Column="2" 
-                                              Content="翻译" 
-                                              IsChecked="{Binding IsOpen,ElementName=DrawerRight}"/>
-                                    <ToggleButton BorderThickness="0"
-                                                  x:Name="htmlBoxToggle"
-                                              Checked="htmlBoxHide"
-                                              Unchecked="htmlBoxShow"
-                                              Margin="5,0"
-                                              FontSize="16"
-                                              FontFamily="Segoe MDL2 Assets"
-                                      Width="30"
-                                      Height="30"
-                                      Style="{StaticResource ToggleButtonFlip}">
-                                        <hc:StatusSwitchElement.CheckedElement>
-                                            <Border Background="{DynamicResource DefaultBrush}">
-                                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xF614;" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                            </Border>
-                                        </hc:StatusSwitchElement.CheckedElement>
-                                        <Border Background="{DynamicResource DefaultBrush}">
-                                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xF617;" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                        </Border>
-                                    </ToggleButton>
-                                </ToolBar>
-                            </ToolBarTray>
-
-                            <!--富文本框-->
-                            <RichTextBox util:HtmlRichTextBoxBehavior.Text="{Binding TextData}"
-                                         IsDocumentEnabled="True"
-                                         Grid.ColumnSpan="2"
-                                         x:Name="richTextBox"
-                                         Panel.ZIndex="1"
-                                     Grid.Row="1"
-                                     FontFamily="微软雅黑">
-                                <FlowDocument>
-                                    <Paragraph>
-                                        <Run>ads</Run>
-                                    </Paragraph>
-                                </FlowDocument>
-                            </RichTextBox>
-
-                            <!--html文本框-->
-                            <TextBox Text="{Binding TextData}"
-                                     x:Name="ttt"
-                                     VerticalContentAlignment="Top"
-                                     TextWrapping="Wrap"
-                                     AcceptsReturn="True"
-                                     Grid.Row="1"
-                                     Grid.Column="1"
-                                     FontFamily="微软雅黑"/>
+                            <control:YanaRichTextBox Grid.Row="2"
+                                                     x:Name="rtb"
+                                                     FontFamily="微软雅黑"/>
                         </Grid>
-                    </Grid>
-                </TabItem>
+                    </TabItem>
 
-                <!--图片编辑-->
-                <TabItem Header="&#xEB9F;" 
+                    <!--图片编辑-->
+                    <TabItem Header="&#xEB9F;" 
                          FontSize="16"
                          FontFamily="Segoe MDL2 Assets"
                          x:Name="imageTab"
                          DataContext="{Binding ToEditImageRecord}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="40"/>
-                            <RowDefinition Height="20"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="40"/>
+                                <RowDefinition Height="20"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
 
-                        <!--标题-->
-                        <TextBox FontFamily="微软雅黑"
+                            <!--标题-->
+                            <TextBox FontFamily="微软雅黑"
                                  BorderThickness="0,0,0,1"
                                  FontSize="20"
                                  Text="{Binding Title}"/>
 
-                        <!--时间-->
-                        <TextBlock Grid.Row="1"
+                            <!--时间-->
+                            <TextBlock Grid.Row="1"
                                    FontFamily="微软雅黑"
                                    Text="{Binding TimeFormat}"
                                    Margin="10,0"/>
 
-                        <!--来源-->
-                        <TextBlock Grid.Row="1"
+                            <!--来源-->
+                            <TextBlock Grid.Row="1"
                                    FontFamily="微软雅黑"
                                    Text="{Binding OriginText}"
                                    HorizontalAlignment="Right"
                                    Margin="10,0"/>
 
-                        <!--边框-->
-                        <Border BorderThickness="0,1,0,0"
+                            <!--边框-->
+                            <Border BorderThickness="0,1,0,0"
                                 BorderBrush="LightGray"
                                 Grid.Row="2"/>
 
-                        <Grid Grid.Row="2">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="40"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="40"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
 
-                            <!--工具栏-->
-                            <ToolBarTray VerticalAlignment="Top">
-                                <ToolBar Padding="5" FontFamily="微软雅黑">
-                                    <ToggleButton HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="2" Content="识别" IsChecked="{Binding IsOpen,ElementName=DrawerRight}"/>
-                                    <ToggleButton BorderThickness="0"
+                                <!--工具栏-->
+                                <ToolBarTray VerticalAlignment="Top">
+                                    <ToolBar Padding="5" FontFamily="微软雅黑">
+                                        <ToggleButton HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="2" Content="识别" IsChecked="{Binding IsOpen,ElementName=DrawerRight}"/>
+                                        <ToggleButton BorderThickness="0"
                                                   x:Name="imageEditToggle"
                                               Checked="imageEdiHide"
                                               Unchecked="imageEdiShow"
@@ -1427,155 +1341,155 @@
                                       Width="30"
                                       Height="30"
                                       Style="{StaticResource ToggleButtonFlip}">
-                                        <hc:StatusSwitchElement.CheckedElement>
+                                            <hc:StatusSwitchElement.CheckedElement>
+                                                <Border Background="{DynamicResource DefaultBrush}">
+                                                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xE7A8;" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                </Border>
+                                            </hc:StatusSwitchElement.CheckedElement>
                                             <Border Background="{DynamicResource DefaultBrush}">
-                                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xE7A8;" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xE890;" Foreground="{DynamicResource PrimaryTextBrush}"/>
                                             </Border>
-                                        </hc:StatusSwitchElement.CheckedElement>
-                                        <Border Background="{DynamicResource DefaultBrush}">
-                                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xE890;" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                        </Border>
-                                    </ToggleButton>
-                                </ToolBar>
-                            </ToolBarTray>
+                                        </ToggleButton>
+                                    </ToolBar>
+                                </ToolBarTray>
 
-                            <!--图片浏览器-->
-                            <Grid Grid.Row="1"
+                                <!--图片浏览器-->
+                                <Grid Grid.Row="1"
                               Panel.ZIndex="1"
                               x:Name="imageViewer">
-                                <hc:ImageViewer Background="{DynamicResource BackgroundBrush}" 
+                                    <hc:ImageViewer Background="{DynamicResource BackgroundBrush}" 
                                             ImageSource="{Binding ImageData}"
                                             FontFamily="微软雅黑"
                                             ShowImgMap="True">
-                                </hc:ImageViewer>
-                            </Grid>
+                                    </hc:ImageViewer>
+                                </Grid>
 
-                            <!--图片编辑-->
-                            <Grid Grid.Row="1">
-                                <Grid.Background>
-                                    <ImageBrush ImageSource="Resources/Images/transparency.png"/>
-                                </Grid.Background>
-                                <Image Source="{Binding ImageData}" hc:Magnifier.Instance="{x:Static hc:Magnifier.Default}"/>
+                                <!--图片编辑-->
+                                <Grid Grid.Row="1">
+                                    <Grid.Background>
+                                        <ImageBrush ImageSource="Resources/Images/transparency.png"/>
+                                    </Grid.Background>
+                                    <Image Source="{Binding ImageData}" hc:Magnifier.Instance="{x:Static hc:Magnifier.Default}"/>
+                                </Grid>
                             </Grid>
                         </Grid>
-                    </Grid>
-                </TabItem>
+                    </TabItem>
 
-                <!--testTab-->
-                <TabItem Header="&#xE7A8; &#xE890;">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="75"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <!--工具栏-->
-                        <ToolBarTray Grid.ColumnSpan="2"
+                    <!--testTab-->
+                    <TabItem Header="&#xE7A8; &#xE890;">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="75"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <!--工具栏-->
+                            <ToolBarTray Grid.ColumnSpan="2"
                                          Margin="0,1">
-                            <ToolBar Padding="5,5,5,0" FontFamily="微软雅黑" Margin="0">
-                                <hc:ButtonGroup>
-                                    <Button Content="&#xE10E;"
+                                <ToolBar Padding="5,5,5,0" FontFamily="微软雅黑" Margin="0">
+                                    <hc:ButtonGroup>
+                                        <Button Content="&#xE10E;"
                                             Command="Undo"
                                             FontWeight="Bold"
                                             FontFamily="Segoe MDL2 Assets"/>
-                                    <Button Content="&#xE10D;"
+                                        <Button Content="&#xE10D;"
                                             Command="Redo"
                                             FontFamily="Segoe MDL2 Assets"
                                             FontWeight="Bold"/>
-                                </hc:ButtonGroup>
-                                <Separator Margin="5,0"/>
-                                <hc:ButtonGroup>
-                                    <Button Content="&#xE19B;"
+                                    </hc:ButtonGroup>
+                                    <Separator Margin="5,0"/>
+                                    <hc:ButtonGroup>
+                                        <Button Content="&#xE19B;"
                                             Command="EditingCommands.ToggleBold"
                                             FontFamily="Segoe MDL2 Assets"/>
-                                    <Button Content="&#xE8DB;"
+                                        <Button Content="&#xE8DB;"
                                             Command="EditingCommands.ToggleItalic"
                                             FontFamily="Segoe MDL2 Assets"
                                             FontWeight="Bold"/>
-                                    <Button Content="&#xE8DC;"
+                                        <Button Content="&#xE8DC;"
                                             Command="EditingCommands.ToggleUnderline"
                                             FontWeight="Bold"
                                             FontFamily="Segoe MDL2 Assets"/>
-                                    <Button Content="&#xE1C6;"
+                                        <Button Content="&#xE1C6;"
                                             Command="EditingCommands.DecreaseFontSize"
                                             FontWeight="Bold"
                                             FontSize="16"
                                             FontFamily="Segoe MDL2 Assets"/>
-                                    <Button Content="&#xE1C7;"
+                                        <Button Content="&#xE1C7;"
                                             FontSize="16"
                                             Command="EditingCommands.IncreaseFontSize"
                                             FontFamily="Segoe MDL2 Assets"
                                             FontWeight="Bold"/>
-                                </hc:ButtonGroup>
-                                <Separator Margin="5,0"/>
-                                <hc:ButtonGroup>
-                                    <ToggleButton IsChecked="False"
+                                    </hc:ButtonGroup>
+                                    <Separator Margin="5,0"/>
+                                    <hc:ButtonGroup>
+                                        <ToggleButton IsChecked="False"
                                                   Content="&#xE186;"
                                                   FontWeight="Bold"
                                                   FontSize="14"
                                                   FontFamily="Segoe MDL2 Assets"
                                                   x:Name="fontColor"/>
-                                    <ToggleButton IsChecked="False"
+                                        <ToggleButton IsChecked="False"
                                                   Content="&#xE790;"
                                                   FontWeight="Bold"
                                                   FontSize="14"
                                                   FontFamily="Segoe MDL2 Assets"
                                                   x:Name="fontBackground"/>
-                                    <ToggleButton IsChecked="False"
+                                        <ToggleButton IsChecked="False"
                                                   Content="&#xE167;"
                                                   FontWeight="Bold"
                                                   FontSize="14"
                                                   FontFamily="Segoe MDL2 Assets"
                                                   x:Name="textHyperlink"/>
-                                </hc:ButtonGroup>
-                                <Popup PopupAnimation="Fade"
+                                    </hc:ButtonGroup>
+                                    <Popup PopupAnimation="Fade"
                                        PlacementTarget="{Binding ElementName=fontColor}"
                                        Placement="Bottom"
                                        StaysOpen="True" 
                                        IsOpen="{Binding IsChecked,ElementName=fontColor,Mode=OneWay}">
-                                    <hc:ColorPicker SelectedColorChanged="fontColorSelected"
+                                        <hc:ColorPicker SelectedColorChanged="fontColorSelected"
                                                     Canceled="fontColorDeselected"/>
-                                </Popup>
-                                <Popup PopupAnimation="Fade"
+                                    </Popup>
+                                    <Popup PopupAnimation="Fade"
                                        PlacementTarget="{Binding ElementName=fontBackground}"
                                        Placement="Bottom"
                                        StaysOpen="True" 
                                        IsOpen="{Binding IsChecked,ElementName=fontBackground,Mode=OneWay}">
-                                    <hc:ColorPicker SelectedColorChanged="fontBackgroundSelected"
+                                        <hc:ColorPicker SelectedColorChanged="fontBackgroundSelected"
                                                     Canceled="fontBackgroundDeselected"/>
-                                </Popup>
-                                <Popup PopupAnimation="Fade"
+                                    </Popup>
+                                    <Popup PopupAnimation="Fade"
                                        PlacementTarget="{Binding ElementName=textHyperlink}"
                                        Placement="Bottom"
                                        StaysOpen="True" 
                                        HorizontalOffset="-50"
                                        IsOpen="{Binding IsChecked,ElementName=textHyperlink,Mode=OneWay}" 
                                        AllowsTransparency="True">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="40"/>
-                                            <RowDefinition Height="40"/>
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="70"/>
-                                            <ColumnDefinition Width="70"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Border Grid.RowSpan="2"
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="40"/>
+                                                <RowDefinition Height="40"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="70"/>
+                                                <ColumnDefinition Width="70"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border Grid.RowSpan="2"
                                                 CornerRadius="5"
                                                 Background="White"
                                                 Grid.ColumnSpan="2"
                                                 BorderThickness="1"
                                                 BorderBrush="LightGray"/>
-                                        <TextBox x:Name="linkText"
+                                            <TextBox x:Name="linkText"
                                                  Margin="5,5,5,0"
                                                  Grid.ColumnSpan="2"
                                                  BorderThickness="1"/>
-                                        <Button Click="selectedToText"
+                                            <Button Click="selectedToText"
                                                 Grid.Row="1"
                                                 FontSize="16"
                                                 FontFamily="Segoe MDL2 Assets"
                                                 Content="&#xF78A;"
                                                 Width="50"/>
-                                        <Button Click="selectedToLink"
+                                            <Button Click="selectedToLink"
                                                 Background="{StaticResource PrimaryBrush}"
                                                 Grid.Row="1"
                                                 Grid.Column="1"
@@ -1584,50 +1498,50 @@
                                                 Foreground="White"
                                                 Content="&#xF78C;"
                                                 Width="50"/>
-                                    </Grid>
-                                </Popup>
-                            </ToolBar>
-                            <ToolBar Padding="5"
+                                        </Grid>
+                                    </Popup>
+                                </ToolBar>
+                                <ToolBar Padding="5"
                                      FontFamily="微软雅黑"
                                      Margin="0"
                                      Band="1">
-                                <hc:ButtonGroup>
-                                    <Button Content="&#xE1A2;"
+                                    <hc:ButtonGroup>
+                                        <Button Content="&#xE1A2;"
                                             Command="EditingCommands.AlignLeft"
                                             FontFamily="Segoe MDL2 Assets"/>
-                                    <Button Content="&#xE1A1;"
+                                        <Button Content="&#xE1A1;"
                                             Command="EditingCommands.AlignCenter"
                                             FontFamily="Segoe MDL2 Assets"
                                             FontWeight="Bold"/>
-                                    <Button Content="&#xE1A0;"
+                                        <Button Content="&#xE1A0;"
                                             Command="EditingCommands.AlignRight"
                                             FontWeight="Bold"
                                             FontFamily="Segoe MDL2 Assets"/>
-                                    <Button Content="&#xE700;"
+                                        <Button Content="&#xE700;"
                                             Command="EditingCommands.AlignJustify"
                                             FontWeight="Bold"
                                             FontFamily="Segoe MDL2 Assets"/>
-                                </hc:ButtonGroup>
-                                <Separator Margin="5,0"/>
-                                <hc:ButtonGroup>
-                                    <Button Content="&#xe6f4;"
+                                    </hc:ButtonGroup>
+                                    <Separator Margin="5,0"/>
+                                    <hc:ButtonGroup>
+                                        <Button Content="&#xe6f4;"
                                             Command="EditingCommands.ToggleNumbering"
                                             FontSize="20"
                                             FontFamily="/clipboardplus;component/Resources/Font/#iconfont"/>
-                                    <Button Content="&#xe6f5;"
+                                        <Button Content="&#xe6f5;"
                                             Command="EditingCommands.ToggleBullets"
                                             FontFamily="/clipboardplus;component/Resources/Font/#iconfont"
                                             FontSize="20"/>
-                                    <Button Content="&#xE290;"
+                                        <Button Content="&#xE290;"
                                             Command="EditingCommands.DecreaseIndentation"
                                             FontSize="16"
                                             FontFamily="Segoe MDL2 Assets"/>
-                                    <Button Content="&#xE291;"
+                                        <Button Content="&#xE291;"
                                             Command="EditingCommands.IncreaseIndentation"
                                             FontFamily="Segoe MDL2 Assets"
                                             FontSize="16"/>
-                                </hc:ButtonGroup>
-                                <!--<Separator Margin="5,0"/>
+                                    </hc:ButtonGroup>
+                                    <!--<Separator Margin="5,0"/>
                                 <Button Content="&#xE167;"
                                         FontFamily="Segoe MDL2 Assets"/>
                                 <Separator Margin="5,0"/>
@@ -1655,62 +1569,65 @@
                                         <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xF617;" Foreground="{DynamicResource PrimaryTextBrush}"/>
                                     </Border>
                                 </ToggleButton>-->
-                            </ToolBar>
-                        </ToolBarTray>
-                        <!--<RichTextBox Name="rtb" 
+                                </ToolBar>
+                            </ToolBarTray>
+                            <!--<RichTextBox Name="rtb" 
                                      AcceptsTab="True"
                                      Grid.Row="1"
                                      Grid.ColumnSpan="4">
                             
-                        </RichTextBox>-->
-                        <!--<Button x:Name="btnAddElement" Content="添加元素" Grid.Row="1" Click="btnAddElement_Click_1" Grid.Column="0" Margin="5"></Button>-->
-                        <!--<RichTextBox Background="Transparent"
+                            </RichTextBox>-->
+                            <!--<RichTextBox Background="Transparent"
                                      AcceptsTab="True"
                                      Grid.Row="1"
                                      x:Name="rtb"
-                                     BorderThickness="0"
                                      util:HtmlRichTextBoxBehavior.Text="{Binding Text,ElementName=ttt}"
                                      IsDocumentEnabled="True"
                                      IsReadOnly="False" 
                                      TextChanged="RichTextBoxChanged"/>-->
-                    </Grid>
-                </TabItem>
-            </TabControl>
+                        </Grid>
+                    </TabItem>
+                    
+                    <TabItem Header="123">
+                        <control:YanaRichTextBox />
+                    </TabItem>
+                </TabControl>
 
-            <!--翻译,文字识别抽屉-->
-            <hc:Drawer Name="DrawerRight" 
+                <!--翻译,文字识别抽屉-->
+                <hc:Drawer Name="DrawerRight" 
                        Dock="Right"
                        ShowMask="False" 
                        ShowMode="Push"
                        >
-                <Border Background="{DynamicResource RegionBrush}" 
+                    <Border Background="{DynamicResource RegionBrush}" 
                                     Width="300" 
                                     BorderThickness="1,0,0,0" 
                                     BorderBrush="{DynamicResource BorderBrush}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
 
-                        <!--标题-->
-                        <TextBlock Margin="10,0,0,0" 
+                            <!--标题-->
+                            <TextBlock Margin="10,0,0,0" 
                                                Text="文本识别" 
                                                Style="{StaticResource TextBlockTitle}" 
                                                HorizontalAlignment="Left"/>
 
-                        <!--关闭按钮-->
-                        <Button CommandTarget="{Binding}"
+                            <!--关闭按钮-->
+                            <Button CommandTarget="{Binding}"
                                             Command="hc:ControlCommands.Close" 
                                             Grid.Row="0" HorizontalAlignment="Right"
                                             Foreground="{DynamicResource PrimaryTextBrush}" 
                                             Style="{StaticResource ButtonIcon}" 
                                             hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}"/>
 
-                        <RichTextBox Grid.Row="1" x:Name="temprich"/>
-                    </Grid>
-                </Border>
-            </hc:Drawer>
+                            <RichTextBox Grid.Row="1" x:Name="temprich"/>
+                        </Grid>
+                    </Border>
+                </hc:Drawer>
+            </Grid>
         </Grid>
     </Grid>
 </Window>

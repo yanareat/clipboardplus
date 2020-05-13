@@ -1,10 +1,17 @@
-﻿// // Copyright (c) Microsoft. All rights reserved.
-// // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+//---------------------------------------------------------------------------
+// 
+// File: HtmlTokenType.cs
+//
+// Copyright (C) Microsoft Corporation.  All rights reserved.
+//
+// Description: Definition of token types supported by HtmlLexicalAnalyzer
+//
+//---------------------------------------------------------------------------
 
-namespace clipboardplus.Converter
+namespace HTMLConverter
 {
     /// <summary>
-    ///     types of lexical tokens for html-to-xaml converter
+    /// types of lexical tokens for html-to-xaml converter
     /// </summary>
     internal enum HtmlTokenType
     {
@@ -17,6 +24,6 @@ namespace clipboardplus.Converter
         Atom, // any attribute value not in quotes
         Text, //text content when accepting text
         Comment,
-        Eof
+        EOF,
     }
 }

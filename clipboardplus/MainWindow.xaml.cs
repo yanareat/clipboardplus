@@ -1,22 +1,16 @@
-﻿using clipboardplus.Converter;
-using mshtml;
-using clipboardplus.Model;
+﻿using clipboardplus.Model;
 using clipboardplus.Util;
 using clipboardplus.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 
 namespace clipboardplus
 {
@@ -33,9 +27,9 @@ namespace clipboardplus
             HotKeySettingsManager.Instance.RegisterGlobalHotKeyEvent += Instance_RegisterGlobalHotKeyEvent;
             SizeChanged += MainWindow_SizeChanged;
             StateChanged += MainWindow_StateChanged;
-            htmlBoxToggle.IsChecked = true;
             imageEditToggle.IsChecked = true;
             searchBar.Focus();
+            rtb.Text = @"string strDoc=System.Windows.Markup.XamlWriter.Save(rtb.Document);";
         }
         #region 属性
 
@@ -317,10 +311,10 @@ namespace clipboardplus
         {
             if (this.Width == 300)
             {
-                this.Width = 800;
+                this.Width = 900;
                 this.Height = 450;
             }
-            else if (this.Width == 800)
+            else if (this.Width == 900)
             {
                 this.Width = 300;
                 this.Height = 450;
@@ -401,8 +395,8 @@ namespace clipboardplus
         /// <param name="e"></param>
         private void htmlBoxHide(object sender, RoutedEventArgs e)
         {
-            Grid.SetColumnSpan(richTextBox, 2);
-            e.Handled = true;
+            //Grid.SetColumnSpan(richTextBox, 2);
+            //e.Handled = true;
         }
 
         /// <summary>
@@ -412,8 +406,8 @@ namespace clipboardplus
         /// <param name="e"></param>
         private void htmlBoxShow(object sender, RoutedEventArgs e)
         {
-            Grid.SetColumnSpan(richTextBox, 1);
-            e.Handled = true;
+            //Grid.SetColumnSpan(richTextBox, 1);
+            //e.Handled = true;
         }
 
         /// <summary>
@@ -651,6 +645,7 @@ namespace clipboardplus
 
         private void test(object sender, RoutedEventArgs e)
         {
+            MessageBox.Show(rtb.Text);
             e.Handled = true;
             //MessageBox.Show("Expand");
         }
