@@ -43,7 +43,6 @@ namespace clipboardplus.ViewModel
             ////    SimpleIoc.Default.Register<IDataService, DataService>();
             ////}
 
-            //注册实例对象
             SimpleIoc.Default.Register<MainViewModel>();
         }
 
@@ -51,7 +50,6 @@ namespace clipboardplus.ViewModel
         {
             get
             {
-                //通过容器获取实例对象 new MainViewModel
                 return ServiceLocator.Current.GetInstance<MainViewModel>();
             }
         }

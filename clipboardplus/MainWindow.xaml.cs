@@ -1,17 +1,22 @@
-﻿using clipboardplus.Model;
+﻿using clipboardplus.Converter;
+using mshtml;
+using clipboardplus.Model;
 using clipboardplus.Util;
 using clipboardplus.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 
 namespace clipboardplus
 {
@@ -506,10 +511,13 @@ namespace clipboardplus
             if (FollowMouse)
             {
                 Activate();
-                var transform = PresentationSource.FromVisual(this).CompositionTarget.TransformFromDevice;
-                var mouse = transform.Transform(GetMousePosition());
-                Left = mouse.X + 10;
-                Top = mouse.Y;
+                searchBar.Focus();
+                //var transform = PresentationSource.FromVisual(this).CompositionTarget.TransformFromDevice;
+                //var mouse = transform.Transform(GetMousePosition());
+                //Left = mouse.X + 10;
+                //Top = mouse.Y;
+                Left = 300;
+                Top = 200;
             }
             Show();
             this.WindowState = WindowState.Normal;
@@ -668,10 +676,81 @@ namespace clipboardplus
 
         private void test(object sender, MouseButtonEventArgs e)
         {
-
+            //EditingCommands
         }
 
-        [DllImport("user32.dll")]
-        public static extern bool GetCursorPos(out Point lpPoint);
+        private void fontBackgroundSelected(object sender, HandyControl.Data.FunctionEventArgs<Color> e)
+        {
+            //var brush = new SolidColorBrush(e.Info);
+            //rtb.Selection.ApplyPropertyValue(TextElement.BackgroundProperty, brush);
+            //fontBackground.IsChecked = false;
+            //e.Handled = true;
+        }
+
+        private void fontBackgroundDeselected(object sender, EventArgs e)
+        {
+            //rtb.Selection.ApplyPropertyValue(TextElement.BackgroundProperty, null);
+            //fontBackground.IsChecked = false;
+        }
+
+        private void fontColorSelected(object sender, HandyControl.Data.FunctionEventArgs<Color> e)
+        {
+            //var brush = new SolidColorBrush(e.Info);
+            //rtb.Selection.ApplyPropertyValue(TextElement.ForegroundProperty, brush);
+            //fontColor.IsChecked = false;
+            //e.Handled = true;
+        }
+
+        private void fontColorDeselected(object sender, EventArgs e)
+        {
+            //rtb.Selection.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Color.FromRgb(21, 21, 21)));
+            //fontColor.IsChecked = false;
+        }
+
+        private void selectedToLink(object sender, RoutedEventArgs e)
+        {
+            //try
+            //{
+            //    //获取选中部分的开始位置 
+            //    TextPointer textPointer = rtb.Selection.Start;
+            //    //Hyperlink
+            //    Hyperlink hyperlink = new Hyperlink(textPointer, textPointer);
+            //    hyperlink.Inlines.Add(rtb.Selection.Text);
+            //    hyperlink.NavigateUri = new Uri(linkText.Text);
+            //    //在插入内容的结尾到原来选中部分的结尾——原来选中部分的文字 清除掉 
+            //    TextPointer pointer = hyperlink.ContentEnd;
+            //    TextRange textRange = new TextRange(pointer, rtb.Selection.End);
+            //    textRange.Text = "";
+            //    //为超链接绑定事件
+            //    HtmlRichTextBoxBehavior.HyperlinksSubscriptions(rtb.Document);
+            //    textHyperlink.IsChecked = false;
+            //}
+            //catch (Exception error)
+            //{
+            //    MessageBox.Show("路径有误，请重新输入！");
+            //    Console.WriteLine(error.Message);
+            //}
+            //e.Handled = true;
+        }
+
+        private void RichTextBoxChanged(object sender, TextChangedEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void selectedToText(object sender, RoutedEventArgs e)
+        {
+            ////获取选中部分的开始位置 
+            //TextPointer textPointer = rtb.Selection.Start;
+            ////Hyperlink
+            //Run run = new Run(rtb.Selection.Text, textPointer);
+            ////在插入内容的结尾到原来选中部分的结尾——原来选中部分的文字 清除掉 
+            //TextPointer pointer = run.ContentEnd;
+            //TextRange textRange = new TextRange(pointer, rtb.Selection.End);
+            //textRange.Text = "";
+            ////为超链接绑定事件
+            //textHyperlink.IsChecked = false;
+            //e.Handled = true;
+        }
     }
 }

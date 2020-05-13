@@ -322,11 +322,15 @@ namespace clipboardplus.ViewModel
                         {
                             RecordList.Clear();
                             RecordList.Add(new Record() { Id = -1, Time = DateTime.Now });
+                            //异步加载记录列表
                             var temp = GetRecordList();
                             if (temp.Count != 0)
                             {
-
                                 ToolUtil.ToAsync((a) => LoadRecordList(a), temp);
+                            }
+                            else
+                            {
+                                RecordList.Remove(RecordList.FirstOrDefault(r => r.Id == -1));
                             }
                         }
                         SelectedLeftTab = 4;
@@ -503,6 +507,20 @@ namespace clipboardplus.ViewModel
             ClipRecord = new Record();
             ClipRecord.Time = DateTime.Now;
             ClipRecord.Origin = ToolUtil.ClipFrom();
+
+            var clipData = Clipboard.GetDataObject();
+            foreach (var format in clipData.GetFormats())
+            {
+                Console.WriteLine(format.Equals("HTML Format"));
+                Console.WriteLine(Clipboard.ContainsText(TextDataFormat.CommaSeparatedValue));
+                Console.WriteLine(Clipboard.ContainsText(TextDataFormat.Html));
+                Console.WriteLine(Clipboard.ContainsText(TextDataFormat.Rtf));
+                Console.WriteLine(Clipboard.ContainsText(TextDataFormat.Text));
+                Console.WriteLine(Clipboard.ContainsText(TextDataFormat.UnicodeText));
+                Console.WriteLine(Clipboard.ContainsText(TextDataFormat.Xaml));
+                Console.WriteLine(clipData.GetData(format)+"\n\n\n\n\n\n");
+            }
+
             if (Clipboard.ContainsImage())
             {
                 Console.WriteLine(" -----------------9-----------------\n");
@@ -518,6 +536,14 @@ namespace clipboardplus.ViewModel
                 ClipRecord.Type = 1;
                 ClipRecord.Title = Clipboard.GetText().Trim().Length > 16 ? Clipboard.GetText().Trim().Substring(0, 16) : Clipboard.GetText().Trim();
                 ClipRecord.TextData = Clipboard.GetText();
+                Console.WriteLine(Clipboard.ContainsData("HTML Format"));
+                if (clipData.GetDataPresent("HTML Format"))
+                {
+                    var text = (Clipboard.GetData("HTML Format") as string);
+                    var num = (Clipboard.GetData("HTML Format") as string).IndexOf("<html>");
+                    var html = text.Substring(num); 
+                    ClipRecord.TextData = html;
+                }
                 ClipRecord.MD5 = ToolUtil.GetMD5Hash(ClipRecord.TextData, 0) + ToolUtil.GetMD5Hash(ClipRecord.Origin, 0);
                 Console.WriteLine(" -----------------7-----------------\n");
             }
@@ -540,23 +566,23 @@ namespace clipboardplus.ViewModel
 
             Console.WriteLine(" -----------------13-----------------\n");
 
-            for(int i = 0; i < RecordList.Count; i++)
+            int i;
+            for (i = 0; i < RecordList.Count; i++)
             {
                 if(RecordList[i].MD5 == ClipRecord.MD5)
                 {
                     RecordList.RemoveAt(i);
-                    if(SelectedLeftTab == 0)
-                    {
-                        RecordList.Insert(0, ClipRecord);
-                    }
-                    else
-                    {
-                        RecordList.Insert(i, ClipRecord);
-                    }
                     break;
                 }
             }
-
+            if (SelectedLeftTab != 0 && i != RecordList.Count)
+            {
+                RecordList.Insert(i, ClipRecord);                
+            }
+            else
+            {
+                RecordList.Insert(0, ClipRecord);
+            }
 
             Console.WriteLine(" -----------------8-----------------\n");
         }       

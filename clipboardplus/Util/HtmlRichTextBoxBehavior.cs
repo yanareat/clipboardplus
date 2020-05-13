@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -33,7 +31,7 @@ namespace clipboardplus.Util
             richTextBox.Document = flowDocument;
         }
 
-        private static void HyperlinksSubscriptions(FlowDocument flowDocument)
+        public static void HyperlinksSubscriptions(FlowDocument flowDocument)
         {
             if (flowDocument == null) return;
             GetVisualChildren(flowDocument).OfType<Hyperlink>().ToList()
@@ -52,6 +50,7 @@ namespace clipboardplus.Util
         private static void HyperlinkNavigate(object sender,
          System.Windows.Navigation.RequestNavigateEventArgs e)
         {
+            Console.WriteLine(e.Uri.AbsoluteUri.ToString());
             Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
             e.Handled = true;
         }

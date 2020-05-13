@@ -147,6 +147,9 @@ namespace clipboardplus.Converter
                     case "Background":
                         css = "background-color:" + ParseXamlColor(xamlReader.Value) + ";";
                         break;
+                    case "NavigateUri":
+                        css = xamlReader.Value;
+                        break;
                     case "FontFamily":
                         css = "font-family:" + xamlReader.Value + ";";
                         break;
@@ -334,7 +337,7 @@ namespace clipboardplus.Converter
                             }
                             else
                             {
-                                if (htmlWriter != null && !elementContentStarted && inlineStyle.Length > 0)
+                                if (htmlWriter != null && !elementContentStarted && inlineStyle.Length > 0 && !xamlReader.Name.Contains("Hyperlink"))
                                 {
                                     // Output STYLE attribute and clear inlineStyle buffer.
                                     htmlWriter.WriteAttributeString("style", inlineStyle.ToString());
@@ -362,9 +365,13 @@ namespace clipboardplus.Converter
                         case XmlNodeType.SignificantWhitespace:
                             if (htmlWriter != null)
                             {
-                                if (!elementContentStarted && inlineStyle.Length > 0)
+                                if (!elementContentStarted && inlineStyle.Length > 0 && !inlineStyle.ToString().Contains("http://"))
                                 {
                                     htmlWriter.WriteAttributeString("style", inlineStyle.ToString());
+                                }
+                                else if (inlineStyle.ToString().Contains("http://"))
+                                {
+                                    htmlWriter.WriteAttributeString("href", inlineStyle.ToString());
                                 }
                                 htmlWriter.WriteString(xamlReader.Value);
                             }
@@ -432,6 +439,9 @@ namespace clipboardplus.Converter
                     case "Run":
                     case "Span":
                         htmlElementName = "span";
+                        break;
+                    case "Hyperlink":
+                        htmlElementName = "a";
                         break;
                     case "InlineUIContainer":
                         htmlElementName = "span";
