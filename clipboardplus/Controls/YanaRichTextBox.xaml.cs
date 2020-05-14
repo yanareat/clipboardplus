@@ -1,4 +1,6 @@
-﻿using System;
+﻿using clipboardplus.Model;
+using HTMLConverter;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -69,6 +71,8 @@ namespace clipboardplus.Controls
             get { return this.richTextBox; }
         }
 
+        private bool updateRTB = false;
+
         public bool isCtrl()
         {
             return (Keyboard.Modifiers == ModifierKeys.Control);
@@ -116,7 +120,6 @@ namespace clipboardplus.Controls
             }
         }
 
-
         private void richTextBox_SelectionChanged(object sender, RoutedEventArgs e)
         {
             UpdateVisualState();
@@ -124,22 +127,58 @@ namespace clipboardplus.Controls
 
         public string Text
         {
-            get {
-                string xaml = System.Windows.Markup.XamlWriter.Save(Editer.Document);
-                string html = HTMLConverter.HtmlFromXamlConverter.ConvertXamlToHtml(xaml);
-                Console.WriteLine(html);
-                return (string)GetValue(TextProperty);
+            get { return (string)GetValue(TextProperty); }
+            set { SetValue(TextProperty, value); }
+        }
+
+        public string Html
+        {
+            get { return (string)GetValue(HtmlProperty); }
+            set { SetValue(HtmlProperty, value); }
+        }
+
+        bool updateUI = true;
+
+        public static DependencyProperty HtmlProperty =
+        DependencyProperty.Register("Html", typeof(string), typeof(YanaRichTextBox), new PropertyMetadata("", new PropertyChangedCallback(OnHtmlChange)));
+
+        private static void OnHtmlChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if ((d as YanaRichTextBox).updateUI)
+            {
+                Console.WriteLine("\n\n\n\n\n\nHtml\n" + d.GetType().ToString() + "\n" + e.OldValue + "\n" + e.NewValue + "\n更新控件\n\n\n\n\n\n");
+                var yrtb = d as YanaRichTextBox;
+                Section s = HTMLConverter.HTMLToFlowConverter.ConvertHtmlToSection(e.NewValue.ToString(), yrtb.Editer.Document.PageWidth);
+                yrtb.cmdInsertBlock(s, true);
+                HyperlinkHelper.SubscribeToAllHyperlinks(yrtb.Editer.Document);
             }
-            set { 
-                SetValue(TextProperty, value);
-                Section s = HTMLConverter.HTMLToFlowConverter.ConvertHtmlToSection(value, Editer.Document.PageWidth);
-                this.cmdInsertBlock(s, true);
-                HyperlinkHelper.SubscribeToAllHyperlinks(Editer.Document);
+            else
+            {
+                Console.WriteLine("\n\n\n\n\n\nHtml\n" + d.GetType().ToString() + "\n" + e.OldValue + "\n" + e.NewValue + "\n更新源\n\n\n\n\n\n");
+                //(d as YanaRichTextBox).GetBindingExpression(TextProperty).UpdateSource();                
             }
+            (d as YanaRichTextBox).updateRTB = false;
         }
 
         public static DependencyProperty TextProperty =
-            DependencyProperty.Register("Text", typeof(string), typeof(YanaRichTextBox), new PropertyMetadata(""));
+            DependencyProperty.Register("Text", typeof(string), typeof(YanaRichTextBox), new PropertyMetadata("",new PropertyChangedCallback(OnTextChange)));
+
+        private static void OnTextChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if ((d as YanaRichTextBox).updateUI)
+            {
+                Console.WriteLine("\n\n\n\n\n\nText\n" + d.GetType().ToString() + "\n" + e.OldValue + "\n" + e.NewValue + "\n更新控件\n\n\n\n\n\n");
+                var yrtb = d as YanaRichTextBox;
+                yrtb.cmdInsertText(e.NewValue as string);
+            }
+            else
+            {
+                Console.WriteLine("\n\n\n\n\n\nText\n" + d.GetType().ToString() + "\n" + e.OldValue + "\n" + e.NewValue + "\n更新源\n\n\n\n\n\n");
+                //(d as YanaRichTextBox).GetBindingExpression(TextProperty).UpdateSource();
+                (d as YanaRichTextBox).updateUI = true;
+            }
+            (d as YanaRichTextBox).updateRTB = false;
+        }
 
         #region Update View
 
@@ -328,6 +367,7 @@ namespace clipboardplus.Controls
                 TextRange textRange = new TextRange(pointer, richTextBox.Selection.End);
                 textRange.Text = "";
                 //为超链接绑定事件
+                HyperlinkHelper.SubscribeToAllHyperlinks(Editer.Document);
                 textHyperlink.IsChecked = false;
             }
             catch (Exception error)
@@ -1451,6 +1491,41 @@ namespace clipboardplus.Controls
 
         #endregion
 
+        private void richTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (updateRTB)
+            {
+                updateUI = false;
+                if (GetBindingExpression(HtmlProperty) != null)
+                {
+                    string xaml = System.Windows.Markup.XamlWriter.Save(Editer.Document);
+                    Html = HtmlFromXamlConverter.ConvertXamlToHtml(xaml);
+                }
+                if (GetBindingExpression(TextProperty) != null)
+                {
+                    TextRange textRange = new TextRange(Editer.Document.ContentStart, Editer.Document.ContentEnd);
+                    Text = textRange.Text;
+                }
+                updateUI = true;
+            }
+        }
+
+        private void richTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            updateRTB = true;
+            //updateUI = false;
+            //if (GetBindingExpression(HtmlProperty) != null)
+            //{
+            //    string xaml = System.Windows.Markup.XamlWriter.Save(Editer.Document);
+            //    Html = HtmlFromXamlConverter.ConvertXamlToHtml(xaml);
+            //}
+            //if (GetBindingExpression(TextProperty) != null)
+            //{
+            //    TextRange textRange = new TextRange(Editer.Document.ContentStart, Editer.Document.ContentEnd);
+            //    Text = textRange.Text;
+            //}
+            //updateUI = true;
+        }
     }
 
     public class fontsize

@@ -360,15 +360,18 @@
                          hc:InfoElement.Placeholder="Search/Command [CTRL+Q]"
                          KeyDown="SearchTermTextBox_KeyDown"
                          TextChanged="SearchTermTextBox_TextChanged"/>
+
                 <RichTextBox Grid.Row="1"
                              x:Name="richTextBox"
                              AcceptsReturn="True"
                              AcceptsTab="True"
                              AllowDrop="False"
                              IsUndoEnabled="True"
+                             TextChanged="richTextBox_TextChanged"
+                             LostFocus="richTextBox_LostFocus"
                              CommandManager.PreviewExecuted="richTextBox_PreviewExecuted"
                              ScrollViewer.ScrollChanged="richTextBox_ScrollChanged"
-                             SpellCheck.IsEnabled="False"/>
+                             SpellCheck.IsEnabled="False"/> <!--LostFocus="richTextBox_LostFocus"-->
                 <ProgressBar x:Name="progressGrid"
                              Grid.Row="1"
                              Panel.ZIndex="1"

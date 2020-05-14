@@ -142,6 +142,7 @@ namespace clipboardplus.Model
             get => _fileData;
             set { _fileData = value; RaisePropertyChanged(() => FileData); }
         }
+
         #endregion
 
         #region 只读属性

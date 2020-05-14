@@ -595,8 +595,8 @@ namespace clipboardplus.ViewModel
         {
             if (e.AddedItems.Count != 0)
             {
-                var temp = SelectedRecord = e.AddedItems[0] as Record;
-                //var temp = ToolUtil.DeepCopy(SelectedRecord);
+                SelectedRecord = e.AddedItems[0] as Record;
+                var temp = ToolUtil.DeepCopy(SelectedRecord);
                 if (temp.Type == 1)
                 {
                     ToEditTextRecord = temp;
