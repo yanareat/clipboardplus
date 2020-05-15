@@ -71,6 +71,11 @@ namespace clipboardplus.Controls
             get { return this.richTextBox; }
         }
 
+        public Button SaveBtn
+        {
+            get { return this.saveBtn; }
+        }
+
         private bool updateRTB = false;
 
         public bool isCtrl()
@@ -148,9 +153,17 @@ namespace clipboardplus.Controls
             {
                 Console.WriteLine("\n\n\n\n\n\nHtml\n" + d.GetType().ToString() + "\n" + e.OldValue + "\n" + e.NewValue + "\n更新控件\n\n\n\n\n\n");
                 var yrtb = d as YanaRichTextBox;
-                Section s = HTMLConverter.HTMLToFlowConverter.ConvertHtmlToSection(e.NewValue.ToString(), yrtb.Editer.Document.PageWidth);
+                TextRange textRange = new TextRange(yrtb.Editer.Document.ContentStart, yrtb.Editer.Document.ContentEnd);
+                string originText = textRange.Text;
+                yrtb.cmdSelectAll();
+                yrtb.cmdDelete();
+                Section s = HTMLConverter.HTMLToFlowConverter.ConvertHtmlToSection(e.NewValue.ToString(), yrtb.Editer.Document.PageWidth);//
                 yrtb.cmdInsertBlock(s, true);
                 HyperlinkHelper.SubscribeToAllHyperlinks(yrtb.Editer.Document);
+                if (textRange.Text == "")
+                {
+                    textRange.Text = originText;
+                }
             }
             else
             {
@@ -169,6 +182,8 @@ namespace clipboardplus.Controls
             {
                 Console.WriteLine("\n\n\n\n\n\nText\n" + d.GetType().ToString() + "\n" + e.OldValue + "\n" + e.NewValue + "\n更新控件\n\n\n\n\n\n");
                 var yrtb = d as YanaRichTextBox;
+                yrtb.cmdSelectAll();
+                yrtb.cmdDelete();
                 yrtb.cmdInsertText(e.NewValue as string);
             }
             else
@@ -1499,6 +1514,7 @@ namespace clipboardplus.Controls
                 if (GetBindingExpression(HtmlProperty) != null)
                 {
                     string xaml = System.Windows.Markup.XamlWriter.Save(Editer.Document);
+                    Console.WriteLine(xaml);
                     Html = HtmlFromXamlConverter.ConvertXamlToHtml(xaml);
                 }
                 if (GetBindingExpression(TextProperty) != null)

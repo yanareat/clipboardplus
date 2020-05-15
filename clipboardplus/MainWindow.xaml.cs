@@ -5,9 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -27,6 +29,14 @@ namespace clipboardplus
             StateChanged += MainWindow_StateChanged;
             imageEditToggle.IsChecked = true;
             searchBar.Focus();
+            rtb.saveBtn.Click += SaveBtn_Click;
+        }
+
+        private void SaveBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine("\n\n\n\n\n\n222222222222222222222\n\n\n\n\n");
+            searchBar.Focus();
+            (DataContext as MainViewModel).saveRecord();
         }
         #region 属性
 

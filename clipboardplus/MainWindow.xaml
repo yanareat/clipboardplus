@@ -1234,6 +1234,11 @@
             <!--右侧编辑区-->
             <Grid Grid.Column="1">
 
+                <Border BorderThickness="0,1,1,1"
+                        Panel.ZIndex="1"
+                        CornerRadius="5"
+                        BorderBrush="{StaticResource BorderBrush}"/>
+                
                 <!--不同格式Tab-->
                 <TabControl TabStripPlacement="Bottom"
                         SelectedIndex="{Binding SelectedTab}">
@@ -1277,7 +1282,8 @@
 
                             <control:YanaRichTextBox Grid.Row="2"
                                                      x:Name="rtb"
-                                                     Html="{Binding TextData, Mode=TwoWay}"
+                                                     Text="{Binding TextData, Mode=TwoWay}"
+                                                     Html="{Binding HtmlData, Mode=TwoWay}"
                                                      FontFamily="微软雅黑"/>
                         </Grid>
                     </TabItem>
@@ -1374,11 +1380,7 @@
                     </TabItem>
 
                     <!--testTab-->
-                    <TabItem Header="&#xE7A8; &#xE890;">
-                    </TabItem>
-                    
-                    <TabItem Header="123">
-                        <control:YanaRichTextBox />
+                    <TabItem Header="test">
                     </TabItem>
                 </TabControl>
 

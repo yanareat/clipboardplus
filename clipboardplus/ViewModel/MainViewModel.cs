@@ -453,9 +453,6 @@ namespace clipboardplus.ViewModel
                 ToolUtil.CreateDesktopQuick(IsCreateDesktopQuick);
                 ToolUtil.SetMeAutoStart(IsSetMeAutoStart);
 
-                RecordList = new ObservableCollection<Record>();
-                RecordList.Add(new Record() { Id = -1, Time = DateTime.Now });
-
                 SelectedTab = 0;
                 SelectedLeftTab = 0;
                 SearchCondition = new Condition()
@@ -471,15 +468,25 @@ namespace clipboardplus.ViewModel
                     SearchPlaceholder = "请输入标题（左侧高级搜索）"
                 };
                 Console.WriteLine(" -----------------1-----------------\n");
+
                 Sqlutil = new SqlUtil<Record>(new StringBuilder("DataSource=D:/5_desktop"), DbType.Sqlite);
+
                 Console.WriteLine(" -----------------2-----------------\n");
                 //异步加载记录列表
+                RecordList = new ObservableCollection<Record>();
+                RecordList.Add(new Record() { Id = -1, Time = DateTime.Now });
                 var temp = GetRecordList();
                 if (temp.Count != 0)
                 {
                     ToolUtil.ToAsync((a) => LoadRecordList(a), temp);
                 }
+                else
+                {
+                    RecordList.Remove(RecordList.FirstOrDefault(r => r.Id == -1));
+                }
                 Console.WriteLine(" -----------------3-----------------\n");
+
+
                 var tempZone = Sqlutil.ZoneDb.GetSingle(z => z.Id == 0);
                 if(tempZone == null)
                 {
@@ -509,19 +516,29 @@ namespace clipboardplus.ViewModel
             ClipRecord.Origin = ToolUtil.ClipFrom();
 
             var clipData = Clipboard.GetDataObject();
-            foreach (var format in clipData.GetFormats())
+            if (clipData.GetDataPresent(DataFormats.Text))
             {
-                Console.WriteLine(format.Equals("HTML Format"));
-                Console.WriteLine(Clipboard.ContainsText(TextDataFormat.CommaSeparatedValue));
-                Console.WriteLine(Clipboard.ContainsText(TextDataFormat.Html));
-                Console.WriteLine(Clipboard.ContainsText(TextDataFormat.Rtf));
-                Console.WriteLine(Clipboard.ContainsText(TextDataFormat.Text));
-                Console.WriteLine(Clipboard.ContainsText(TextDataFormat.UnicodeText));
-                Console.WriteLine(Clipboard.ContainsText(TextDataFormat.Xaml));
-                Console.WriteLine(clipData.GetData(format)+"\n\n\n\n\n\n");
+                Console.WriteLine(" -----------------10-----------------\n");
+                var text = (Clipboard.GetData(DataFormats.Text) as string);
+                ClipRecord.Type = 1;
+                ClipRecord.Title = text.Trim().Length > 16 ? text.Trim().Substring(0, 16) : text.Trim();
+                ClipRecord.TextData = text;
+                ClipRecord.HtmlData = text;
+                ClipRecord.MD5 = ToolUtil.GetMD5Hash(ClipRecord.TextData, 0) + ToolUtil.GetMD5Hash(ClipRecord.Origin, 0);
+                Console.WriteLine(" -----------------7-----------------\n");
+                if (clipData.GetDataPresent(DataFormats.Html))
+                {
+                    Console.WriteLine(" -----------------10-----------------\n");
+                    var doc = (Clipboard.GetData(DataFormats.Html) as string);
+                    Console.WriteLine(doc);
+                    var num = doc.IndexOf("<html>");
+                    var html = doc.Substring(num);
+                    ClipRecord.HtmlData = html;
+                    ClipRecord.MD5 = ToolUtil.GetMD5Hash(ClipRecord.HtmlData, 0) + ToolUtil.GetMD5Hash(ClipRecord.Origin, 0);
+                    Console.WriteLine(" -----------------7-----------------\n");
+                }
             }
-
-            if (Clipboard.ContainsImage())
+            if (clipData.GetDataPresent(DataFormats.Bitmap))
             {
                 Console.WriteLine(" -----------------9-----------------\n");
                 ClipRecord.Type = 2;
@@ -529,23 +546,6 @@ namespace clipboardplus.ViewModel
                 ClipRecord.ImageData = ToolUtil.ConvertToBytes(Clipboard.GetImage());
                 ClipRecord.MD5 = ToolUtil.GetMD5Hash(ClipRecord.ImageData) + ToolUtil.GetMD5Hash(ClipRecord.Origin, 0);
                 Console.WriteLine(" -----------------6-----------------\n");
-            }
-            else
-            {
-                Console.WriteLine(" -----------------10-----------------\n");
-                ClipRecord.Type = 1;
-                ClipRecord.Title = Clipboard.GetText().Trim().Length > 16 ? Clipboard.GetText().Trim().Substring(0, 16) : Clipboard.GetText().Trim();
-                ClipRecord.TextData = Clipboard.GetText();
-                Console.WriteLine(Clipboard.ContainsData("HTML Format"));
-                if (clipData.GetDataPresent("HTML Format"))
-                {
-                    var text = (Clipboard.GetData("HTML Format") as string);
-                    var num = (Clipboard.GetData("HTML Format") as string).IndexOf("<html>");
-                    var html = text.Substring(num); 
-                    ClipRecord.TextData = html;
-                }
-                ClipRecord.MD5 = ToolUtil.GetMD5Hash(ClipRecord.TextData, 0) + ToolUtil.GetMD5Hash(ClipRecord.Origin, 0);
-                Console.WriteLine(" -----------------7-----------------\n");
             }
 
             Console.WriteLine(" -----------------10-----------------\n");
@@ -964,6 +964,29 @@ namespace clipboardplus.ViewModel
         private void RenameZone(Zone zone)
         {
             Sqlutil.ZoneDb.Update(z => new Zone() { Name = zone.Name }, r => r.Id == zone.Id);
+        }
+
+        public void saveRecord()
+        {
+
+            Console.WriteLine("ToSave...");
+            ToolUtil.ToAsync(() => {
+                Thread.Sleep(1000);                
+                ToEditTextRecord.MD5 = ToolUtil.GetMD5Hash(ToEditTextRecord.HtmlData, 0) + ToolUtil.GetMD5Hash(ToEditTextRecord.Origin, 0);
+                var temp = RecordList.AsQueryable().Where(r => r.Id == ToEditTextRecord.Id).ToList()[0];
+                temp.Title = ToEditTextRecord.Title;
+                temp.MD5 = ToEditTextRecord.MD5;
+                temp.TextData = ToEditTextRecord.TextData;
+                temp.HtmlData = ToEditTextRecord.HtmlData;
+                Sqlutil.CurrentDb.Update(r => new Record()
+                {
+                    Title = ToEditTextRecord.Title,
+                    MD5 = ToEditTextRecord.MD5,
+                    TextData = ToEditTextRecord.TextData,
+                    HtmlData = ToEditTextRecord.HtmlData
+                }, r => r.Id == ToEditTextRecord.Id);                
+            });
+            Console.WriteLine("Saved...");
         }
 
         /// <summary>

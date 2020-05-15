@@ -56,6 +56,7 @@ namespace HTMLConverter
 
                 // Check if the table contains only one cell - we want to take only its content
                 XmlElement singleCell = GetCellFromSingleCellTable(htmlElement);
+                Console.WriteLine(htmlElement.Name + "TTTTTTTTTTT");
 
                 if (singleCell != null)
                 {
@@ -65,6 +66,7 @@ namespace HTMLConverter
                     TableRowGroup trg = new TableRowGroup();
                     current.RowGroups.Add(trg);
 
+                    
                     //  Need to push skipped table elements onto sourceContext
                     for (XmlNode htmlChildNode = singleCell.FirstChild; htmlChildNode != null; htmlChildNode = htmlChildNode != null ? htmlChildNode.NextSibling : null)
                     {
@@ -112,7 +114,7 @@ namespace HTMLConverter
                             GetElementProperties(htmlElement, localProperties, childProperties, stylesheet);
                             ApplyLocalProperties(trg, childProperties,/*isBlock*/true);
 
-
+                            Console.WriteLine(htmlChildName + "iiiiiiiiiiiii");
                             // Process children of htmlChildNode, which is tbody, for tr elements
                             AddTableRowsToTableBody(trg, htmlChildNode.FirstChild, childProperties, columnStarts, stylesheet);
 
@@ -138,6 +140,7 @@ namespace HTMLConverter
                             //XmlElement xamlTableBodyElement = xamlTableElement.OwnerDocument.CreateElement(null, Xaml_TableRowGroup, _xamlNamespace);
                             TableRowGroup trg = new TableRowGroup();
 
+                            Console.WriteLine(htmlChildName + "iiiiiiiiiiiii");
                             // We use currentProperties of xamlTableElement when adding rows since the tbody element is artificially created and has 
                             // no properties of its own
                             htmlChildNode = AddTableRowsToTableBody(trg, htmlChildNode, localProperties, columnStarts, stylesheet);
@@ -214,6 +217,7 @@ namespace HTMLConverter
                     GetElementProperties(htmlChildNode as XmlElement, currentProperties, trElementCurrentProperties, stylesheet);
                     ApplyLocalProperties(tr, trElementCurrentProperties,/*isBlock*/true);
 
+                    Console.WriteLine(htmlChildNode.Name + "iiiiiiiiiiiii");
                     // TODO: apply local properties to tr element id:280 gh:281
                     AddTableCellsToTableRow(tr, htmlChildNode.FirstChild, trElementCurrentProperties, columnStarts, activeRowSpans, stylesheet);
 
@@ -239,6 +243,8 @@ namespace HTMLConverter
 
                     // This is incorrect formatting and the column starts should not be set in this case
                     Debug.Assert(columnStarts == null);
+
+                    Console.WriteLine(htmlChildNode.Name + "iiiiiiiiiiiii");
 
                     htmlChildNode = AddTableCellsToTableRow(tr, htmlChildNode, currentProperties, columnStarts, activeRowSpans, stylesheet);
 
@@ -334,7 +340,10 @@ namespace HTMLConverter
                         columnIndex = columnIndex + columnSpan;
                     }
 
-                    AddDataToTableCell(tc, htmlChildNode.FirstChild, tcElementLocalProperties, stylesheet);
+                    Console.WriteLine(htmlChildNode.Name + "yyyyyyyyyyy");
+                    Block b = AddBlock(htmlChildNode, currentProperties, stylesheet);
+                    tc.Blocks.Add(b);
+                    //AddDataToTableCell(tc, htmlChildNode.FirstChild, tcElementLocalProperties, stylesheet);
 
 
                     if (tc.Blocks.Count > 0)
@@ -377,6 +386,7 @@ namespace HTMLConverter
             for (XmlNode htmlChildNode = htmlDataStartNode; htmlChildNode != null; htmlChildNode = htmlChildNode != null ? htmlChildNode.NextSibling : null)
             {
                 // Process a new html element and add it to the td element
+                Console.WriteLine(htmlChildNode.LocalName + "zzzzzzzzzzz");
                 Block b = AddBlock(htmlChildNode, currentProperties, stylesheet);
                 if (b != null)
                 {

@@ -773,50 +773,51 @@ namespace clipboardplus.Controls
         /// <param name="block">The block.</param>
         public void cmdInsertBlock(Block block, bool EmptySectionAfter = false)
         {
-            this.cmdDelete();
-            MemoryStream ms = new MemoryStream();
-            TextRange tr = new TextRange(block.ContentStart, block.ContentEnd);
+            Editer.Document.Blocks.Add(block);
+            //this.cmdDelete();
+            //MemoryStream ms = new MemoryStream();
+            //TextRange tr = new TextRange(block.ContentStart, block.ContentEnd);
 
-            tr.Save(ms, DataFormats.XamlPackage);
-            ms.Position = 0;
+            //tr.Save(ms, DataFormats.XamlPackage);
+            //ms.Position = 0;
 
-            TextRange tr3 = new TextRange(richTextBox.CaretPosition, richTextBox.CaretPosition.GetInsertionPosition(LogicalDirection.Backward));
+            //TextRange tr3 = new TextRange(richTextBox.CaretPosition, richTextBox.CaretPosition.GetInsertionPosition(LogicalDirection.Backward));
 
-            tr3.Load(ms, DataFormats.XamlPackage);
-            ms.Flush();
-            ms.Close();
-            ms.Dispose();
+            //tr3.Load(ms, DataFormats.XamlPackage);
+            //ms.Flush();
+            //ms.Close();
+            //ms.Dispose();
 
-            TextPointer tp = tr3.End;
-            richTextBox.Selection.Select(tp, tp);
+            //TextPointer tp = tr3.End;
+            //richTextBox.Selection.Select(tp, tp);
 
-            if (EmptySectionAfter)
-            {
-                try
-                {
-                    Block b = null; Section s = null;
-                    TextPointer insert = tr3.Start;
-                    b = TryFindParent<Block>(insert.Parent as DependencyObject);
-                    s = TryFindParent<Section>(insert.Parent as DependencyObject);
+            //if (EmptySectionAfter)
+            //{
+            //    try
+            //    {
+            //        Block b = null; Section s = null;
+            //        TextPointer insert = tr3.Start;
+            //        b = TryFindParent<Block>(insert.Parent as DependencyObject);
+            //        s = TryFindParent<Section>(insert.Parent as DependencyObject);
 
-                    Paragraph newItem = new Paragraph(new Run(""));
-                    if (s == null)
-                    {
-                        if (b != null) this.Document.Blocks.InsertAfter(b, newItem);
-                        else this.Document.Blocks.Add(newItem);
-                    }
-                    else
-                    {
-                        if (b != null) s.Blocks.InsertAfter(b, newItem);
-                        else s.Blocks.Add(newItem);
-                    }
-                    richTextBox.Selection.Select(newItem.ContentStart, newItem.ContentStart);
-                }
-                catch (Exception)
-                {
+            //        Paragraph newItem = new Paragraph(new Run(""));
+            //        if (s == null)
+            //        {
+            //            if (b != null) this.Document.Blocks.InsertAfter(b, newItem);
+            //            else this.Document.Blocks.Add(newItem);
+            //        }
+            //        else
+            //        {
+            //            if (b != null) s.Blocks.InsertAfter(b, newItem);
+            //            else s.Blocks.Add(newItem);
+            //        }
+            //        richTextBox.Selection.Select(newItem.ContentStart, newItem.ContentStart);
+            //    }
+            //    catch (Exception)
+            //    {
 
-                }
-            }
+            //    }
+            //}
 
         }
 
@@ -897,8 +898,5 @@ namespace clipboardplus.Controls
         {
             richTextBox.Selection.Select(richTextBox.Selection.Start, richTextBox.Selection.Start);
         }
-
-
-
     }
 }

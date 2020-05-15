@@ -129,7 +129,7 @@ namespace HTMLConverter
                 sourceContext.Add(htmlElement);
                 // Convert the name to lowercase, because html elements are case-insensitive
                 htmlElementName = htmlElementName.ToLower();
-
+                Console.WriteLine(htmlElement.Name+"bbbbbbb");
                 // Switch to an appropriate kind of processing depending on html element name
                 switch (htmlElementName)
                 {
@@ -314,6 +314,7 @@ namespace HTMLConverter
                 Paragraph p = new Paragraph();
                 // Create currentProperties as a compilation of local and inheritedProperties, set localProperties
                 Hashtable localProperties = new Hashtable();
+                Console.WriteLine(htmlElement.Name+"44444444444444444444");
                 GetElementProperties(htmlElement, inheritedProperties, localProperties, stylesheet);
 
                 // Create a XAML element corresponding to this html element
@@ -449,7 +450,7 @@ namespace HTMLConverter
                 {
                     return null; // Skip non-html elements
                 }
-
+                Console.WriteLine(htmlElement.Name);
                 // Identify element name
                 string htmlElementName = htmlElement.LocalName.ToLower();
                 switch (htmlElementName)

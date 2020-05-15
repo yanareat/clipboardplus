@@ -148,6 +148,9 @@ namespace HTMLConverter
                 {
                     // Character fomatting properties
                     // ------------------------------
+                    case "NavigateUri":
+                        css = xamlReader.Value;
+                        break;
                     case "Background":
                         css = "background-color:" + ParseXamlColor(xamlReader.Value) + ";";
                         break;
@@ -365,9 +368,13 @@ namespace HTMLConverter
                         case XmlNodeType.SignificantWhitespace:
                             if (htmlWriter != null)
                             {
-                                if (!elementContentStarted && inlineStyle.Length > 0)
+                                if (!elementContentStarted && inlineStyle.Length > 0 && !inlineStyle.ToString().Contains("http://"))
                                 {
-                                    htmlWriter.WriteAttributeString("STYLE", inlineStyle.ToString());
+                                    htmlWriter.WriteAttributeString("style", inlineStyle.ToString());
+                                }
+                                else if (inlineStyle.ToString().Contains("http://"))
+                                {
+                                    htmlWriter.WriteAttributeString("href", inlineStyle.ToString());
                                 }
                                 htmlWriter.WriteString(xamlReader.Value);
                             }
@@ -435,6 +442,9 @@ namespace HTMLConverter
                     case "Run" :
                     case "Span":
                         htmlElementName = "SPAN";
+                        break;
+                    case "Hyperlink":
+                        htmlElementName = "A";
                         break;
                     case "InlineUIContainer":
                         htmlElementName = "SPAN";

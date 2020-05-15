@@ -24,14 +24,14 @@
                     <ToggleButton IsChecked="False"
                                   Checked="toolBarShow"
                                   Unchecked="toolBarHide"
-                                  Margin="0,0,10,0"
                                     Content="&#xE167;"
                                     FontWeight="Bold"
                                     FontSize="14"
                                     FontFamily="Segoe MDL2 Assets"/>
                     <hc:ButtonGroup>
                         <Button Content="洞"/>
-                        <Button Content="保"/>
+                        <Button Content="保"
+                                x:Name="saveBtn"/>
                         <Button Content="文"/>
                     </hc:ButtonGroup>
                     <hc:ButtonGroup>
@@ -90,6 +90,34 @@
                                         FontSize="14"
                                         FontFamily="Segoe MDL2 Assets"
                                         x:Name="textHyperlink"/>
+                        <ToggleButton HorizontalAlignment="Stretch"
+                                    Content="&#xF2B7;" 
+                                    FontSize="14"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    IsChecked="{Binding IsOpen,ElementName=DrawerRight}"/>
+                        <!--<ToggleButton x:Name="htmlBoxToggle1"
+                                    Checked="htmlBoxHide"
+                                    Unchecked="htmlBoxShow"
+                                    FontSize="14"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    Style="{StaticResource ToggleButtonFlip}">
+                            <hc:StatusSwitchElement.CheckedElement>
+                                <Border Background="{DynamicResource DefaultBrush}">
+                                    <TextBlock HorizontalAlignment="Center" 
+                                               Padding="0"
+                                               VerticalAlignment="Center" 
+                                               Text="&#xF614;" 
+                                               Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                </Border>
+                            </hc:StatusSwitchElement.CheckedElement>
+                            <Border Background="{DynamicResource DefaultBrush}">
+                                <TextBlock HorizontalAlignment="Center" 
+                                           Padding="0"
+                                           VerticalAlignment="Center"
+                                           Text="&#xF617;" 
+                                           Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            </Border>
+                        </ToggleButton>-->
                     </hc:ButtonGroup>
                     <Popup PopupAnimation="Fade"
                            HorizontalOffset="-100"
@@ -118,7 +146,7 @@
                             AllowsTransparency="True">
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="40"/>
+                                <RowDefinition Height="35"/>
                                 <RowDefinition Height="40"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
@@ -133,6 +161,7 @@
                                     BorderBrush="LightGray"/>
                             <TextBox x:Name="linkText"
                                     Margin="5,5,5,0"
+                                    FontSize="12"
                                     Grid.ColumnSpan="2"
                                     BorderThickness="1"/>
                             <Button Click="selectedToText"
@@ -180,38 +209,41 @@
                     </hc:ButtonGroup>
                     <hc:ButtonGroup>
                         <Button Content="&#xe6f4;"
+                                Padding="6,0"
+                                FontSize="20"
                                 x:Name="bn_Bullet"
                                 Click="ToggleNumberingClick"
-                                FontSize="20"
                                 FontFamily="/clipboardplus;component/Resources/Font/#iconfont"/>
                         <Button Content="&#xe6f5;"
                                 x:Name="bn_Numeric"
+                                Padding="6,0"
+                                FontSize="20"
                                 Click="ToggleBulletsClick"
-                                FontFamily="/clipboardplus;component/Resources/Font/#iconfont"
-                                FontSize="20"/>
+                                FontFamily="/clipboardplus;component/Resources/Font/#iconfont"/>
                         <Button Content="&#xE290;"
-                                Click="DecreaseIndentationClick"
+                                Padding="9,0"
                                 FontSize="16"
+                                Click="DecreaseIndentationClick"
                                 FontFamily="Segoe MDL2 Assets"/>
                         <Button Content="&#xE291;"
+                                Padding="9,0"
+                                FontSize="16"
                                 Click="IncreaseIndentationClick"
-                                FontFamily="Segoe MDL2 Assets"
-                                FontSize="16"/>
+                                FontFamily="Segoe MDL2 Assets"/>
                     </hc:ButtonGroup>
                     <hc:ButtonGroup>
                         <Button Content="&#xE1C6;"
                                 Click="DecreaseFontSizeClick"
                                 FontWeight="Bold"
-                                FontSize="16"
                                 FontFamily="Segoe MDL2 Assets"/>
                         <Button Content="&#xE1C7;"
-                                FontSize="16"
                                 Click="IncreaseFontSizeClick"
                                 FontFamily="Segoe MDL2 Assets"
                                 FontWeight="Bold"/>
                     </hc:ButtonGroup>
                     <ComboBox IsEditable="True"
                               x:Name="cb_FontName"
+                              FontSize="12"
                             ItemsSource="{Binding Source={x:Static Fonts.SystemFontFamilies}}"
                             SelectionChanged="fontNameSelected">
                         <ComboBox.ItemTemplate>
@@ -224,39 +256,12 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     <ComboBox IsEditable="True"
+                              FontSize="12"
                               x:Name="cb_FontSIze"
                               DisplayMemberPath="Name"
                               SelectedValuePath="Id"
                               SelectionChanged="fontSizeSelected">
                     </ComboBox>
-                    <!--<Separator Margin="5,0"/>
-                                <Button Content="&#xE167;"
-                                        FontFamily="Segoe MDL2 Assets"/>
-                                <Separator Margin="5,0"/>
-                                <ToggleButton HorizontalAlignment="Stretch"
-                                              Grid.Row="1" 
-                                              Grid.Column="2" 
-                                              Content="翻译" 
-                                              IsChecked="{Binding IsOpen,ElementName=DrawerRight}"/>
-                                <ToggleButton BorderThickness="0"
-                                                  x:Name="htmlBoxToggle1"
-                                              Checked="htmlBoxHide"
-                                              Unchecked="htmlBoxShow"
-                                              Margin="5,0"
-                                              FontSize="16"
-                                              FontFamily="Segoe MDL2 Assets"
-                                      Width="30"
-                                      Height="30"
-                                      Style="{StaticResource ToggleButtonFlip}">
-                                    <hc:StatusSwitchElement.CheckedElement>
-                                        <Border Background="{DynamicResource DefaultBrush}">
-                                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xF614;" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                        </Border>
-                                    </hc:StatusSwitchElement.CheckedElement>
-                                    <Border Background="{DynamicResource DefaultBrush}">
-                                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xF617;" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                    </Border>
-                                </ToggleButton>-->
                 </ToolBar>
                 <ToolBar Padding="0"
                         FontFamily="微软雅黑"
@@ -266,9 +271,11 @@
                         <Button Content="&#xE1C6;"
                                 Click="DecreaseFontSizeClick"
                                 FontWeight="Bold"
+                                Padding="8,0"
                                 FontSize="16"
                                 FontFamily="Segoe MDL2 Assets"/>
                         <Button Content="&#xE1C7;"
+                                Padding="0"
                                 FontSize="16"
                                 Click="IncreaseFontSizeClick"
                                 FontFamily="Segoe MDL2 Assets"
@@ -277,9 +284,11 @@
                                 Click="DecreaseFontSizeClick"
                                 FontWeight="Bold"
                                 FontSize="16"
+                                Padding="0"
                                 FontFamily="Segoe MDL2 Assets"/>
                         <Button Content="&#xE1C7;"
                                 FontSize="16"
+                                Padding="0"
                                 Click="IncreaseFontSizeClick"
                                 FontFamily="Segoe MDL2 Assets"
                                 FontWeight="Bold"/>
@@ -287,9 +296,11 @@
                                 Click="DecreaseFontSizeClick"
                                 FontWeight="Bold"
                                 FontSize="16"
+                                Padding="0"
                                 FontFamily="Segoe MDL2 Assets"/>
                         <Button Content="&#xE1C7;"
                                 FontSize="16"
+                                Padding="0"
                                 Click="IncreaseFontSizeClick"
                                 FontFamily="Segoe MDL2 Assets"
                                 FontWeight="Bold"/>
@@ -297,15 +308,18 @@
                                 Click="DecreaseFontSizeClick"
                                 FontWeight="Bold"
                                 FontSize="16"
+                                Padding="0"
                                 FontFamily="Segoe MDL2 Assets"/>
                     </hc:ButtonGroup>
                     <hc:ButtonGroup>
                         <Button Content="&#xE1C6;"
                                 Click="DecreaseFontSizeClick"
                                 FontWeight="Bold"
+                                Padding="8,0"
                                 FontSize="16"
                                 FontFamily="Segoe MDL2 Assets"/>
                         <Button Content="&#xE1C7;"
+                                Padding="8,0"
                                 FontSize="16"
                                 Click="IncreaseFontSizeClick"
                                 FontFamily="Segoe MDL2 Assets"
@@ -313,9 +327,11 @@
                         <Button Content="&#xE1C6;"
                                 Click="DecreaseFontSizeClick"
                                 FontWeight="Bold"
+                                Padding="8,0"
                                 FontSize="16"
                                 FontFamily="Segoe MDL2 Assets"/>
                         <Button Content="&#xE1C7;"
+                                Padding="8,0"
                                 FontSize="16"
                                 Click="IncreaseFontSizeClick"
                                 FontFamily="Segoe MDL2 Assets"
@@ -323,9 +339,11 @@
                         <Button Content="&#xE1C6;"
                                 Click="DecreaseFontSizeClick"
                                 FontWeight="Bold"
+                                Padding="8,0"
                                 FontSize="16"
                                 FontFamily="Segoe MDL2 Assets"/>
                         <Button Content="&#xE1C7;"
+                                Padding="8,0"
                                 FontSize="16"
                                 Click="IncreaseFontSizeClick"
                                 FontFamily="Segoe MDL2 Assets"
@@ -333,19 +351,18 @@
                         <Button Content="&#xE1C6;"
                                 Click="DecreaseFontSizeClick"
                                 FontWeight="Bold"
+                                Padding="8,0"
                                 FontSize="16"
                                 FontFamily="Segoe MDL2 Assets"/>
                         <Button Content="&#xE1C6;"
                                 Click="DecreaseFontSizeClick"
                                 FontWeight="Bold"
+                                Padding="8,0"
                                 FontSize="16"
                                 FontFamily="Segoe MDL2 Assets"/>
                     </hc:ButtonGroup>
-                    
 
-                </ToolBar>
-                <ToolBar Band="3">
-                    
+
                 </ToolBar>
             </ToolBarTray>
             <Grid Grid.RowSpan="2"
@@ -378,5 +395,39 @@
                              Visibility="Collapsed" />
             </Grid>
         </Grid>
+        <!--翻译,文字识别抽屉-->
+        <hc:Drawer Name="DrawerRight" 
+                       Dock="Right"
+                       ShowMask="False" 
+                       ShowMode="Push"
+                       >
+            <Border Background="{DynamicResource RegionBrush}" 
+                    Width="300" 
+                    BorderThickness="1,0,0,0" 
+                    BorderBrush="{DynamicResource BorderBrush}">
+                <Grid Margin="0,10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <!--标题-->
+                    <TextBlock Margin="10,0,0,0" 
+                                Text="文本识别" 
+                                Style="{StaticResource TextBlockTitle}" 
+                                HorizontalAlignment="Left"/>
+
+                    <!--关闭按钮-->
+                    <Button CommandTarget="{Binding}"
+                            Command="hc:ControlCommands.Close" 
+                            Grid.Row="0" HorizontalAlignment="Right"
+                            Foreground="{DynamicResource PrimaryTextBrush}" 
+                            Style="{StaticResource ButtonIcon}" 
+                            hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}"/>
+
+                    <RichTextBox Grid.Row="1" x:Name="temprich"/>
+                </Grid>
+            </Border>
+        </hc:Drawer>
     </Grid>
 </UserControl>
