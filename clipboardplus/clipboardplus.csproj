@@ -97,9 +97,27 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\ArrowTool.cs" />
+    <Compile Include="Controls\EllipseTool.cs" />
+    <Compile Include="Controls\ImageEditBar.cs" />
+    <Compile Include="Controls\KeyboardTextBox.cs" />
+    <Compile Include="Controls\LineTool.cs" />
+    <Compile Include="Controls\MainImage.cs" />
+    <Compile Include="Controls\RectangleTool.cs" />
+    <Compile Include="Controls\SizeColorBar.cs" />
+    <Compile Include="Controls\TextBoxControl.cs" />
+    <Compile Include="Controls\TextTool.cs" />
+    <Compile Include="Controls\ToolButton.cs" />
+    <Compile Include="Controls\YanaImageEditor.xaml.cs">
+      <DependentUpon>YanaImageEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\YanaRichTextBox.xaml.cs">
       <DependentUpon>YanaRichTextBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ZoomThumb.cs" />
+    <Compile Include="Converters\ColorConverter.cs" />
+    <Compile Include="Converters\SizeConverter.cs" />
+    <Compile Include="Converters\ToolConverter.cs" />
     <Compile Include="Converter\DocxReader.cs" />
     <Compile Include="Converter\DocxToFlowDocumentConverter.cs" />
     <Compile Include="Converter\htmlcssparser.cs" />
@@ -113,7 +131,16 @@
     <Compile Include="Converter\htmltokentype.cs" />
     <Compile Include="Converter\XPSHelper.cs" />
     <Compile Include="Converter\XPStoFlowDocument.cs" />
+    <Compile Include="Helpers\ImageHelper.cs" />
+    <Compile Include="Helpers\RelayCommand.cs" />
+    <Compile Include="Helpers\ScreenHelper.cs" />
+    <Compile Include="Helpers\WpfHelper.cs" />
+    <Compile Include="Model\AppModel.cs" />
+    <Compile Include="Model\Direction.cs" />
+    <Compile Include="Model\EntityBase.cs" />
+    <Compile Include="Model\Limit.cs" />
     <Compile Include="Model\Record.cs" />
+    <Compile Include="Model\Tool.cs" />
     <Compile Include="Model\Zone.cs" />
     <Compile Include="Util\HotKeySettingsManager.cs" />
     <Compile Include="Util\SqlUtil.cs" />
@@ -135,6 +162,10 @@
     <Compile Include="Yana\WpfPayload.cs" />
     <Compile Include="Yana\YanaHelper.cs" />
     <Compile Include="Controls\YanaRichTextBox.cmd.cs" />
+    <Page Include="Controls\YanaImageEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\YanaRichTextBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -151,6 +182,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Window1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

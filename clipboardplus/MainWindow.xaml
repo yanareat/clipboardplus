@@ -1381,6 +1381,7 @@
 
                     <!--testTab-->
                     <TabItem Header="test">
+                        <control:YanaImageEditor/>
                     </TabItem>
                 </TabControl>
 

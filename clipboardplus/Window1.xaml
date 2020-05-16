@@ -3,12 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:control="clr-namespace:clipboardplus.Controls"
         xmlns:local="clr-namespace:clipboardplus"
         mc:Ignorable="d"
         Title="Window1" Height="450" Width="800">
     <Grid>
-        <WebBrowser Grid.Row="1"
-                    x:Name="wb_Source"
-                                    />
+        <control:YanaImageEditor/>
     </Grid>
 </Window>

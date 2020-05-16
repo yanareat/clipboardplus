@@ -23,6 +23,7 @@ using Path = System.IO.Path;
 using System.Drawing;
 using Point = System.Windows.Point;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace clipboardplus.Util
 {
@@ -60,6 +61,24 @@ namespace clipboardplus.Util
             return buffer;
         }
 
+        public static Bitmap ConvertToBitmapImage(byte[] ImageData)
+        {
+            Bitmap img = null;
+            try
+            {
+                if (ImageData != null && ImageData.Length != 0)
+                {
+                    MemoryStream ms = new MemoryStream(ImageData);
+                    img = new Bitmap(ms);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            return img;
+        }
+
         public static BitmapImage ConvertToBitmap(byte[] ImageData)
         {
             Console.WriteLine(ImageData.Length);
@@ -75,6 +94,30 @@ namespace clipboardplus.Util
             }
             Console.WriteLine(bi == null);
             return bi;
+        }
+
+        public static BitmapImage ConvertToBitmapImage(Canvas canvas)
+        {
+            int width = (int)canvas.ActualWidth;
+            int height = (int)canvas.ActualHeight;
+            RenderTargetBitmap bmp = new RenderTargetBitmap(width, height, 96d, 96d, PixelFormats.Pbgra32);
+            bmp.Render(canvas);
+            PngBitmapEncoder encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(bmp));
+            BitmapImage bitmapImage = new BitmapImage();
+            var memoryStream = new MemoryStream();
+            encoder.Save(memoryStream);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            bitmapImage.BeginInit();
+            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+            bitmapImage.StreamSource = memoryStream;
+            bitmapImage.EndInit();
+            return bitmapImage;
+        }
+
+        public static BitmapSource GetPartImage(BitmapImage bitmap, int XCoordinate, int YCoordinate, int Width, int Height)
+        {
+            return new CroppedBitmap(bitmap, new Int32Rect(XCoordinate, YCoordinate, Width, Height));
         }
 
         /// <summary>
