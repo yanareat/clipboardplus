@@ -27,9 +27,17 @@ namespace clipboardplus
             HotKeySettingsManager.Instance.RegisterGlobalHotKeyEvent += Instance_RegisterGlobalHotKeyEvent;
             SizeChanged += MainWindow_SizeChanged;
             StateChanged += MainWindow_StateChanged;
-            imageEditToggle.IsChecked = true;
+            //imageEditToggle.IsChecked = true;
             searchBar.Focus();
-            rtb.saveBtn.Click += SaveBtn_Click;
+            rtb.SaveBtn.Click += SaveBtn_Click;
+            yie.SaveBtn.Click += ImageEditorSaveBtn_Click;
+        }
+
+        private void ImageEditorSaveBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine("\n\n\n\n\n\n222222222222222222222\n\n\n\n\n");
+            searchBar.Focus();
+            (DataContext as MainViewModel).saveRecord();
         }
 
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
@@ -424,7 +432,7 @@ namespace clipboardplus
         /// <param name="e"></param>
         private void imageEdiHide(object sender, RoutedEventArgs e)
         {
-            Panel.SetZIndex(imageViewer, 1);
+            //Panel.SetZIndex(imageViewer, 1);
             e.Handled = true;
         }
 
@@ -435,7 +443,7 @@ namespace clipboardplus
         /// <param name="e"></param>
         private void imageEdiShow(object sender, RoutedEventArgs e)
         {
-            Panel.SetZIndex(imageViewer, 0);
+            //Panel.SetZIndex(imageViewer, 0);
             e.Handled = true;
         }
 

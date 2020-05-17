@@ -152,17 +152,20 @@ namespace clipboardplus.Controls
             if ((d as YanaRichTextBox).updateUI)
             {
                 Console.WriteLine("\n\n\n\n\n\nHtml\n" + d.GetType().ToString() + "\n" + e.OldValue + "\n" + e.NewValue + "\n更新控件\n\n\n\n\n\n");
-                var yrtb = d as YanaRichTextBox;
-                TextRange textRange = new TextRange(yrtb.Editer.Document.ContentStart, yrtb.Editer.Document.ContentEnd);
-                string originText = textRange.Text;
-                yrtb.cmdSelectAll();
-                yrtb.cmdDelete();
-                Section s = HTMLConverter.HTMLToFlowConverter.ConvertHtmlToSection(e.NewValue.ToString(), yrtb.Editer.Document.PageWidth);//
-                yrtb.cmdInsertBlock(s, true);
-                HyperlinkHelper.SubscribeToAllHyperlinks(yrtb.Editer.Document);
-                if (textRange.Text == "")
+                if (e.NewValue.ToString().ToUpper().StartsWith("<HTML>"))
                 {
-                    textRange.Text = originText;
+                    var yrtb = d as YanaRichTextBox;
+                    TextRange textRange = new TextRange(yrtb.Editer.Document.ContentStart, yrtb.Editer.Document.ContentEnd);
+                    string originText = textRange.Text;
+                    yrtb.cmdSelectAll();
+                    yrtb.cmdDelete();
+                    Section s = HTMLConverter.HTMLToFlowConverter.ConvertHtmlToSection(e.NewValue.ToString(), yrtb.Editer.Document.PageWidth);//
+                    yrtb.cmdInsertBlock(s, true);
+                    HyperlinkHelper.SubscribeToAllHyperlinks(yrtb.Editer.Document);
+                    if (textRange.Text == "")
+                    {
+                        textRange.Text = originText;
+                    }
                 }
             }
             else
@@ -190,7 +193,6 @@ namespace clipboardplus.Controls
             {
                 Console.WriteLine("\n\n\n\n\n\nText\n" + d.GetType().ToString() + "\n" + e.OldValue + "\n" + e.NewValue + "\n更新源\n\n\n\n\n\n");
                 //(d as YanaRichTextBox).GetBindingExpression(TextProperty).UpdateSource();
-                (d as YanaRichTextBox).updateUI = true;
             }
             (d as YanaRichTextBox).updateRTB = false;
         }

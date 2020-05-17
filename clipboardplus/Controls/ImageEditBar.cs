@@ -29,6 +29,19 @@ namespace clipboardplus.Controls
                 _Current = value;
             }
         }
+
+        private ToolButton _currentTool;
+        public ToolButton CurrentTool
+        {
+            get
+            {
+                return _currentTool;
+            }
+            set
+            {
+                _currentTool = value;
+            }
+        }
         #endregion
 
         #region 定位

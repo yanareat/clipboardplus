@@ -197,6 +197,7 @@ namespace clipboardplus.Model
                     //return ToolUtil.ConvertToBytes(new BitmapImage(new Uri("/Resources/Images/clipboardplus.ico",UriKind.Relative)));
                 }
             }
+            set { _imageData = value; RaisePropertyChanged(() => ImageSource); }
         }
 
         /// <summary>

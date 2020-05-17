@@ -971,20 +971,36 @@ namespace clipboardplus.ViewModel
 
             Console.WriteLine("ToSave...");
             ToolUtil.ToAsync(() => {
-                Thread.Sleep(1000);                
-                ToEditTextRecord.MD5 = ToolUtil.GetMD5Hash(ToEditTextRecord.HtmlData, 0) + ToolUtil.GetMD5Hash(ToEditTextRecord.Origin, 0);
-                var temp = RecordList.AsQueryable().Where(r => r.Id == ToEditTextRecord.Id).ToList()[0];
-                temp.Title = ToEditTextRecord.Title;
-                temp.MD5 = ToEditTextRecord.MD5;
-                temp.TextData = ToEditTextRecord.TextData;
-                temp.HtmlData = ToEditTextRecord.HtmlData;
-                Sqlutil.CurrentDb.Update(r => new Record()
+                Thread.Sleep(1000);         
+                if(SelectedTab == 0)
                 {
-                    Title = ToEditTextRecord.Title,
-                    MD5 = ToEditTextRecord.MD5,
-                    TextData = ToEditTextRecord.TextData,
-                    HtmlData = ToEditTextRecord.HtmlData
-                }, r => r.Id == ToEditTextRecord.Id);                
+                    ToEditTextRecord.MD5 = ToolUtil.GetMD5Hash(ToEditTextRecord.HtmlData, 0) + ToolUtil.GetMD5Hash(ToEditTextRecord.Origin, 0);
+                    var temp = RecordList.AsQueryable().Where(r => r.Id == ToEditTextRecord.Id).ToList()[0];
+                    temp.Title = ToEditTextRecord.Title;
+                    temp.MD5 = ToEditTextRecord.MD5;
+                    temp.TextData = ToEditTextRecord.TextData;
+                    temp.HtmlData = ToEditTextRecord.HtmlData;
+                    Sqlutil.CurrentDb.Update(r => new Record()
+                    {
+                        Title = ToEditTextRecord.Title,
+                        MD5 = ToEditTextRecord.MD5,
+                        TextData = ToEditTextRecord.TextData,
+                        HtmlData = ToEditTextRecord.HtmlData
+                    }, r => r.Id == ToEditTextRecord.Id);
+                }else if(SelectedTab == 1 || SelectedTab ==2)
+                {
+                    ToEditImageRecord.MD5 = ToolUtil.GetMD5Hash(ToEditImageRecord.ImageData) + ToolUtil.GetMD5Hash(ToEditImageRecord.Origin, 0);
+                    var temp = RecordList.AsQueryable().Where(r => r.Id == ToEditImageRecord.Id).ToList()[0];
+                    temp.Title = ToEditImageRecord.Title;
+                    temp.MD5 = ToEditImageRecord.MD5;
+                    temp.ImageSource = ToEditImageRecord.ImageData;
+                    Sqlutil.CurrentDb.Update(r => new Record()
+                    {
+                        Title = ToEditImageRecord.Title,
+                        MD5 = ToEditImageRecord.MD5,
+                        ImageData = ToEditImageRecord.ImageData
+                    }, r => r.Id == ToEditImageRecord.Id);
+                }           
             });
             Console.WriteLine("Saved...");
         }

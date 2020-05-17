@@ -155,7 +155,7 @@
 
     <!--工具栏-->
     <Style TargetType="{x:Type control:ImageEditBar}">
-        <Setter Property="Width" Value="200"/>
+        <Setter Property="Width" Value="176"/>
         <Setter Property="Height" Value="20"/>
         <Setter Property="Visibility" Value="Collapsed"/>
         <Setter Property="Background" Value="{StaticResource StackPanelColor}"/>
@@ -184,9 +184,9 @@
                         <control:ToolButton Content="&#xE10E;" FontSize="12" FontFamily="Segoe MDL2 Assets" Width="14" Height="14" Tool="Revoke" ToolTip="撤销编辑" Style="{StaticResource ToolButton}">
                             <!--<Image Margin="0,-1,0,1" Width="18" Height="15" Source="/ComeCapture;component/Resources/后退.png"/>-->
                         </control:ToolButton>
-                        <control:ToolButton Content="&#xE105;" FontSize="12" FontFamily="Segoe MDL2 Assets" Width="14" Height="14" Tool="Save" ToolTip="保存" Style="{StaticResource ToolButton}">
-                            <!--<Image Margin="0,1,0,-1" Width="18" Height="15" Source="/ComeCapture;component/Resources/保存.png"/>-->
-                        </control:ToolButton>
+                        <!--<control:ToolButton Content="&#xE105;" FontSize="12" FontFamily="Segoe MDL2 Assets" Width="14" Height="14" Tool="Save" ToolTip="保存" Style="{StaticResource ToolButton}">
+                            --><!--<Image Margin="0,1,0,-1" Width="18" Height="15" Source="/ComeCapture;component/Resources/保存.png"/>--><!--
+                        </control:ToolButton>-->
                         <control:ToolButton Content="&#xE10A;" FontSize="12" FontFamily="Segoe MDL2 Assets" Width="14" Height="14" Tool="Cancel" ToolTip="退出截图" Style="{StaticResource ToolButton}">
                             <!--<Grid Width="17" Height="14">
                                 <Path Stroke="Red" StrokeThickness="4" Data="M 4,2 L 15,13"/>

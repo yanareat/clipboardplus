@@ -32,6 +32,17 @@ namespace clipboardplus.Controls
                         YanaImageEditor.Current.OnOK();
                         break;
                     default:
+                        if (YanaImageEditor.Current.ImageEditBar.CurrentTool == null)
+                        {
+                            YanaImageEditor.Current.ImageEditBar.CurrentTool = this;
+                        }else if(YanaImageEditor.Current.ImageEditBar.CurrentTool == this)
+                        {
+                            YanaImageEditor.Current.ImageEditBar.CurrentTool = null;
+                        }
+                        else
+                        {
+                            YanaImageEditor.Current.ImageEditBar.CurrentTool = this;
+                        }
                         IsChecked = !IsChecked;
                         SizeColorBar.Current.Selected = IsChecked == true ? Tool : Tool.Null;
                         break;
@@ -48,6 +59,11 @@ namespace clipboardplus.Controls
                     }
                 }
             }
+        }
+
+        public void ToOnClick()
+        {
+            OnClick();
         }
         #endregion
 

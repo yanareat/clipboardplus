@@ -1326,62 +1326,16 @@
                                 Grid.Row="2"/>
 
                             <Grid Grid.Row="2">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="40"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
 
-                                <!--工具栏-->
-                                <ToolBarTray VerticalAlignment="Top">
-                                    <ToolBar Padding="5" FontFamily="微软雅黑">
-                                        <ToggleButton HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="2" Content="识别" IsChecked="{Binding IsOpen,ElementName=DrawerRight}"/>
-                                        <ToggleButton BorderThickness="0"
-                                                  x:Name="imageEditToggle"
-                                              Checked="imageEdiHide"
-                                              Unchecked="imageEdiShow"
-                                              Margin="5,0"
-                                              FontSize="16"
-                                              FontFamily="Segoe MDL2 Assets"
-                                      Width="30"
-                                      Height="30"
-                                      Style="{StaticResource ToggleButtonFlip}">
-                                            <hc:StatusSwitchElement.CheckedElement>
-                                                <Border Background="{DynamicResource DefaultBrush}">
-                                                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xE7A8;" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                                </Border>
-                                            </hc:StatusSwitchElement.CheckedElement>
-                                            <Border Background="{DynamicResource DefaultBrush}">
-                                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="&#xE890;" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                            </Border>
-                                        </ToggleButton>
-                                    </ToolBar>
-                                </ToolBarTray>
-
-                                <!--图片浏览器-->
-                                <Grid Grid.Row="1"
-                              Panel.ZIndex="1"
-                              x:Name="imageViewer">
-                                    <hc:ImageViewer Background="{DynamicResource BackgroundBrush}" 
-                                            ImageSource="{Binding ImageData}"
-                                            FontFamily="微软雅黑"
-                                            ShowImgMap="True">
-                                    </hc:ImageViewer>
-                                </Grid>
-
-                                <!--图片编辑-->
-                                <Grid Grid.Row="1">
-                                    <Grid.Background>
-                                        <ImageBrush ImageSource="Resources/Images/transparency.png"/>
-                                    </Grid.Background>
-                                    <Image Source="{Binding ImageData}" hc:Magnifier.Instance="{x:Static hc:Magnifier.Default}"/>
-                                </Grid>
+                                <control:YanaImageEditor x:Name="yie"
+                                                         FontFamily="微软雅黑"
+                                    ImageSource="{Binding Source={StaticResource Locator},Path=Main.ToEditImageRecord.ImageData, Mode=TwoWay}"/>
                             </Grid>
                         </Grid>
                     </TabItem>
 
                     <!--testTab-->
                     <TabItem Header="test">
-                        <control:YanaImageEditor/>
                     </TabItem>
                 </TabControl>
 

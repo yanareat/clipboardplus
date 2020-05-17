@@ -67,6 +67,10 @@ namespace clipboardplus.Helpers
         //截控件
         public static BitmapSource SetBitmapSource(int x, int y, int width, int height)
         {
+            if(width == 0 || height == 0)
+            {
+                return null;
+            }
             var bounds = ScreenHelper.GetPhysicalDisplaySize();
             var screenWidth = bounds.Width;
             var screenHeight = bounds.Height;
@@ -93,6 +97,8 @@ namespace clipboardplus.Helpers
         private static StringBuilder sb = new StringBuilder();
         public static string GetRGB(int x,int y)
         {
+            x = x > 0 ? x : 0;
+            y = y > 0 ? y : 0;
             int X = _Bitmap.Width > x ? x : _Bitmap.Width - 1;
             int Y = _Bitmap.Height > y ? y : _Bitmap.Height - 1;
             //Console.WriteLine(X + "  " + Y);

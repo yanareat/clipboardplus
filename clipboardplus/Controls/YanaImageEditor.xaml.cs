@@ -1,6 +1,7 @@
 ﻿using clipboardplus.Helpers;
 using clipboardplus.Models;
 using clipboardplus.Util;
+using HandyControl.Controls;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -18,6 +19,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MessageBox = System.Windows.MessageBox;
 
 namespace clipboardplus.Controls
 {
@@ -32,7 +34,7 @@ namespace clipboardplus.Controls
             _Current = this;
             DataContext = new AppModel();
             WpfHelper.MainDispatcher = Dispatcher;
-            //SetImage();
+            imageEditToggle.IsChecked = true;
             //计算Windows项目缩放比例
             ScreenHelper.ResetScreenScale();
         }
@@ -41,6 +43,31 @@ namespace clipboardplus.Controls
         public static double ScreenHeight = SystemParameters.PrimaryScreenHeight;
         public static double ScreenScale = 1;
         public static int MinSize = 10;
+
+        bool updateUI = true;
+
+        public byte[] ImageSource
+        {
+            get { return (byte[])GetValue(ImageSourceProperty); }
+            set { SetValue(ImageSourceProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ImageSource.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ImageSourceProperty =
+            DependencyProperty.Register("ImageSource", typeof(byte[]), typeof(YanaImageEditor), new PropertyMetadata(null, new PropertyChangedCallback(OnImageSource)));
+
+        private static void OnImageSource(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if ((d as YanaImageEditor).updateUI)
+            {
+                Console.WriteLine("\n\n\n\n\n\nImageSource\n" + "\n更新控件\n\n\n\n\n\n");
+            }
+            else
+            {
+                Console.WriteLine("\n\n\n\n\n\nImageSource\n" + "\n更新源\n\n\n\n\n\n");
+            }
+        }
+
 
         //画图注册名称集合
         public List<NameAndLimit> list = new List<NameAndLimit>();
@@ -66,6 +93,11 @@ namespace clipboardplus.Controls
                 return _Current;
             }
         }
+
+        public Button SaveBtn
+        {
+            get { return this.saveBtn; }
+        }
         #endregion
 
         #region 全屏+置顶
@@ -80,11 +112,10 @@ namespace clipboardplus.Controls
         #endregion
 
         #region 设置图片
-        public void SetImage()
+        public BitmapSource SetImage()
         {
-            //var tempImage = new BitmapImage(new Uri("pack://application:,,,/Resources/Images/content_0.jpg"));
-            //Background = new ImageBrush(Helpers.ImageHelper.GetBitmapImage(ToolUtil.ConvertToBytes(tempImage)));
-            //Background = new ImageBrush(Helpers.ImageHelper.GetFullBitmapSource());
+            System.Windows.Point point = imageBrowser.PointToScreen(new System.Windows.Point(0, 0));
+            return Helpers.ImageHelper.SetBitmapSource((int)point.X, (int)point.Y, (int)imageBrowser.ActualWidth, (int)imageBrowser.ActualHeight);
         }
         #endregion
 
@@ -131,6 +162,37 @@ namespace clipboardplus.Controls
         #endregion
 
         #region 保存
+        public void OriginOnSave()
+        {
+            var sfd = new Microsoft.Win32.SaveFileDialog
+            {
+                FileName = "截图" + DateTime.Now.ToString("yyyyMMddhhmmss"),
+                Filter = "png|*.png",
+                AddExtension = true,
+                RestoreDirectory = true
+            };
+            if (sfd.ShowDialog() == true)
+            {
+                Hidden();
+                Thread t = new Thread(new ThreadStart(() =>
+                {
+                    Thread.Sleep(200);
+                    WpfHelper.SafeRun(() =>
+                    {
+                        var source = GetCapture();
+                        if (source != null)
+                        {
+                            Helpers.ImageHelper.SaveToPng(source, sfd.FileName);
+                        }
+                        OnCancel();
+                    });
+                }))
+                {
+                    IsBackground = true
+                };
+                t.Start();
+            }
+        }
         public void OnSave()
         {
             var sfd = new Microsoft.Win32.SaveFileDialog
@@ -153,7 +215,8 @@ namespace clipboardplus.Controls
                         {
                             Helpers.ImageHelper.SaveToPng(source, sfd.FileName);
                         }
-                        //Close();
+                        Show();
+                        OnCancel();
                     });
                 }))
                 {
@@ -165,27 +228,51 @@ namespace clipboardplus.Controls
         #endregion
 
         #region 获取截图
-        private BitmapSource OriginGetCapture()
+        private BitmapSource GetCapture()
         {
             System.Windows.Point point = imageBrowser.PointToScreen(new System.Windows.Point(0, 0));
-            return Helpers.ImageHelper.SetBitmapSource((int)(AppModel.Current.MaskLeftWidth + point.X + 1), (int)(AppModel.Current.MaskTopHeight + point.Y + 1), (int)MainImage.ActualWidth - 2, (int)MainImage.ActualHeight - 2);
+            return Helpers.ImageHelper.SetBitmapSource((int)(AppModel.Current.MaskLeftWidth + point.X + 2), (int)(AppModel.Current.MaskTopHeight + point.Y + 2), (int)MainImage.ActualWidth - 3, (int)MainImage.ActualHeight - 3);
         }
-
-        private BitmapSource GetCapture()
+        private BitmapSource OriginGetCapture()
         {
             return ToolUtil.GetPartImage(ToolUtil.ConvertToBitmapImage(MainCanvas), (int)(AppModel.Current.MaskLeftWidth+1), (int)(AppModel.Current.MaskTopHeight+1), (int)MainImage.ActualWidth - 2, (int)MainImage.ActualHeight - 2);
         }
         #endregion
 
         #region 退出截图
-        public void OnCancel()
+        public void OriginOnCancel()
         {
             //Close();
+        }
+        public void OnCancel()
+        {
+            Cursor = Cursors.Cross;
+            Show_Size.Visibility = Visibility.Collapsed;
+            if(ImageEditBar.CurrentTool != null)
+            {
+                ImageEditBar.CurrentTool.ToOnClick();
+            }
+            ImageEditBar.Current.Visibility = Visibility.Collapsed;
+            //SizeColorBar.Current.Visibility = Visibility.Collapsed;
+            //MainImage.ZoomThumbVisibility = Visibility.Collapsed;
+            MainImage.Current.Visibility = Visibility.Collapsed;
+            for (int i = list.Count - 1; i > -1; i--)
+            {
+                var name = list[i].Name;
+                var obj = MainCanvas.FindName(name);
+                MainCanvas.Children.Remove(obj as UIElement);
+                MainCanvas.UnregisterName(name);
+                list.RemoveAt(i);
+                MainImage.Limit = list.Count == 0 ? new Limit() : list[list.Count - 1].Limit;
+            }
+            num = 1;
+            _IsMouseDown = false;
+            _IsCapture = false;
         }
         #endregion
 
         #region 完成截图
-        public void OnOK()
+        public void OriginOnOK()
         {
             Hidden();
             Thread t = new Thread(new ThreadStart(() =>
@@ -198,7 +285,30 @@ namespace clipboardplus.Controls
                     {
                         Clipboard.SetImage(source);
                     }
-                    //Close();
+                    OnCancel();
+                });
+            }))
+            {
+                IsBackground = true
+            };
+            t.Start();
+        }
+        public void OnOK()
+        {
+            Hidden();
+            Thread t = new Thread(new ThreadStart(() =>
+            {
+                Thread.Sleep(50);
+                WpfHelper.SafeRun(() =>
+                {
+                    var source = GetCapture();
+                    if (source != null)
+                    {
+                        ImageSource = ToolUtil.ConvertToBytes(source);                        
+                    }
+                    Show();
+                    OnCancel();
+                    SetImage();
                 });
             }))
             {
@@ -224,6 +334,21 @@ namespace clipboardplus.Controls
             }
             MainImage.ZoomThumbVisibility = Visibility.Collapsed;
         }
+        private void Show()
+        {
+            //隐藏尺寸RGB框
+            if (AppModel.Current.MaskTopHeight < 40)
+            {
+                SizeRGB.Visibility = Visibility.Visible;
+            }
+            var need = SizeColorBar.Current.Selected == Tool.Null ? 30 : 67;
+            if (AppModel.Current.MaskBottomHeight < need && AppModel.Current.MaskTopHeight < need)
+            {
+                ImageEditBar.Current.Visibility = Visibility.Visible;
+                SizeColorBar.Current.Visibility = Visibility.Visible;
+            }
+            MainImage.ZoomThumbVisibility = Visibility.Visible;
+        }
         #endregion
 
         #region 鼠标及键盘事件
@@ -247,20 +372,24 @@ namespace clipboardplus.Controls
 
         private void Control_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (_IsCapture)
+            if (_IsEdit)
             {
-                return;
+                if (_IsCapture)
+                {
+                    return;
+                }
+                var point = e.GetPosition(MainCanvas);
+                _X0 = point.X;
+                _Y0 = point.Y;
+                _IsMouseDown = true;
+                Canvas.SetLeft(MainImage, _X0);
+                Canvas.SetTop(MainImage, _Y0);
+                AppModel.Current.MaskLeftWidth = _X0;
+                AppModel.Current.MaskRightWidth = MainCanvas.ActualWidth - _X0;
+                AppModel.Current.MaskTopHeight = _Y0;
+                Show_Size.Visibility = Visibility.Visible;
             }
-            var point = e.GetPosition(MainCanvas);
-            _X0 = point.X;
-            _Y0 = point.Y;
-            _IsMouseDown = true;
-            Canvas.SetLeft(MainImage, _X0);
-            Canvas.SetTop(MainImage, _Y0);
-            AppModel.Current.MaskLeftWidth = _X0;
-            AppModel.Current.MaskRightWidth = MainCanvas.ActualWidth - _X0;
-            AppModel.Current.MaskTopHeight = _Y0;
-            Show_Size.Visibility = Visibility.Visible;
+            e.Handled = true;
         }
 
         private void Window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -269,6 +398,31 @@ namespace clipboardplus.Controls
             {
                 return;
             }
+            _IsMouseDown = false;
+            if (MainImage.Width >= MinSize && MainImage.Height >= MinSize)
+            {
+                _IsCapture = true;
+                ImageEditBar.Current.Visibility = Visibility.Visible;
+                ImageEditBar.Current.ControlResetCanvas();
+                Cursor = Cursors.Arrow;
+            }
+        }
+
+        private void Control_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (_IsEdit)
+            {
+                if (!_IsMouseDown || _IsCapture)
+                {
+                    return;
+                }
+                ToMouseUp();
+            }
+            e.Handled = true;
+        }
+
+        private void ToMouseUp()
+        {
             _IsMouseDown = false;
             if (MainImage.Width >= MinSize && MainImage.Height >= MinSize)
             {
@@ -325,6 +479,12 @@ namespace clipboardplus.Controls
             if (_IsEdit)
             {
                 var point = e.GetPosition(MainCanvas);
+                if(point.X > MainCanvas.ActualWidth || point.Y > MainCanvas.ActualHeight)
+                {
+                    ToMouseUp();
+                    return;
+                }
+
                 var screenP = point;
                 AppModel.Current.ShowRGB = Helpers.ImageHelper.GetRGB((int)screenP.X, (int)screenP.Y);
                 if (_IsCapture)
@@ -362,6 +522,7 @@ namespace clipboardplus.Controls
                     AppModel.Current.ShowSizeTop = MainCanvas.ActualHeight - point.Y < 30 ? point.Y - 30 : point.Y + 10;
                 }
             }
+            e.Handled = true;
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
@@ -373,11 +534,90 @@ namespace clipboardplus.Controls
         }
         #endregion
 
-        private void editImageClick(object sender, RoutedEventArgs e)
+
+
+        private void imageEditToggle_Unchecked(object sender, RoutedEventArgs e)
         {
-            System.Windows.Point point = imageBrowser.PointToScreen(new System.Windows.Point(0, 0));
-            Helpers.ImageHelper.SetBitmapSource((int)point.X, (int)point.Y, (int)imageBrowser.ActualWidth, (int)imageBrowser.ActualHeight);
-            _IsEdit = true;
+            editPanel.Visibility = Visibility.Visible;
+            Panel.SetZIndex(imageViewer, 0);
+        }
+
+        private void imageEditToggle_Checked(object sender, RoutedEventArgs e)
+        {
+            editPanel.Visibility = Visibility.Collapsed;
+            Panel.SetZIndex(imageViewer, 1);
+        }
+
+        private void ImageAnticlockwise(object sender, RoutedEventArgs e)
+        {
+            OnCancel();
+            Cursor = Cursors.Arrow;
+            _IsEdit = false;
+            TransformedBitmap tb = new TransformedBitmap();
+            tb.BeginInit();//表示开始 TransformedBitmap 初始化。
+            tb.Source = ToolUtil.ConvertToBitmap(ImageSource);
+            RotateTransform transform = new RotateTransform(-90);//旋转角度
+            tb.Transform = transform;
+            tb.EndInit();//结束的信号 BitmapImage 初始化。
+            ImageSource = ToolUtil.ConvertToBytes(tb);//设置image控件source
+        }
+
+        private void ImageClockwise(object sender, RoutedEventArgs e)
+        {
+            OnCancel();
+            Cursor = Cursors.Arrow;
+            _IsEdit = false;
+            TransformedBitmap tb = new TransformedBitmap();
+            tb.BeginInit();//表示开始 TransformedBitmap 初始化。
+            tb.Source = ToolUtil.ConvertToBitmap(ImageSource);
+            RotateTransform transform = new RotateTransform(90);//旋转角度
+            tb.Transform = transform;
+            tb.EndInit();//结束的信号 BitmapImage 初始化。
+            ImageSource = ToolUtil.ConvertToBytes(tb);//设置image控件source
+        }
+
+        private void ImageFlipHorizontal(object sender, RoutedEventArgs e)
+        {
+            OnCancel();
+            Cursor = Cursors.Arrow;
+            _IsEdit = false;
+            TransformedBitmap tb = new TransformedBitmap();
+            tb.BeginInit();//表示开始 TransformedBitmap 初始化。
+            tb.Source = ToolUtil.ConvertToBitmap(ImageSource);
+            ScaleTransform transform = new ScaleTransform(-1, 1);//旋转角度
+            tb.Transform = transform;
+            tb.EndInit();//结束的信号 BitmapImage 初始化。
+            ImageSource = ToolUtil.ConvertToBytes(tb);//设置image控件source
+        }
+
+        private void ImageFlipVertical(object sender, RoutedEventArgs e)
+        {
+            OnCancel();
+            Cursor = Cursors.Arrow;
+            _IsEdit = false;
+            TransformedBitmap tb = new TransformedBitmap();
+            tb.BeginInit();//表示开始 TransformedBitmap 初始化。
+            tb.Source = ToolUtil.ConvertToBitmap(ImageSource);
+            ScaleTransform transform = new ScaleTransform(1, -1);//旋转角度
+            tb.Transform = transform;
+            tb.EndInit();//结束的信号 BitmapImage 初始化。
+            ImageSource = ToolUtil.ConvertToBytes(tb);//设置image控件source
+        }
+
+        private void ImageEditOpen(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine(imageBrowser.ActualWidth + "--" + imageBrowser.ActualHeight + "--" + MainCanvas.ActualWidth + "--" + MainCanvas.ActualHeight);
+            if (SetImage() != null)
+            {
+                Cursor = Cursors.Cross;
+                _IsEdit = true;
+            }
+        }
+
+        private void ImageEditClose(object sender, RoutedEventArgs e)
+        {
+            Cursor = Cursors.Arrow;
+            _IsEdit = false;
         }
     }
 }
