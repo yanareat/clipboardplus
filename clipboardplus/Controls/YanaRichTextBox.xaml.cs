@@ -152,7 +152,7 @@ namespace clipboardplus.Controls
             if ((d as YanaRichTextBox).updateUI)
             {
                 Console.WriteLine("\n\n\n\n\n\nHtml\n" + d.GetType().ToString() + "\n" + e.OldValue + "\n" + e.NewValue + "\n更新控件\n\n\n\n\n\n");
-                if (e.NewValue.ToString().ToUpper().StartsWith("<HTML>"))
+                if (e.NewValue.ToString().ToUpper().StartsWith("<HTML"))
                 {
                     var yrtb = d as YanaRichTextBox;
                     TextRange textRange = new TextRange(yrtb.Editer.Document.ContentStart, yrtb.Editer.Document.ContentEnd);

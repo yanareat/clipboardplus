@@ -531,7 +531,7 @@ namespace clipboardplus.ViewModel
                     Console.WriteLine(" -----------------10-----------------\n");
                     var doc = (Clipboard.GetData(DataFormats.Html) as string);
                     Console.WriteLine(doc);
-                    var num = doc.IndexOf("<html>");
+                    var num = doc.IndexOf("<html");
                     var html = doc.Substring(num);
                     ClipRecord.HtmlData = html;
                     ClipRecord.MD5 = ToolUtil.GetMD5Hash(ClipRecord.HtmlData, 0) + ToolUtil.GetMD5Hash(ClipRecord.Origin, 0);
