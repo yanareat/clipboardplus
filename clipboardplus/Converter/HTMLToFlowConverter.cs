@@ -338,7 +338,7 @@ namespace HTMLConverter
                 }
                 else return null;
 
-            } catch(Exception)
+            } catch(Exception error)
             {
                 return null; 
             }

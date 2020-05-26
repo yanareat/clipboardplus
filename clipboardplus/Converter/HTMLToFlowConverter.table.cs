@@ -33,7 +33,7 @@ namespace HTMLConverter
 
         private void FillTableWithEmptyCells(Table t)
         {
-                    foreach(TableRowGroup trg in t.RowGroups)
+            foreach(TableRowGroup trg in t.RowGroups)
             {
                 foreach(TableRow tr in trg.Rows)
                 {

@@ -1,0 +1,78 @@
+﻿<UserControl x:Class="clipboardplus.Controls.AddTable"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:clipboardplus.Controls"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             Name="UC"
+             Margin="0"
+             Cursor="Hand"
+             d:DesignHeight="30"
+             d:DesignWidth="36"
+             mc:Ignorable="d">
+    <Grid>
+
+        <ToggleButton x:Name="AddTableButton"
+                      Content="&#xE80A;"
+                      FontFamily="Segoe MDL2 Assets"
+                      FontSize="16"
+                      Width="34"
+                      Height="30"
+                      Margin="0"
+                      HorizontalAlignment="Stretch"
+                      HorizontalContentAlignment="Stretch"
+                      VerticalContentAlignment="Stretch"
+                      Checked="AddTableButton_Checked"
+                      IsChecked="False"
+                      Padding="8,0"/>
+        <Popup x:Name="popup"
+               AllowsTransparency="True"
+               Focusable="True"
+               IsOpen="{Binding Path=IsChecked,
+                                ElementName=AddTableButton}"
+               Placement="Bottom"
+               PlacementTarget="{Binding ElementName=AddTableButton}"
+               PopupAnimation="Fade"
+               SnapsToDevicePixels="True"
+               StaysOpen="False">
+            <Border BorderBrush="DarkGray" BorderThickness="0">
+                <Grid Background="#FFFFFFFF">
+                    <Border Background="White"
+                            BorderBrush="#999999"
+                            BorderThickness="1">
+                        <StackPanel Background="#FFFFFFFF" Orientation="Vertical">
+
+                            <Border Height="23"
+                                    Background="#DDE7EE"
+                                    BorderBrush="#BFBFBF"
+                                    BorderThickness="0,0,0,2">
+                                <DockPanel>
+                                    <Label x:Name="lb_Name"
+                                           Padding="0"
+                                           Background="Transparent"
+                                           VerticalAlignment="Center"
+                                           VerticalContentAlignment="Center"
+                                           Content="Insert Table"
+                                           FontFamily="Arial"
+                                           FontSize="11"
+                                           FontWeight="Bold"
+                                           Foreground="DarkBlue"
+                                           SnapsToDevicePixels="True" />
+                                </DockPanel>
+                            </Border>
+                            <StackPanel x:Name="SecondRow"
+                                        Margin="2"
+                                        Orientation="Horizontal"
+                                        SnapsToDevicePixels="True">
+                                <Grid x:Name="gd_Grid" Background="White" />
+
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+        </Popup>
+    </Grid>
+</UserControl>
+
+

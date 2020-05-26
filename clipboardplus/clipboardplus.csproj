@@ -61,6 +61,10 @@
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationUI, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\PresentationUI.dll</HintPath>
+    </Reference>
     <Reference Include="ReachFramework" />
     <Reference Include="SqlSugar, Version=5.0.0.14, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\sqlSugar.5.0.0.14\lib\SqlSugar.dll</HintPath>
@@ -75,6 +79,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Printing" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\MvvmLightLibs.5.4.1.1\lib\net45\System.Windows.Interactivity.dll</HintPath>
@@ -97,12 +102,22 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\AddTable.xaml.cs">
+      <DependentUpon>AddTable.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ArrowTool.cs" />
+    <Compile Include="Controls\ButtonImg.xaml.cs">
+      <DependentUpon>ButtonImg.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ButtonToggle.xaml.cs">
+      <DependentUpon>ButtonToggle.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\EllipseTool.cs" />
     <Compile Include="Controls\ImageEditBar.cs" />
     <Compile Include="Controls\KeyboardTextBox.cs" />
     <Compile Include="Controls\LineTool.cs" />
     <Compile Include="Controls\MainImage.cs" />
+    <Compile Include="Controls\PrintPreview.cs" />
     <Compile Include="Controls\RectangleTool.cs" />
     <Compile Include="Controls\SizeColorBar.cs" />
     <Compile Include="Controls\TextBoxControl.cs" />
@@ -147,9 +162,6 @@
     <Compile Include="Util\ToolUtil.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
-    <Compile Include="Window1.xaml.cs">
-      <DependentUpon>Window1.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Yana\Core.cs" />
     <Compile Include="Yana\DocRuler.cs" />
     <Compile Include="Yana\DocumentPaginator.cs" />
@@ -162,6 +174,18 @@
     <Compile Include="Yana\WpfPayload.cs" />
     <Compile Include="Yana\YanaHelper.cs" />
     <Compile Include="Controls\YanaRichTextBox.cmd.cs" />
+    <Page Include="Controls\AddTable.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\ButtonImg.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\ButtonToggle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\YanaImageEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -182,13 +206,17 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Themes\Generic.xaml">
+    <Page Include="Resources\Icon\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Window1.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Themes\Controls.DocumentViewer.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>

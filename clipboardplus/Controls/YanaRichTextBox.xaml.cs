@@ -130,6 +130,20 @@ namespace clipboardplus.Controls
             UpdateVisualState();
         }
 
+        private SolidColorBrush _borderBrush;
+        public SolidColorBrush borderBrush
+        {
+            get { return _borderBrush; }
+            set { _borderBrush = value; }
+        }
+
+        private SolidColorBrush _cellBrush;
+        public SolidColorBrush CellBrush
+        {
+            get { return _cellBrush; }
+            set { _cellBrush = value; }
+        }
+
         public string Text
         {
             get { return (string)GetValue(TextProperty); }
@@ -215,20 +229,15 @@ namespace clipboardplus.Controls
 
         private void UpdateTableState()
         {
-            //if (richTextBox.isTable)
-            //{
-            //    sp_Table.Visibility = Visibility.Visible;
-            //    Thickness thick = richTextBox.TableBorderTickness;
+            if (isTable)
+            {
+                Thickness thick = TableBorderTickness;
 
-            //    bt_Left.isChecked = (thick.Left > 0 ? true : false);
-            //    bt_Right.isChecked = (thick.Right > 0 ? true : false);
-            //    bt_Top.isChecked = (thick.Top > 0 ? true : false);
-            //    bt_Bottom.isChecked = (thick.Bottom > 0 ? true : false);
-            //}
-            //else
-            //{
-            //    sp_Table.Visibility = Visibility.Collapsed;
-            //}
+                bt_Left.isChecked = (thick.Left > 0 ? true : false);
+                bt_Right.isChecked = (thick.Right > 0 ? true : false);
+                bt_Top.isChecked = (thick.Top > 0 ? true : false);
+                bt_Bottom.isChecked = (thick.Bottom > 0 ? true : false);
+            }
         }
 
         #endregion
@@ -420,6 +429,207 @@ namespace clipboardplus.Controls
         {
             Grid.SetRowSpan(rtbGrid, 2);
             Grid.SetRow(rtbGrid, 1);
+        }
+
+        private void bn_Open_Click(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.DefaultExt = "*.xaml";
+            dlg.Filter = "XAML File (*.xaml)|*.xaml|Word File (*.docx)|*.docx|XPS File (*.xps)|*.xps";
+
+            Nullable<bool> result = dlg.ShowDialog();
+
+
+            if (result == true)
+            {
+                // Open document 
+                string filename = dlg.FileName;
+                LoadFile(filename);
+            }
+        }
+
+        private void bn_Save_Click(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+            dlg.DefaultExt = "*.xaml";
+            dlg.Filter = "XAML File (*.xaml)|*.xaml|XPS File (*.xps)|*.xps|PDF File (*.pdf)|*.pdf";
+
+            Nullable<bool> result = dlg.ShowDialog();
+
+            if (result == true)
+            {
+                string ext = SaveFile(dlg.FileName);
+                if (!ext.Equals(".XAML"))
+                {
+                    System.Diagnostics.Process.Start(dlg.FileName);
+                }
+            }
+        }
+
+        private void bn_PDF_Click(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+            dlg.DefaultExt = "*.pdf";
+            dlg.Filter = "PDF File (*.pdf)|*.pdf";
+
+            Nullable<bool> result = dlg.ShowDialog();
+
+            if (result == true)
+            {
+                SaveFilePDF(dlg.FileName);
+                System.Diagnostics.Process.Start(dlg.FileName);
+
+            }
+        }
+
+        private void bn_PrintPreview_Click(object sender, RoutedEventArgs e)
+        {
+            if (yanapp.Visibility == Visibility.Collapsed)
+            {
+                yanapp.Document = DocumentFixedGet();
+                yanapp.Visibility = Visibility.Visible;
+
+                ClearAdorners();
+                richTextBox.Visibility = Visibility.Collapsed;
+
+            }
+            else
+            {
+                yanapp.Visibility = Visibility.Collapsed;
+                richTextBox.Visibility = Visibility.Visible;
+                Focus();
+
+                InvalidateVisual();
+            }
+
+        }
+
+        private void bn_RowAbove_Click(object sender, RoutedEventArgs e)
+        {
+            Focus();
+            cmdTableRowAddAbove();
+        }
+
+        private void bn_RowDel_Click(object sender, RoutedEventArgs e)
+        {
+            Focus();
+
+            cmdTableRowRemove();
+        }
+
+        private void bn_RowBelow_Click(object sender, RoutedEventArgs e)
+        {
+            Focus();
+
+            cmdTableRowAddBelow();
+        }
+
+        private void bn_ColLeft_Click(object sender, RoutedEventArgs e)
+        {
+            Focus();
+
+            cmdTableColAddLeft();
+        }
+
+        private void bn_ColDel_Click(object sender, RoutedEventArgs e)
+        {
+            Focus();
+
+            cmdTableColRemove();
+        }
+
+        private void bn_ColRight_Click(object sender, RoutedEventArgs e)
+        {
+            Focus();
+
+            cmdTableColAddRight();
+        }
+
+        private void bn_BorderColor_Click(object sender, HandyControl.Data.FunctionEventArgs<Color> e)
+        {
+            Focus();
+            borderBrush = new SolidColorBrush(e.Info);
+            cmdTableSetBorderColor(borderBrush);
+            borderColor.IsChecked = false;
+            e.Handled = true;
+        }
+
+        private void bn_BorderColor_UnClick(object sender, EventArgs e)
+        {
+            Focus();
+            borderBrush = new SolidColorBrush(Color.FromRgb(64,64,64));
+            cmdTableSetBorderColor(borderBrush);
+            borderColor.IsChecked = false;
+        }
+
+        private void bn_BackCellChange_Click(object sender, HandyControl.Data.FunctionEventArgs<Color> e)
+        {
+            Focus();
+            CellBrush = new SolidColorBrush(e.Info);
+            cmdTableSetCellColor(CellBrush);
+            tableBackground.IsChecked = false;
+            e.Handled = true;
+        }
+
+        private void bn_BackCellChange_UnClick(object sender, EventArgs e)
+        {
+            Focus();
+            CellBrush = new SolidColorBrush(Colors.Transparent);
+            cmdTableSetCellColor(CellBrush);
+            tableBackground.IsChecked = false;
+        }
+
+        private void bn_BorderAll(object sender, RoutedEventArgs e)
+        {
+            Focus();
+
+            cmdTableSetBorder(new Thickness(1, 1, 1, 1), true, borderBrush);
+            this.UpdateTableState();
+        }
+
+        private void bn_BorderClear(object sender, RoutedEventArgs e)
+        {
+            Focus();
+            cmdTableSetBorder(new Thickness(0, 0, 0, 0), false, borderBrush);
+            this.UpdateTableState();
+        }
+
+        private void bn_BorderLeft(object sender, RoutedEventArgs e)
+        {
+            Focus();
+            cmdTableSetBorderLeft((bt_Left.isChecked ? 1.0 : 0.0), borderBrush);
+        }
+
+        private void bn_BorderRight(object sender, RoutedEventArgs e)
+        {
+            Focus();
+
+            cmdTableSetBorderRight((bt_Right.isChecked ? 1.0 : 0.0), borderBrush);
+        }
+
+        private void bn_BorderTop(object sender, RoutedEventArgs e)
+        {
+            Focus();
+            cmdTableSetBorderTop((bt_Top.isChecked ? 1.0 : 0.0), borderBrush);
+        }
+
+        private void bn_BorderBottom(object sender, RoutedEventArgs e)
+        {
+            Focus();
+            cmdTableSetBorderBottom((bt_Bottom.isChecked ? 1.0 : 0.0), borderBrush);
+        }
+
+        private void bn_AddTable_TableChange(object sender, RoutedEventArgs e)
+        {
+            Focus();
+            int i = bn_AddTable.CurrentSize.Value.Key;
+            int j = bn_AddTable.CurrentSize.Value.Value;
+
+            if (i > 0 && j > 0)
+            {
+                cmdTableAdd(i, j);
+            }
+
         }
 
         #region 搜索框

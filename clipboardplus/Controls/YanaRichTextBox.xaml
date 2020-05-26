@@ -29,10 +29,26 @@
                                     FontSize="14"
                                     FontFamily="Segoe MDL2 Assets"/>
                     <hc:ButtonGroup>
-                        <Button Content="洞"/>
-                        <Button Content="保"
-                                x:Name="saveBtn"/>
-                        <Button Content="文"/>
+                        <Button Content="&#xE838;"
+                                Click="bn_Open_Click"
+                                FontWeight="Bold"
+                                FontFamily="Segoe MDL2 Assets"/>
+                        <Button Content="&#xE105;"
+                                x:Name="saveBtn"
+                                FontFamily="Segoe MDL2 Assets"/>
+                        <Button Content="&#xE160;"
+                                Click="bn_Save_Click"
+                                FontWeight="Bold"
+                                FontFamily="Segoe MDL2 Assets"/>
+                    </hc:ButtonGroup>
+                    <hc:ButtonGroup>
+                        <Button Content="&#xE749;"
+                                Click="bn_PrintPreview_Click"
+                                FontWeight="Bold"
+                                FontFamily="Segoe MDL2 Assets"/>
+                        <Button Content="&#xEA90;"
+                                Click="bn_PDF_Click"
+                                FontFamily="Segoe MDL2 Assets"/>
                     </hc:ButtonGroup>
                     <hc:ButtonGroup>
                         <Button Content="&#xE10E;"
@@ -43,20 +59,10 @@
                                 Click="RedoClick"
                                 FontFamily="Segoe MDL2 Assets"
                                 FontWeight="Bold"/>
-                    </hc:ButtonGroup>
-                    <hc:ButtonGroup>
-                        <Button Content="&#xE10E;"
-                                Click="UndoClick"
-                                FontWeight="Bold"
-                                FontFamily="Segoe MDL2 Assets"/>
-                        <Button Content="&#xE10D;"
+                        <!--<Button Content="&#xE10D;"
                                 Click="RedoClick"
                                 FontFamily="Segoe MDL2 Assets"
-                                FontWeight="Bold"/>
-                        <Button Content="&#xE10D;"
-                                Click="RedoClick"
-                                FontFamily="Segoe MDL2 Assets"
-                                FontWeight="Bold"/>
+                                FontWeight="Bold"/>-->
                     </hc:ButtonGroup>
                     <hc:ButtonGroup>
                         <Button Content="&#xE19B;"
@@ -267,102 +273,121 @@
                         FontFamily="微软雅黑"
                         Margin="0"
                         Band="2">
-                    <hc:ButtonGroup>
-                        <Button Content="&#xE1C6;"
-                                Click="DecreaseFontSizeClick"
-                                FontWeight="Bold"
-                                Padding="8,0"
-                                FontSize="16"
-                                FontFamily="Segoe MDL2 Assets"/>
-                        <Button Content="&#xE1C7;"
-                                Padding="0"
-                                FontSize="16"
-                                Click="IncreaseFontSizeClick"
-                                FontFamily="Segoe MDL2 Assets"
-                                FontWeight="Bold"/>
-                        <Button Content="&#xE1C6;"
-                                Click="DecreaseFontSizeClick"
-                                FontWeight="Bold"
-                                FontSize="16"
-                                Padding="0"
-                                FontFamily="Segoe MDL2 Assets"/>
-                        <Button Content="&#xE1C7;"
-                                FontSize="16"
-                                Padding="0"
-                                Click="IncreaseFontSizeClick"
-                                FontFamily="Segoe MDL2 Assets"
-                                FontWeight="Bold"/>
-                        <Button Content="&#xE1C6;"
-                                Click="DecreaseFontSizeClick"
-                                FontWeight="Bold"
-                                FontSize="16"
-                                Padding="0"
-                                FontFamily="Segoe MDL2 Assets"/>
-                        <Button Content="&#xE1C7;"
-                                FontSize="16"
-                                Padding="0"
-                                Click="IncreaseFontSizeClick"
-                                FontFamily="Segoe MDL2 Assets"
-                                FontWeight="Bold"/>
-                        <Button Content="&#xE1C6;"
-                                Click="DecreaseFontSizeClick"
-                                FontWeight="Bold"
-                                FontSize="16"
-                                Padding="0"
-                                FontFamily="Segoe MDL2 Assets"/>
-                    </hc:ButtonGroup>
-                    <hc:ButtonGroup>
-                        <Button Content="&#xE1C6;"
-                                Click="DecreaseFontSizeClick"
-                                FontWeight="Bold"
-                                Padding="8,0"
-                                FontSize="16"
-                                FontFamily="Segoe MDL2 Assets"/>
-                        <Button Content="&#xE1C7;"
-                                Padding="8,0"
-                                FontSize="16"
-                                Click="IncreaseFontSizeClick"
-                                FontFamily="Segoe MDL2 Assets"
-                                FontWeight="Bold"/>
-                        <Button Content="&#xE1C6;"
-                                Click="DecreaseFontSizeClick"
-                                FontWeight="Bold"
-                                Padding="8,0"
-                                FontSize="16"
-                                FontFamily="Segoe MDL2 Assets"/>
-                        <Button Content="&#xE1C7;"
-                                Padding="8,0"
-                                FontSize="16"
-                                Click="IncreaseFontSizeClick"
-                                FontFamily="Segoe MDL2 Assets"
-                                FontWeight="Bold"/>
-                        <Button Content="&#xE1C6;"
-                                Click="DecreaseFontSizeClick"
-                                FontWeight="Bold"
-                                Padding="8,0"
-                                FontSize="16"
-                                FontFamily="Segoe MDL2 Assets"/>
-                        <Button Content="&#xE1C7;"
-                                Padding="8,0"
-                                FontSize="16"
-                                Click="IncreaseFontSizeClick"
-                                FontFamily="Segoe MDL2 Assets"
-                                FontWeight="Bold"/>
-                        <Button Content="&#xE1C6;"
-                                Click="DecreaseFontSizeClick"
-                                FontWeight="Bold"
-                                Padding="8,0"
-                                FontSize="16"
-                                FontFamily="Segoe MDL2 Assets"/>
-                        <Button Content="&#xE1C6;"
-                                Click="DecreaseFontSizeClick"
-                                FontWeight="Bold"
-                                Padding="8,0"
-                                FontSize="16"
-                                FontFamily="Segoe MDL2 Assets"/>
-                    </hc:ButtonGroup>
-
-
+                    <local:AddTable x:Name="bn_AddTable"
+                                    TableChange="bn_AddTable_TableChange"
+                                    ToolTip="Add Table" />
+                    <local:ButtonImg Click="bn_RowAbove_Click"
+                                     Image="{StaticResource appbar_cell_insert_above}"
+                                     ToolTip="All border"
+                                     Margin="-1,0"/>
+                    <local:ButtonImg Click="bn_RowDel_Click"
+                                     Image="{StaticResource appbar_cell_row_delete}"
+                                     ToolTip="All border"
+                                     Margin="-1,0"/>
+                    <local:ButtonImg Click="bn_RowBelow_Click"
+                                     Image="{StaticResource appbar_cell_insert_below}"
+                                     ToolTip="All border"
+                                     Margin="-1,0"/>
+                    <local:ButtonImg Click="bn_ColLeft_Click"
+                                     Image="{StaticResource appbar_cell_insert_below}"
+                                     RenderTransformOrigin="0.5,0.5"
+                                     ToolTip="All border"
+                                     Margin="-1,0">
+                        <local:ButtonImg.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="0.78" ScaleY="1.2"/>
+                                <SkewTransform />
+                                <RotateTransform Angle="90" />
+                                <TranslateTransform />
+                            </TransformGroup>
+                        </local:ButtonImg.RenderTransform>
+                    </local:ButtonImg>
+                    <local:ButtonImg Click="bn_ColDel_Click"
+                                     Image="{StaticResource appbar_cell_row_delete}"
+                                     RenderTransformOrigin="0.5,0.5"
+                                     ToolTip="All border"
+                                     Margin="-1,0">
+                        <local:ButtonImg.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="0.83" ScaleY="1.2"/>
+                                <SkewTransform />
+                                <RotateTransform Angle="90" />
+                                <TranslateTransform />
+                            </TransformGroup>
+                        </local:ButtonImg.RenderTransform>
+                    </local:ButtonImg>
+                    <local:ButtonImg Click="bn_ColRight_Click"
+                                     Image="{StaticResource appbar_cell_insert_above}"
+                                     RenderTransformOrigin="0.5,0.5"
+                                     ToolTip="All border"
+                                     Margin="-1,0">
+                        <local:ButtonImg.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="0.83" ScaleY="1.2"/>
+                                <SkewTransform />
+                                <RotateTransform Angle="90" />
+                                <TranslateTransform />
+                            </TransformGroup>
+                        </local:ButtonImg.RenderTransform>
+                    </local:ButtonImg>
+                    <ToggleButton IsChecked="False"
+                                      Content="&#xE922;"
+                                      FontWeight="Bold"
+                                      FontSize="14"
+                                      FontFamily="Segoe MDL2 Assets"
+                                      x:Name="borderColor"/>
+                    <ToggleButton IsChecked="False"
+                                        Content="&#xE790;"
+                                        FontWeight="Bold"
+                                        FontSize="14"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        x:Name="tableBackground"/>
+                    <Popup PopupAnimation="Fade"
+                           HorizontalOffset="-100"
+                            PlacementTarget="{Binding ElementName=borderColor}"
+                            Placement="Bottom"
+                            StaysOpen="True" 
+                            IsOpen="{Binding IsChecked,ElementName=borderColor,Mode=OneWay}">
+                        <hc:ColorPicker SelectedColorChanged="bn_BorderColor_Click"
+                                        Canceled="bn_BorderColor_UnClick"/>
+                    </Popup>
+                    <Popup PopupAnimation="Fade"
+                           HorizontalOffset="-100"
+                            PlacementTarget="{Binding ElementName=tableBackground}"
+                            Placement="Bottom"
+                            StaysOpen="True" 
+                            IsOpen="{Binding IsChecked,ElementName=tableBackground,Mode=OneWay}">
+                        <hc:ColorPicker SelectedColorChanged="bn_BackCellChange_Click"
+                                        Canceled="bn_BackCellChange_UnClick"/>
+                    </Popup>
+                    <local:ButtonImg Click="bn_BorderClear"
+                                     Image="{StaticResource appbar_border_none}"
+                                     ToolTip="All border"
+                                     Margin="-1,0"/>
+                    <local:ButtonToggle Click="bn_BorderLeft"
+                                     x:Name="bt_Left"
+                                     Image="{StaticResource appbar_border_left}"
+                                     ToolTip="All border"
+                                     Margin="-1,0"/>
+                    <local:ButtonToggle Click="bn_BorderTop"
+                                     x:Name="bt_Top"
+                                     Image="{StaticResource appbar_border_top}"
+                                     ToolTip="All border"
+                                     Margin="-1,0"/>
+                    <local:ButtonToggle Click="bn_BorderRight"
+                                     x:Name="bt_Right"
+                                     Image="{StaticResource appbar_border_right}"
+                                     ToolTip="All border"
+                                     Margin="-1,0"/>
+                    <local:ButtonToggle Click="bn_BorderBottom"
+                                     x:Name="bt_Bottom"
+                                     Image="{StaticResource appbar_border_bottom}"
+                                     ToolTip="All border"
+                                     Margin="-1,0"/>
+                    <local:ButtonImg Click="bn_BorderAll"
+                                     Image="{StaticResource appbar_border_all}"
+                                     ToolTip="All border"
+                                     Margin="-1,0"/>
                 </ToolBar>
             </ToolBarTray>
             <Grid Grid.RowSpan="2"
@@ -376,7 +401,7 @@
                 <hc:TextBox x:Name="SearchTermTextBox"
                          hc:InfoElement.Placeholder="Search/Command [CTRL+Q]"
                          KeyDown="SearchTermTextBox_KeyDown"
-                         TextChanged="SearchTermTextBox_TextChanged"/>
+                         TextChanged="SearchTermTextBox_TextChanged" Grid.ColumnSpan="2"/>
 
                 <RichTextBox Grid.Row="1"
                              x:Name="richTextBox"
@@ -388,11 +413,17 @@
                              LostFocus="richTextBox_LostFocus"
                              CommandManager.PreviewExecuted="richTextBox_PreviewExecuted"
                              ScrollViewer.ScrollChanged="richTextBox_ScrollChanged"
-                             SpellCheck.IsEnabled="False"/> <!--LostFocus="richTextBox_LostFocus"-->
+                             SpellCheck.IsEnabled="False" Grid.ColumnSpan="2"/>
+                <!--LostFocus="richTextBox_LostFocus"-->
                 <ProgressBar x:Name="progressGrid"
                              Grid.Row="1"
                              Panel.ZIndex="1"
-                             Visibility="Collapsed" />
+                             Visibility="Collapsed"
+                             Margin="0,154,0,155" />
+                <local:PrintPreview x:Name="yanapp"
+                                    Style="{StaticResource DocumentViewerStyle}"
+                                Grid.Row="1"
+                                Visibility="Collapsed" />
             </Grid>
         </Grid>
         <!--翻译,文字识别抽屉-->
