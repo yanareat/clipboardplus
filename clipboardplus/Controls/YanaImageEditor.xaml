@@ -34,21 +34,42 @@
                     </Border>
                 </ToggleButton>
                 <ToggleButton HorizontalAlignment="Stretch"
-                              Content="识" 
-                              IsChecked="{Binding IsOpen,ElementName=DrawerRight}"/>
+                              Content="&#xe686;"
+                              Padding="5,0"
+                              FontSize="20"
+                              IsChecked="{Binding IsOpen,ElementName=DrawerRight}" 
+                              FontFamily="/clipboardplus;component/Resources/Font/#iconfont"/>
                 <StackPanel Orientation="Horizontal"
                             x:Name="editPanel">
                     <hc:ButtonGroup>
-                        <Button Click="ImageAnticlockwise" Content="逆"/>
-                        <Button Click="ImageClockwise" Content="顺"/>
-                        <Button Click="ImageFlipHorizontal" Content="水"/>
-                        <Button Click="ImageFlipVertical" Content="垂"/>
+                        <Button Click="ImageAnticlockwise"
+                                Content="&#xe65a;"
+                              Padding="5,0"
+                              FontSize="20" FontFamily="/clipboardplus;component/Resources/Font/#iconfont"/>
+                        <Button Click="ImageClockwise"
+                                Content="&#xe65c;"
+                              Padding="5,0"
+                              FontSize="20" FontFamily="/clipboardplus;component/Resources/Font/#iconfont"/>
+                        <Button Click="ImageFlipHorizontal"
+                                Content="&#xe65f;"
+                              Padding="5,0"
+                              FontSize="20" FontFamily="/clipboardplus;component/Resources/Font/#iconfont"/>
+                        <Button Click="ImageFlipVertical"
+                                Content="&#xe660;"
+                              Padding="5,0"
+                              FontSize="20" FontFamily="/clipboardplus;component/Resources/Font/#iconfont"/>
                     </hc:ButtonGroup>
                     <ToggleButton HorizontalAlignment="Stretch"
-                              Content="编"
+                              Content="&#xF406;"
+                                  Padding="5,0"
+                                  FontSize="18"
+                              FontFamily="Segoe MDL2 Assets"
                               Checked="ImageEditOpen"
                               Unchecked="ImageEditClose"/>
-                    <Button x:Name="saveBtn" Content="保"/>
+                    <Button x:Name="saveBtn" Content="&#xE74E;"
+                            FontSize="18"
+                            Padding="5,0"
+                            FontFamily="Segoe MDL2 Assets"/>
                 </StackPanel>
             </ToolBar>
         </ToolBarTray>
