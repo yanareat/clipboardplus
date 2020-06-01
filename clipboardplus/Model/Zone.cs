@@ -96,6 +96,27 @@ namespace clipboardplus.Model
             set { _isRename = value; RaisePropertyChanged(() => IsRename); }
         }
 
+        /// <summary>
+        /// 记录的版本
+        /// </summary>
+        private int _version;
+        public int Version
+        {
+            get => _version;
+            set { _version = value; RaisePropertyChanged(() => Version); }
+        }
+
+        /// <summary>
+        /// 记录的用户
+        /// </summary>
+        private string _user;
+        [SugarColumn(IsNullable = true)]
+        public string User
+        {
+            get => _user;
+            set { _user = value; RaisePropertyChanged(() => User); }
+        }
+
         #endregion
 
         #region 方法

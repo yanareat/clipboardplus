@@ -1,6 +1,7 @@
 ﻿using clipboardplus.Model;
 using clipboardplus.Util;
 using clipboardplus.ViewModel;
+//using HandyControl.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -31,6 +32,12 @@ namespace clipboardplus
             searchBar.Focus();
             rtb.SaveBtn.Click += SaveBtn_Click;
             yie.SaveBtn.Click += ImageEditorSaveBtn_Click;
+            yie.OCRBtn.Checked += OCRBtn_Checked;
+        }
+
+        private void OCRBtn_Checked(object sender, RoutedEventArgs e)
+        {
+            (DataContext as MainViewModel).beOCR();
         }
 
         private void ImageEditorSaveBtn_Click(object sender, RoutedEventArgs e)
@@ -674,6 +681,13 @@ namespace clipboardplus
 
         private void test(object sender, MouseButtonEventArgs e)
         {
+            //PasswordBox
+        }
+
+        private void DrawerLeft_LostFocus(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("lost");
+            toggleZone.IsChecked = false;
         }
     }
 }

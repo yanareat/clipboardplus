@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -68,6 +69,32 @@ namespace clipboardplus.Controls
             }
         }
 
+        public string OCRText
+        {
+            get { return (string)GetValue(OCRTextProperty); }
+            set { SetValue(OCRTextProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ImageSource.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty OCRTextProperty =
+            DependencyProperty.Register("OCRText", typeof(string), typeof(YanaImageEditor), new PropertyMetadata("", new PropertyChangedCallback(OnOCRText)));
+
+        private static void OnOCRText(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if ((d as YanaImageEditor).updateUI)
+            {
+                Console.WriteLine("\n\n\n\n\n\nOCRText\n" + "\n更新控件\n\n\n\n\n\n" + e.NewValue);
+                var yie = d as YanaImageEditor;
+                if(e.NewValue != null)
+                {
+                    yie.temprich.Text = e.NewValue.ToString();
+                }                
+            }
+            else
+            {
+                Console.WriteLine("\n\n\n\n\n\nOCRText\n" + "\n更新源\n\n\n\n\n\n");
+            }
+        }
 
         //画图注册名称集合
         public List<NameAndLimit> list = new List<NameAndLimit>();
@@ -97,6 +124,11 @@ namespace clipboardplus.Controls
         public Button SaveBtn
         {
             get { return this.saveBtn; }
+        }
+
+        public ToggleButton OCRBtn
+        {
+            get { return this.btnOCR; }
         }
         #endregion
 

@@ -124,7 +124,7 @@ namespace clipboardplus.Model
         /// 二进制
         /// </summary>
         private byte[] _imageData;
-        [SugarColumn(IsNullable = true)]
+        [SugarColumn(IsNullable = true, ColumnDataType = "mediumblob")]
         public byte[] ImageData
         {
             get => _imageData;
@@ -136,13 +136,33 @@ namespace clipboardplus.Model
         /// 二进制
         /// </summary>
         private byte[] _fileData;
-        [SugarColumn(IsNullable = true)]
+        [SugarColumn(IsNullable = true, ColumnDataType = "mediumblob")]
         public byte[] FileData
         {
             get => _fileData;
             set { _fileData = value; RaisePropertyChanged(() => FileData); }
         }
 
+        /// <summary>
+        /// 记录的版本
+        /// </summary>
+        private int _version;
+        public int Version
+        {
+            get => _version;
+            set { _version = value; RaisePropertyChanged(() => Version); }
+        }
+
+        /// <summary>
+        /// 记录的用户
+        /// </summary>
+        private string _user;
+        [SugarColumn(IsNullable = true)]
+        public string User
+        {
+            get => _user;
+            set { _user = value; RaisePropertyChanged(() => User); }
+        }
         #endregion
 
         #region 只读属性
@@ -234,6 +254,15 @@ namespace clipboardplus.Model
         public Visibility ImageShow
         {
             get => Type == 2 ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        /// <summary>
+        /// 记录的时间格式化
+        /// </summary>
+        [SugarColumn(IsIgnore = true)]
+        public Visibility RecycleShow
+        {
+            get => Deleted == true ? Visibility.Visible : Visibility.Collapsed;
         }
 
         /// <summary>

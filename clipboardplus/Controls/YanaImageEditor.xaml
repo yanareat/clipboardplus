@@ -34,6 +34,7 @@
                     </Border>
                 </ToggleButton>
                 <ToggleButton HorizontalAlignment="Stretch"
+                              x:Name="btnOCR"
                               Content="&#xe686;"
                               Padding="5,0"
                               FontSize="20"
@@ -175,7 +176,7 @@
                             Style="{StaticResource ButtonIcon}" 
                             hc:IconElement.Geometry="{StaticResource DeleteFillCircleGeometry}"/>
 
-                    <RichTextBox Grid.Row="1" x:Name="temprich"/>
+                    <TextBox Grid.Row="1" x:Name="temprich"/>
                 </Grid>
             </Border>
         </hc:Drawer>

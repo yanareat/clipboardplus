@@ -40,6 +40,9 @@
     <ApplicationIcon>Resources\Images\clipboardplus.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AipSdk">
+      <HintPath>..\..\..\..\9_portable\aip-csharp-sdk-3.6.11\net35\AipSdk.dll</HintPath>
+    </Reference>
     <Reference Include="CommonServiceLocator, Version=2.0.2.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
       <HintPath>packages\CommonServiceLocator.2.0.2\lib\net47\CommonServiceLocator.dll</HintPath>
     </Reference>
@@ -58,6 +61,9 @@
     <Reference Include="Microsoft.mshtml, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
+    <Reference Include="mysql.data">
+      <HintPath>..\..\..\..\3_download\mysql-for-visualstudio-1.2.8-noinstall\15.0v461\mysql.data.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -71,6 +77,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.SQLite, Version=1.0.112.1, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -146,6 +153,7 @@
     <Compile Include="Converter\htmltokentype.cs" />
     <Compile Include="Converter\XPSHelper.cs" />
     <Compile Include="Converter\XPStoFlowDocument.cs" />
+    <Compile Include="Helpers\PasswordBoxHelper.cs" />
     <Compile Include="Helpers\ImageHelper.cs" />
     <Compile Include="Helpers\RelayCommand.cs" />
     <Compile Include="Helpers\ScreenHelper.cs" />
@@ -156,8 +164,10 @@
     <Compile Include="Model\Limit.cs" />
     <Compile Include="Model\Record.cs" />
     <Compile Include="Model\Tool.cs" />
+    <Compile Include="Model\User.cs" />
     <Compile Include="Model\Zone.cs" />
     <Compile Include="Util\HotKeySettingsManager.cs" />
+    <Compile Include="Util\OCRUtils.cs" />
     <Compile Include="Util\SqlUtil.cs" />
     <Compile Include="Util\ToolUtil.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
